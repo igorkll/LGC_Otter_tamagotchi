@@ -1,5 +1,6 @@
 #include "main.h"
 #include "gfx.h"
+#include "hctl.h"
 
 #define TARGET_FPS 20
 
@@ -76,8 +77,10 @@ void app_main() {
         tsgl_display_rotate(&display, ROTATE);
     }
 
+    hctl_init();
+
     tsgl_delay(100);
-    tsgl_display_setBacklight(&display, BACKLIGHT_MAX);
+    hctl_setBacklight(BACKLIGHT_MAX);
 
     while (true) {
         tsgl_delay(5000);

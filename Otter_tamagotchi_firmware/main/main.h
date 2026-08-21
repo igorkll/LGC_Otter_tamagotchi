@@ -20,6 +20,9 @@
 #include <TSGL_bmp.h>
 #include <TSGL_fonts/font.h>
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/timers.h>
+
 #include "configs/display.h"
 #include "configs/config.h"
 
