@@ -35,4 +35,6 @@ extern tsgl_colormode colormode;
 extern tsgl_rawcolor white;
 extern tsgl_rawcolor black;
 
+#define TITLE_WIDTH 8
 #define TITLE_HEIGHT 16
+#define TITLE_MARGIN 8

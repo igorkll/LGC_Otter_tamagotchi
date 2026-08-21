@@ -22,7 +22,7 @@ tsgl_print_settings printsettings_title = {
     .globalCentering = true,
 
     .font = font,
-    .targetWidth = TITLE_HEIGHT,
+    .targetWidth = TITLE_WIDTH,
     .targetHeight = TITLE_HEIGHT,
 
     .fill = TSGL_INVALID_RAWCOLOR,
@@ -32,7 +32,7 @@ tsgl_print_settings printsettings_title = {
 static void bootlogo() {
     tsgl_framebuffer_clear(&framebuffer, black);
     gfx_drawCenteredImage("/storage/bootlogo.bmp");
-    tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT, printsettings_title, "Otter");
+    tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, "Otter");
 }
 
 void app_main() {
