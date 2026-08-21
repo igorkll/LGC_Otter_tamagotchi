@@ -19,9 +19,10 @@
 tsgl_display_settings settings = {
     .driver = &st77XX_rgb565,
     .swapRGB = false,
-    .width = 160,
-    .height = 128,
-    .swapXY = true,
+    .width = 128,
+    .height = 160,
+    .swapXY = false,
+    .flipX = true,
     .flipY = true,
     .offsetX = 0,
     .offsetY = 0
