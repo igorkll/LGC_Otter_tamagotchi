@@ -34,3 +34,5 @@ extern tsgl_colormode colormode;
 
 extern tsgl_rawcolor white;
 extern tsgl_rawcolor black;
+
+#define TITLE_HEIGHT 16
