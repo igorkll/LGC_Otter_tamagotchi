@@ -1,2 +1,3 @@
-#define FRAMEBUFFER_ROTATE 0
+#pragma once
+#define FRAMEBUFFER_ROTATE 1
 

@@ -1,3 +1,4 @@
+#pragma once
 #include <TSGL_drivers/st77XX.h>
 
 #define FREQ 60000000
