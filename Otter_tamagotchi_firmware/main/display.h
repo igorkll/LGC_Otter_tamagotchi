@@ -1,12 +1,18 @@
 #include <TSGL_drivers/st77XX.h>
 
-#define SPI TSGL_HOST1
 #define FREQ 60000000
 #define BUFFER TSGL_RAM
-#define DC 12
-#define CS TSGL_HOST1_CS
+
 #define RST -1
-#define BL 13
+
+#define SPI TSGL_HOST1
+#define SPI_MOSI 4
+#define SPI_MISO -1
+#define SPI_CLK 8
+
+#define DC 5
+#define CS 6
+#define BL 7
 
 tsgl_display_settings settings = {
     .driver = &st77XX_rgb565,

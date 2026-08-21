@@ -50,7 +50,7 @@ void app_main() {
     settings.init_color = tsgl_color_raw(TSGL_BLACK, settings.driver->colormode);
 
     ESP_ERROR_CHECK(tsgl_filesystem_mount_fatfs("/storage", "storage"));
-    ESP_ERROR_CHECK(tsgl_spi_init(settings.width * settings.height * tsgl_colormodeSizes[settings.driver->colormode], SPI));
+    ESP_ERROR_CHECK(tsgl_spi_initManual(settings.width * settings.height * tsgl_colormodeSizes[settings.driver->colormode], SPI, SPI_MOSI, SPI_MISO, SPI_CLK));
     ESP_ERROR_CHECK(tsgl_display_spi(&display, settings, SPI, FREQ, DC, CS, RST));
     ESP_ERROR_CHECK(tsgl_framebuffer_init(&framebuffer, display.colormode, settings.width, settings.height, BUFFER));
 
@@ -61,24 +61,7 @@ void app_main() {
 
     while (true) {
         tsgl_framebuffer_clear(&framebuffer, white);
-        drawCenteredImage("/storage/text1.bmp");
-        tsgl_display_send(&display, &framebuffer);
-        tsgl_delay(5000);
-
-        for (int i = 0; i < 5; i++) {
-            tsgl_framebuffer_clear(&framebuffer, white);
-            drawCenteredImage("/storage/heart1.bmp");
-            tsgl_display_send(&display, &framebuffer);
-            tsgl_delay(500);
-
-            tsgl_framebuffer_clear(&framebuffer, white);
-            drawCenteredImage("/storage/heart2.bmp");
-            tsgl_display_send(&display, &framebuffer);
-            tsgl_delay(500);
-        }
-
-        tsgl_framebuffer_clear(&framebuffer, white);
-        drawCenteredImage("/storage/text2.bmp");
+        drawCenteredImage("/storage/test.bmp");
         tsgl_display_send(&display, &framebuffer);
         tsgl_delay(5000);
     }
