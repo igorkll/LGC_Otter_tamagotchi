@@ -43,9 +43,9 @@ void app_main() {
 
     printsettings_title.fg = tsgl_color_raw(TSGL_RED, colormode);
 
-    settings.backlight_init = true;
+    settings.backlight_init = false;
     settings.backlight_pin = BL;
-    settings.backlight_value = 255;
+    settings.backlight_value = 0;
 
     ESP_ERROR_CHECK(tsgl_filesystem_mount_fatfs("/storage", "storage"));
 
@@ -75,10 +75,10 @@ void app_main() {
     if (USE_HARDWARE_ROTATE) {
         tsgl_display_rotate(&display, ROTATE);
     }
+    //tsgl_display_setBacklight(&display, BACKLIGHT_MAX);
 
-    tsgl_delay(5000);
     while (true) {
-        tsgl_display_send(&display, &framebuffer);
         tsgl_delay(5000);
+        tsgl_display_send(&display, &framebuffer);
     }
 }
