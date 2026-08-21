@@ -30,7 +30,7 @@ void hctl_setBacklight(uint8_t value) {
     if (change_backlight_timer_handle == NULL) {
         change_backlight_timer_handle = xTimerCreate(
             NULL,
-            pdMS_TO_TICKS(100),
+            pdMS_TO_TICKS(BACKLIGHT_CHANGE_PERIOD),
             pdTRUE,
             NULL, 
             change_backlight_timer_callback
