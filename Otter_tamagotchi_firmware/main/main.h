@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,6 +18,19 @@
 #include <TSGL_color.h>
 #include <TSGL_spi.h>
 #include <TSGL_bmp.h>
+#include <TSGL_fonts/font.h>
 
-#include "display.h"
-#include "config.h"
+#include "configs/display.h"
+#include "configs/config.h"
+
+extern const char* TAG;
+
+extern tsgl_display display;
+extern tsgl_framebuffer framebuffer;
+
+extern tsgl_pos width;
+extern tsgl_pos height;
+extern tsgl_colormode colormode;
+
+extern tsgl_rawcolor white;
+extern tsgl_rawcolor black;

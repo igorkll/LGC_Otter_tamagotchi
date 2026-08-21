@@ -1,4 +1,5 @@
 #pragma once
+
 #include <TSGL_drivers/st77XX.h>
 
 #define FREQ 60000000
@@ -15,14 +16,4 @@
 #define CS 6
 #define BL 7
 
-tsgl_display_settings settings = {
-    .driver = &st77XX_rgb565,
-    .swapRGB = false,
-    .width = 128,
-    .height = 160,
-    .swapXY = false,
-    .flipX = true,
-    .flipY = true,
-    .offsetX = 0,
-    .offsetY = 0
-};
+extern tsgl_display_settings settings;

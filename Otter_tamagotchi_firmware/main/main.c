@@ -1,34 +1,29 @@
 #include "main.h"
+#include "gfx.h"
 
 #define TARGET_FPS 20
 
-static const char* TAG = "otter_tamagotchi";
+const char* TAG = "otter_tamagotchi";
 
-static tsgl_display display;
-static tsgl_framebuffer framebuffer;
+tsgl_display display;
+tsgl_framebuffer framebuffer;
 
-static tsgl_pos width;
-static tsgl_pos height;
-static tsgl_colormode colormode;
+tsgl_pos width;
+tsgl_pos height;
+tsgl_colormode colormode;
 
-static tsgl_rawcolor white;
-static tsgl_rawcolor black;
+tsgl_rawcolor white;
+tsgl_rawcolor black;
 
-static void drawCenteredImage(const char* path) {
-    tsgl_sprite* sprite = tsgl_bmp_load(path, colormode, BUFFER, tsgl_color_raw(tsgl_color_pack(0, 125, 0), colormode));
-
-    tsgl_framebuffer_push(&framebuffer,
-        (width / 2) - (sprite->sprite->width / 2),
-        (height / 2) - (sprite->sprite->height / 2),
-        sprite
-    );
-
-    tsgl_bmp_free(sprite);
-}
+tsgl_print_settings printsettings_title = {
+    .alignment = tsgl_print_alignment_center,
+    .font = font
+};
 
 static void bootlogo() {
-    tsgl_framebuffer_clear(&framebuffer, white);
-    drawCenteredImage("/storage/bootlogo.bmp");
+    tsgl_framebuffer_clear(&framebuffer, black);
+    gfx_drawCenteredImage("/storage/bootlogo.bmp");
+    tsgl_framebuffer_text(&framebuffer, 0, 15, printsettings_title, "Otter");
 }
 
 void app_main() {
@@ -37,6 +32,8 @@ void app_main() {
     white = tsgl_color_raw(TSGL_WHITE, colormode);
     black = tsgl_color_raw(TSGL_BLACK, colormode);
 
+    printsettings_title.fg = tsgl_color_raw(TSGL_RED, colormode);
+
     settings.backlight_init = true;
     settings.backlight_pin = BL;
     settings.backlight_value = 255;
@@ -44,7 +41,11 @@ void app_main() {
     ESP_ERROR_CHECK(tsgl_filesystem_mount_fatfs("/storage", "storage"));
 
     ESP_ERROR_CHECK(tsgl_framebuffer_init(&framebuffer, colormode, settings.width, settings.height, BUFFER));
-    tsgl_framebuffer_rotate(&framebuffer, FRAMEBUFFER_ROTATE);
+    if (USE_HARDWARE_ROTATE) {
+        tsgl_framebuffer_hardwareRotate(&framebuffer, ROTATE);
+    } else {
+        tsgl_framebuffer_rotate(&framebuffer, ROTATE);
+    }
     width = framebuffer.width;
     height = framebuffer.height;
 
@@ -53,9 +54,15 @@ void app_main() {
     settings.init_state = tsgl_display_init_framebuffer;
     settings.init_framebuffer_ptr = framebuffer.buffer;
     settings.init_framebuffer_size = framebuffer.buffersize;
+    if (USE_HARDWARE_ROTATE) {
+        settings.init_framebuffer_rotation = ROTATE;
+    }
 
     ESP_ERROR_CHECK(tsgl_spi_initManual(framebuffer.buffersize, SPI, SPI_MOSI, SPI_MISO, SPI_CLK));
     ESP_ERROR_CHECK(tsgl_display_spi(&display, settings, SPI, FREQ, DC, CS, RST));
+    if (USE_HARDWARE_ROTATE) {
+        tsgl_display_rotate(&display, ROTATE);
+    }
 
     tsgl_delay(5000);
     while (true) {
