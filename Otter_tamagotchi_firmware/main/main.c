@@ -43,7 +43,7 @@ void app_main() {
 
     printsettings_title.fg = tsgl_color_raw(TSGL_RED, colormode);
 
-    settings.backlight_init = false;
+    settings.backlight_init = true;
     settings.backlight_pin = BL;
     settings.backlight_value = 0;
 
@@ -75,7 +75,9 @@ void app_main() {
     if (USE_HARDWARE_ROTATE) {
         tsgl_display_rotate(&display, ROTATE);
     }
-    //tsgl_display_setBacklight(&display, BACKLIGHT_MAX);
+
+    tsgl_delay(100);
+    tsgl_display_setBacklight(&display, BACKLIGHT_MAX);
 
     while (true) {
         tsgl_delay(5000);
