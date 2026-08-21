@@ -1,5 +1,5 @@
 file(GLOB_RECURSE FILES "*.c")
-file(GLOB_RECURSE TSGL_FILES "../TSGL-0.3.3/TSGL/*.c")
+file(GLOB_RECURSE TSGL_FILES "../TSGL-0.3.4/TSGL/*.c")
 
 idf_component_register(
     SRCS
@@ -8,7 +8,7 @@ idf_component_register(
 
     INCLUDE_DIRS
         "."
-        "../TSGL-0.3.3/TSGL"
+        "../TSGL-0.3.4/TSGL"
 )
 
 fatfs_create_spiflash_image(storage ../storage FLASH_IN_PROJECT)

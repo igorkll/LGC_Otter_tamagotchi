@@ -190,6 +190,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
 
     if (!sets.fill.invalid && fill != NULL) {
         tsgl_print_textArea textArea = tsgl_font_getTextArea(x, y, sets, text);
+        
         fill(arg, textArea.left, textArea.top, textArea.width, textArea.height, sets.fill);
     }
 
