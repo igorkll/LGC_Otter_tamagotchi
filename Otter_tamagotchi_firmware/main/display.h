@@ -14,8 +14,6 @@
 #define CS 6
 #define BL 7
 
-#define FRAMEBUFFER_ROTATE 0
-
 tsgl_display_settings settings = {
     .driver = &st77XX_rgb565,
     .swapRGB = false,
