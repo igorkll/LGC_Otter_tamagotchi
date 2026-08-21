@@ -52,16 +52,17 @@ void app_main() {
     ESP_ERROR_CHECK(tsgl_filesystem_mount_fatfs("/storage", "storage"));
     ESP_ERROR_CHECK(tsgl_spi_initManual(settings.width * settings.height * tsgl_colormodeSizes[settings.driver->colormode], SPI, SPI_MOSI, SPI_MISO, SPI_CLK));
     ESP_ERROR_CHECK(tsgl_display_spi(&display, settings, SPI, FREQ, DC, CS, RST));
-    ESP_ERROR_CHECK(tsgl_framebuffer_init(&framebuffer, display.colormode, settings.width, settings.height, BUFFER));
+    ESP_ERROR_CHECK(tsgl_framebuffer_init(&framebuffer, display.colormode, display.width, display.height, BUFFER));
 
     tsgl_display_incompleteSending(&display, false, &framebuffer);
-    tsgl_framebuffer_rotate(&framebuffer, 3);
+    tsgl_framebuffer_rotate(&framebuffer, FRAMEBUFFER_ROTATE);
 
     white = tsgl_color_raw(TSGL_WHITE, display.colormode);
 
     while (true) {
         tsgl_framebuffer_clear(&framebuffer, white);
         drawCenteredImage("/storage/test.bmp");
+        tsgl_framebuffer_fill(&framebuffer, 4, 4, 16, 16, tsgl_color_raw(TSGL_RED, display.colormode));
         tsgl_display_send(&display, &framebuffer);
         tsgl_delay(5000);
     }

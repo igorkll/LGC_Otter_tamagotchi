@@ -14,11 +14,15 @@
 #define CS 6
 #define BL 7
 
+#define FRAMEBUFFER_ROTATE 0
+
 tsgl_display_settings settings = {
     .driver = &st77XX_rgb565,
-    .swapRGB = true,
-    .flipX = true,
-    .width = 128,
-    .height = 160,
-    .offsetY = 32
+    .swapRGB = false,
+    .width = 160,
+    .height = 128,
+    .swapXY = true,
+    .flipY = true,
+    .offsetX = 0,
+    .offsetY = 0
 };
