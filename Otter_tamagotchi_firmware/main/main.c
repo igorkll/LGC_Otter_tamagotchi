@@ -83,6 +83,6 @@ void app_main() {
     tsgl_delay(100);
     hctl_setBacklight(BACKLIGHT_MAX);
     while (hctl_isBacklightChangeProcess()) tsgl_delay(50);
-    tsgl_delay(1000);
+    tsgl_delay(3000);
     game_start();
 }
