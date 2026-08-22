@@ -280,6 +280,6 @@ const tsgl_driver st7735_rgb565 = {
 const tsgl_driver st7735_rgb666 = {
     .colormode = tsgl_rgb888,
     .init = {
-        {0x3A, {0x06}, 1}
+        {0x3A, {0x06}, 1},
     _SERVICE_CODE_ST7735
 };
