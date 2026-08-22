@@ -9,6 +9,12 @@
 * esp32
 * esp32c3
 
+## supported displays
+* st7735
+* st7789
+* st7796
+* pcd8544 (nokia 84x48 display)
+
 ## supported ST77XX colormodes
 * st7735 - st7735_rgb444 / st7735_rgb565 / st7735_rgb666
 * st7789 - st77XX_rgb444 / st77XX_rgb565 / st77XX_rgb666
