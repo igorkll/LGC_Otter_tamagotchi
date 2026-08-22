@@ -13,6 +13,18 @@ static Game_state default_state = {
 
 Game_state current_state;
 
+static tsgl_sprite* room_sprite = NULL;
+static int room_sprite_old_index = 0;
+
+static void loadSprites() {
+    if (room_sprite == NULL || current_state.room != room_sprite_old_index) {
+        room_sprite_old_index = current_state.room;
+        if (room_sprite != NULL) tsgl_bmp_free(room_sprite);
+        room_sprite = gfx_loadSprite(game_rooms_images_paths[current_state.room]);
+        printf("load room\n");
+    }
+}
+
 static void game_save() {
     tsgl_filesystem_writeFile(game_state_path, &current_state, sizeof(Game_state));
 }
@@ -25,16 +37,21 @@ static void game_load() {
     }
 }
 
+
 void game_start() {
     ESP_LOGI(TAG, "game started!");
 
     game_load();
 
     while (true) {
+        time_t start_render_time = tsgl_time();
+
+        loadSprites();
         tsgl_framebuffer_clear(&framebuffer, black);
-        gfx_drawCenteredScreenImage(game_rooms_images_paths[current_state.room]);
+        gfx_drawCenteredScreenImageSprite(room_sprite);
         tsgl_display_send(&display, &framebuffer);
-        ESP_LOGI(TAG, "frame %lld", tsgl_time());
+
+        ESP_LOGI(TAG, "frame time %lld", tsgl_time() - start_render_time);
         tsgl_delay(10);
     }
 }
