@@ -38,3 +38,7 @@ void hctl_setBacklight(uint8_t value) {
         if (change_backlight_timer_handle != NULL) xTimerStart(change_backlight_timer_handle, 0);
     }
 }
+
+bool hctl_isBacklightChangeProcess() {
+    return change_backlight_timer_handle != NULL;
+}

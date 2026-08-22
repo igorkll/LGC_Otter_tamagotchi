@@ -1,6 +1,7 @@
 #include "main.h"
 #include "gfx.h"
 #include "hctl.h"
+#include "game.h"
 
 #define TARGET_FPS 20
 
@@ -32,7 +33,7 @@ tsgl_print_settings printsettings_title = {
 
 static void bootlogo() {
     tsgl_framebuffer_clear(&framebuffer, black);
-    gfx_drawCenteredImage("/storage/bootlogo.bmp");
+    gfx_drawCenteredScreenImage("/storage/bootlogo.bmp");
     tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, "Otter");
 }
 
@@ -81,9 +82,7 @@ void app_main() {
 
     tsgl_delay(100);
     hctl_setBacklight(BACKLIGHT_MAX);
-
-    while (true) {
-        tsgl_delay(5000);
-        tsgl_display_send(&display, &framebuffer);
-    }
+    while (hctl_isBacklightChangeProcess()) tsgl_delay(50);
+    tsgl_delay(1000);
+    game_start();
 }
