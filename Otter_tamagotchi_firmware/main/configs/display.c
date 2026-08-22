@@ -1,7 +1,7 @@
 #include "display.h"
 
 tsgl_display_settings settings = {
-    .driver = &st77XX_rgb565,
+    .driver = &st77XX_rgb666,
     .swapRGB = false,
     .width = 128,
     .height = 160,
