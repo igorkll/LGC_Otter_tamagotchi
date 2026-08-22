@@ -48,7 +48,7 @@ void game_start() {
     while (true) {
         tsgl_benchmark_startRendering(&benchmark);
         loadSprites();
-        tsgl_framebuffer_clear(&framebuffer, black);
+        //tsgl_framebuffer_clear(&framebuffer, black);
         gfx_drawCenteredScreenImageSprite(room_sprite);
         tsgl_benchmark_endRendering(&benchmark);
 
