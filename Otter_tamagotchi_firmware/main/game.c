@@ -27,12 +27,14 @@ static void game_load() {
 
 void game_start() {
     ESP_LOGI(TAG, "game started!");
+
     game_load();
 
     while (true) {
         tsgl_framebuffer_clear(&framebuffer, black);
         gfx_drawCenteredScreenImage(game_rooms_images_paths[current_state.room]);
         tsgl_display_send(&display, &framebuffer);
+        ESP_LOGI(TAG, "frame %lld", tsgl_time());
         tsgl_delay(10);
     }
 }

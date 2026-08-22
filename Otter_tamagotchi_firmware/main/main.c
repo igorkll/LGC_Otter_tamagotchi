@@ -38,6 +38,9 @@ static void bootlogo() {
 }
 
 void app_main() {
+    esp_log_level_set("TSGL_bmp", ESP_LOG_WARN);
+    esp_log_level_set("TSGL_framebuffer", ESP_LOG_WARN);
+
     colormode = settings.driver->colormode;
 
     white = tsgl_color_raw(TSGL_WHITE, colormode);
