@@ -9,6 +9,11 @@
 * esp32
 * esp32c3
 
+## supported ST77XX colormodes
+* st7735 - st77XX_rgb444 / st77XX_rgb565 / st77XX_rgb666
+* st7789 - st77XX_rgb444 / st77XX_rgb565 / st77XX_rgb666
+* st7796 - st77XX_rgb565 / st77XX_rgb888
+
 ## features
 * the ability to install custom drivers without having to change the library code
 * the ability to install drivers directly inside the project

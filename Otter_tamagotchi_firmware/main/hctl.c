@@ -1,6 +1,6 @@
 #include "hctl.h"
 
-static uint8_t currentBackgroundValue = 0;
+static int16_t currentBackgroundValue = 0;
 static uint8_t targetBackgroundValue = 0;
 static TimerHandle_t change_backlight_timer_handle = NULL;
 
