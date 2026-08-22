@@ -18,6 +18,7 @@
 #include <TSGL_color.h>
 #include <TSGL_spi.h>
 #include <TSGL_bmp.h>
+#include <TSGL_benchmark.h>
 #include <TSGL_fonts/font.h>
 
 #include <freertos/FreeRTOS.h>

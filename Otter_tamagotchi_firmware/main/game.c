@@ -13,6 +13,8 @@ static Game_state default_state = {
 
 Game_state current_state;
 
+static tsgl_benchmark benchmark;
+
 static tsgl_sprite* room_sprite = NULL;
 static int room_sprite_old_index = 0;
 
@@ -40,18 +42,21 @@ static void game_load() {
 
 void game_start() {
     ESP_LOGI(TAG, "game started!");
-
+    tsgl_benchmark_reset(&benchmark);
     game_load();
 
     while (true) {
-        time_t start_render_time = tsgl_time();
-
+        tsgl_benchmark_startRendering(&benchmark);
         loadSprites();
         tsgl_framebuffer_clear(&framebuffer, black);
         gfx_drawCenteredScreenImageSprite(room_sprite);
-        tsgl_display_send(&display, &framebuffer);
+        tsgl_benchmark_endRendering(&benchmark);
 
-        ESP_LOGI(TAG, "frame time %lld", tsgl_time() - start_render_time);
-        tsgl_delay(10);
+        tsgl_benchmark_startSend(&benchmark);
+        tsgl_display_send(&display, &framebuffer);
+        tsgl_benchmark_endSend(&benchmark);
+
+        tsgl_benchmark_print(&benchmark);
+        tsgl_benchmark_wait(&benchmark, 15);
     }
 }
