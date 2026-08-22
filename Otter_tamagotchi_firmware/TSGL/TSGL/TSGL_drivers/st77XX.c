@@ -178,6 +178,42 @@ static tsgl_driver_list _backlight(const tsgl_driver_storage* storage, uint8_t v
     /* Power Control 1, AVDD=6.8V, AVCL=-4.8V, VDDS=2.3V */ \
     {0xD0, {0xA4, 0xA1}, 1}, \
     /* Positive Voltage Gamma Control */ \
+    {0xE0, {0xD0, 0x00, 0x05, 0x0E, 0x15, 0x0D, 0x37, 0x43, 0x47, 0x09, 0x15, 0x12, 0x16, 0x19}, 14}, \
+    /* Negative Voltage Gamma Control */ \
+    {0xE1, {0xD0, 0x00, 0x05, 0x0D, 0x0C, 0x06, 0x2D, 0x44, 0x40, 0x0E, 0x1C, 0x18, 0x16, 0x19}, 14}, \
+    /* Sleep Out */ \
+    {0x11, {0}, 0, 100}, \
+    /* Idle mode off */ \
+    {0x38, {0}, 0, -1} \
+}, \
+.enable = _enable, \
+.select = _select, \
+.rotate = _rotate, \
+.invert = _invert, \
+.backlight = _backlight, \
+.selectAreaAfterCommand = true, \
+.incompleteSending = true
+
+#define _SERVICE_CODE_ST7735 \
+    /* Porch Setting */ \
+    {0xB2, {0x0c, 0x0c, 0x00, 0x33, 0x33}, 5}, \
+    /* Gate Control, Vgh=13.65V, Vgl=-10.43V */ \
+    {0xB7, {0x45}, 1}, \
+    /* VCOM Setting, VCOM=1.175V */ \
+    {0xBB, {0x2B}, 1}, \
+    /* LCM Control, XOR: BGR, MX, MH */ \
+    {0xC0, {0x2C}, 1}, \
+    /* VDV and VRH Command Enable, enable=1 */ \
+    {0xC2, {0x01, 0xff}, 2}, \
+    /* VRH Set, Vap=4.4+... */ \
+    {0xC3, {0x11}, 1}, \
+    /* VDV Set, VDV=0 */ \
+    {0xC4, {0x20}, 1}, \
+    /* Frame Rate Control, 111Hz, inversion=0. if your screen does not work stably at such a refresh rate, then set the 0x0f mode, which will be equal to 60 hertz */ \
+    {0xC6, {0x01}, 1}, \
+    /* Power Control 1, AVDD=6.8V, AVCL=-4.8V, VDDS=2.3V */ \
+    {0xD0, {0xA4, 0xA1}, 1}, \
+    /* Positive Voltage Gamma Control */ \
     {0xE0, {0x0F, 0x1A, 0x0F, 0x18, 0x2F, 0x28, 0x20, 0x22, 0x1F, 0x1B, 0x23, 0x37, 0x00, 0x07, 0x02, 0x10}, 16}, \
     /* Negative Voltage Gamma Control */ \
     {0xE1, {0x0F, 0x1B, 0x0F, 0x17, 0x33, 0x2C, 0x29, 0x2E, 0x30, 0x30, 0x39, 0x3F, 0x00, 0x07, 0x03, 0x10}, 16}, \
@@ -194,7 +230,8 @@ static tsgl_driver_list _backlight(const tsgl_driver_storage* storage, uint8_t v
 .selectAreaAfterCommand = true, \
 .incompleteSending = true
 
-
+// universal
+// problems with gamma curve on st7735
 
 const tsgl_driver st77XX_rgb444 = { //does not work on st7796
     .colormode = tsgl_rgb444,
@@ -222,4 +259,27 @@ const tsgl_driver st77XX_rgb888 = { //does not work on st7735
     .init = {
         {0x3A, {0x07}, 1}, //on st7789 16M truncated - truncated true color support. that's what it says in the documentation
     _SERVICE_CODE
+};
+
+// st7735
+
+const tsgl_driver st7735_rgb444 = {
+    .colormode = tsgl_rgb444,
+    .init = {
+        {0x3A, {0x03}, 1},
+    _SERVICE_CODE_ST7735
+};
+
+const tsgl_driver st7735_rgb565 = {
+    .colormode = tsgl_rgb565_be,
+    .init = {
+        {0x3A, {0x05}, 1},
+    _SERVICE_CODE_ST7735
+};
+
+const tsgl_driver st7735_rgb666 = {
+    .colormode = tsgl_rgb888,
+    .init = {
+        {0x3A, {0x06}, 1}
+    _SERVICE_CODE_ST7735
 };
