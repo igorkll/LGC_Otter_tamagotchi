@@ -1,5 +1,6 @@
 #include "game.h"
 #include "gfx.h"
+#include "hctl.h"
 
 static const char* game_state_path = "/storage/game_state";
 static const char* game_rooms_images_paths[] = {
@@ -46,6 +47,8 @@ void game_start() {
     game_load();
 
     while (true) {
+        hctl_process();
+
         tsgl_benchmark_startRendering(&benchmark);
         loadSprites();
         //tsgl_framebuffer_clear(&framebuffer, black);
