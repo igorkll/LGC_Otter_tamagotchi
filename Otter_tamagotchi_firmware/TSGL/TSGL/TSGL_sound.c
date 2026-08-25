@@ -141,7 +141,10 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
     portENTER_CRITICAL_ISR(&global_sounds_lock);
 
     tsgl_sound* sound = user_ctx;
-    if (sound->callback_end_run) return false;
+    if (sound->callback_end_run) {
+        portEXIT_CRITICAL_ISR(&global_sounds_lock);
+        return false;
+    }
 
     if (!sound->mute) {
         void* ptr = sound->buffer + sound->bufferPosition;
