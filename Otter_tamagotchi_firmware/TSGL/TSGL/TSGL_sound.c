@@ -100,8 +100,14 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
 
     if (readFile) {
         sound->bufferPosition = 0;
-        if (sound->file != NULL) {
-            gptimer_stop(sound->timer);
+        if (sound->task_used) {
+            if (!sound->doubleSwapBuffer) {
+                gptimer_stop(sound->timer);
+            } else {
+                void* buffer = sound->buffer;
+                sound->buffer = sound->buffer2;
+                sound->buffer2 = buffer;
+            }
             xTaskResumeFromISR(sound->task);
         }
     }
@@ -164,6 +170,10 @@ esp_err_t tsgl_sound_load_pcm(tsgl_sound* sound, size_t bufferSize, int64_t caps
 }
 
 esp_err_t tsgl_sound_load_pcmPart(tsgl_sound* sound, size_t offset, size_t loadsize, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format) {
+    return tsgl_sound_load_pcmPartEx(sound, offset, loadsize, bufferSize, caps, path, sample_rate, bit_rate, channels, pcm_format, false)
+}
+
+esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loadsize, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format, bool doubleSwapBuffer) {
     memset(sound, 0, sizeof(tsgl_sound));
     sound->file = fopen(path, "rb");
     if (sound->file == NULL) return ESP_FAIL;
@@ -182,6 +192,7 @@ esp_err_t tsgl_sound_load_pcmPart(tsgl_sound* sound, size_t offset, size_t loads
     sound->channels = channels;
     sound->pcm_format = pcm_format;
     sound->bufferSize = bufferSize;
+    sound->doubleSwapBuffer = doubleSwapBuffer;
 
     if (bufferSize != TSGL_SOUND_FULLBUFFER) {
         uint16_t t = bit_rate * channels;
@@ -195,7 +206,18 @@ esp_err_t tsgl_sound_load_pcmPart(tsgl_sound* sound, size_t offset, size_t loads
             return ESP_ERR_NO_MEM;
         }
 
+        if (doubleSwapBuffer) {
+            sound->buffer2 = tsgl_malloc(sound->len, caps);
+            if (sound->buffer2 == NULL) {
+                free(sound->buffer);
+                ESP_LOGE(TAG, "the buffer2 for the sound could not be allocated: %i bytes", sound->len);
+                memset(sound, 0, sizeof(tsgl_sound));
+                return ESP_ERR_NO_MEM;
+            }
+        }
+
         xTaskCreate(_soundTask, NULL, 2048, sound, 1, &sound->task);
+        sound->task_used = true;
     } else {
         sound->bufferSize = sound->len;
 
@@ -210,6 +232,7 @@ esp_err_t tsgl_sound_load_pcmPart(tsgl_sound* sound, size_t offset, size_t loads
         fclose(sound->file);
         sound->file = NULL;
     }
+
     return ESP_OK;
 }
 
@@ -323,12 +346,16 @@ void tsgl_sound_stop(tsgl_sound* sound) {
 void tsgl_sound_free(tsgl_sound* sound) {
     if (sound->playing) tsgl_sound_stop(sound);
     if (sound->buffer != NULL) free(sound->buffer);
-    if (sound->file != NULL) {
+    if (sound->buffer2 != NULL) free(sound->buffer2);
+    if (sound->task_used) {
         vTaskDelete(sound->task);
+    }
+    if (sound->file != NULL) {
         fclose(sound->file);
     }
     _freeOutputs(sound);
     if (sound->heap) free(sound);
+    memset(sound, 0, sizeof(tsgl_sound));
 }
 
 #ifdef HARDWARE_DAC

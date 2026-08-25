@@ -37,8 +37,13 @@ typedef struct { //do not write ANYTHING in the fields of the structure. use met
     size_t position;
 
     TaskHandle_t task;
+    bool task_used;
     FILE* file;
+
     void* buffer;
+    void* buffer2;
+    bool doubleSwapBuffer;
+
     size_t bufferSize;
     size_t bufferPosition;
 
@@ -64,6 +69,8 @@ esp_err_t tsgl_sound_load_pcm(tsgl_sound* sound, size_t bufferSize, int64_t caps
 //It is used to load pcm content from other files, for example wav
 //you can pass 0 to loadsize to load the entire file to the end from your offset
 esp_err_t tsgl_sound_load_pcmPart(tsgl_sound* sound, size_t offset, size_t loadsize, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format);
+// allows you to specify double buffering to avoid clicks
+esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loadsize, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format, bool doubleSwapBuffer);
 //it makes a second instance of sound from already loaded data, works only with tracks fully loaded into RAM, it is necessary so that several sound effects can be run simultaneously
 esp_err_t tsgl_sound_instance(tsgl_sound* sound, tsgl_sound* parent);
 //sets the outputs for sample playback. if the track is single-channel,
