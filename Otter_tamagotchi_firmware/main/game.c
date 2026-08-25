@@ -47,13 +47,13 @@ static void game_load() {
     }
 }
 
-static void play_sound(const char* path, int test) {
+static tsgl_sound* play_sound(const char* path, int test) {
     static tsgl_sound sounds[MAX_SOUNDS] = {0};
     static uint8_t current_sound_index = 0;
 
     tsgl_sound* current_sound = &sounds[current_sound_index];
-    if (tsgl_sound_load_pcmEx(current_sound, SOUND_BUFFER_SIZE, 0, path, test, 1, 1, tsgl_sound_pcm_unsigned, true) != ESP_OK) {
-        return;
+    if (tsgl_sound_load_pcmEx(current_sound, SOUND_BUFFER_SIZE, 0, path, test, 1, 1, tsgl_sound_pcm_unsigned, false) != ESP_OK) {
+        return NULL;
     }
     
     current_sound_index++;
@@ -66,6 +66,8 @@ static void play_sound(const char* path, int test) {
     tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
     tsgl_sound_setVolume(current_sound, 1);
     tsgl_sound_play(current_sound);
+
+    return current_sound;
 }
 
 void game_start() {
@@ -73,9 +75,7 @@ void game_start() {
     tsgl_benchmark_reset(&benchmark);
     game_load();
 
-    play_sound("/storage/test.pcm", 8000);
-    tsgl_delay(50);
-    play_sound("/storage/test.pcm", 16000);
+    tsgl_sound* sound = play_sound("/storage/test.pcm", 8000);
 
     while (true) {
         hctl_process();

@@ -129,7 +129,7 @@ static void IRAM_ATTR _read_next_block(tsgl_sound* sound, int bufOffset) {
                 void* buffer = sound->buffer;
                 sound->buffer = sound->buffer2;
                 sound->buffer2 = buffer;
-            } else {
+            } else if (sound->use_local_timer) {
                 gptimer_stop(sound->timer);
             }
             xTaskResumeFromISR(sound->task);
@@ -319,7 +319,7 @@ esp_err_t tsgl_sound_load_pcmPart(tsgl_sound* sound, size_t offset, size_t loads
 
 static void afterUpdateSpeed(tsgl_sound* sound) {
     if (!sound->use_local_timer) {
-        sound->global_timer_div = global_timer_freq / (sound->sample_rate * sound->speed);
+        sound->global_timer_div = (global_timer_freq / (sound->sample_rate * sound->speed)) - 1;
     }
 }
 
