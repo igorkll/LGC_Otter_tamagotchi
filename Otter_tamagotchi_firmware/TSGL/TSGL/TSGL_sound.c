@@ -249,8 +249,6 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
                     tsgl_sound_addOutputValue(output,
                         (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
                     );
-
-                    tsgl_sound_flushOutput(output);
                 }
             }
 
@@ -268,7 +266,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
 
         for (size_t i = 0; i < sound->outputsCount; i++) {
             tsgl_sound_output* output = sound->outputs[i];
-            tsgl_sound_flushOutput(output);
+            if (output->count > 0) tsgl_sound_flushOutput(output);
         }
     }
 
@@ -569,6 +567,7 @@ tsgl_sound_output* tsgl_sound_newLedcOutput(gpio_num_t pin) {
 
 void IRAM_ATTR tsgl_sound_addOutputValue(tsgl_sound_output* output, int value) {
     output->value += value;
+    output->count++;
 }
 
 void IRAM_ATTR tsgl_sound_flushOutput(tsgl_sound_output* output) {
@@ -587,6 +586,7 @@ void IRAM_ATTR tsgl_sound_flushOutput(tsgl_sound_output* output) {
     }
 
     output->value = 0;
+    output->count = 0;
 }
 
 void tsgl_sound_freeOutput(tsgl_sound_output* output) {

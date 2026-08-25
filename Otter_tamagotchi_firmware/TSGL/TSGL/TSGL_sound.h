@@ -20,6 +20,7 @@ typedef struct {
     #endif
     tsgl_ledc* ledc;
     int value;
+    int count;
 } tsgl_sound_output;
 
 typedef enum {
