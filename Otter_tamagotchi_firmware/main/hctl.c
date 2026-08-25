@@ -4,9 +4,11 @@ static int16_t currentBackgroundValue = 0;
 static uint8_t targetBackgroundValue = 0;
 static TimerHandle_t change_backlight_timer_handle = NULL;
 
-tsgl_keyboard keyboard;
 static time_t lastInteractTime = 0;
 static bool isIdle = false;
+
+tsgl_keyboard keyboard;
+tsgl_sound_output* sound_output;
 
 void hctl_init() {
     time_t currentTime = tsgl_time();

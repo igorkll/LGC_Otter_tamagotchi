@@ -5,6 +5,7 @@
 // ------------------------------------ consts
 
 #define MAX_SOUNDS 16
+#define SOUND_BUFFER_SIZE (16 * 1024)
 
 static const char* game_state_path = "/storage/game_state";
 static const char* game_rooms_images_paths[] = {
@@ -51,7 +52,7 @@ static void play_sound(const char* path) {
     static uint8_t current_sound_index = 0;
 
     tsgl_sound* current_sound = &sounds[current_sound_index];
-    if (tsgl_sound_load_pcm(current_sound, 0, 0, path, 8000, 1, 1, tsgl_sound_pcm_unsigned) != ESP_OK) {
+    if (tsgl_sound_load_pcm(current_sound, SOUND_BUFFER_SIZE, 0, path, 8000, 1, 1, tsgl_sound_pcm_unsigned) != ESP_OK) {
         return;
     }
     
