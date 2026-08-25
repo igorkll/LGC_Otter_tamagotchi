@@ -29,4 +29,3 @@
 * support for the 444 color space, where 3 pixels are encoded in 2 bits (accessing such a framebuffer is slower, and working without framebuffer can cause graphical artifacts)
 
 ## warnings
-* if several sounds are played at the same time, their sampling frequency should be the SAME. otherwise, there will be timer overflows and there may be an output conflict
