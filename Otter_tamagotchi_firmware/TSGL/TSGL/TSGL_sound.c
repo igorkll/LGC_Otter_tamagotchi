@@ -10,8 +10,11 @@
 
 static const char* TAG = "TSGL_sound";
 
-static gptimer_handle_t global_timer;
 static bool use_global_timer = false;
+
+static gptimer_handle_t global_timer;
+static int global_timer_freq = 0;
+
 static tsgl_sound** global_sounds;
 static size_t global_sounds_index = 0;
 static size_t global_sounds_max_count = 0;
@@ -224,7 +227,7 @@ static void _setPosition(tsgl_sound* sound, size_t position) {
 }
 
 static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
-    for (size_t i = 0; i < global_sounds_max_count; i++) {
+    for (size_t i = 0; i < global_sounds_index; i++) {
         tsgl_sound* sound = global_sounds[i];
 
         if (!sound->mute) {
@@ -283,6 +286,7 @@ void tsgl_sound_enableGlobalTimer(int freq, size_t max_sounds) {
     ESP_ERROR_CHECK(gptimer_register_event_callbacks(global_timer, &callback_config, NULL));
     ESP_ERROR_CHECK(gptimer_enable(global_timer));
 
+    global_timer_freq = freq;
     use_global_timer = true;
 }
 
@@ -369,6 +373,8 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
     if (use_global_timer && global_sounds_index < global_sounds_max_count) {
         global_sounds[global_sounds_index++] = sound;
     }
+
+    printf("%p %p %i %i\n", global_sounds[0], global_sounds[1], global_sounds_index, global_sounds_max_count);
 
     return ESP_OK;
 }
@@ -501,6 +507,9 @@ void tsgl_sound_free(tsgl_sound* sound) {
     }
     _freeOutputs(sound);
     if (sound->heap) free(sound);
+    if (use_global_timer) {
+
+    }
     memset(sound, 0, sizeof(tsgl_sound));
 }
 
