@@ -13,8 +13,8 @@ static const char* TAG = "TSGL_sound";
 static gptimer_handle_t global_timer;
 static bool use_global_timer = false;
 static tsgl_sound** global_sounds;
-static int global_sounds_index = 0;
-static int global_sounds_max_count = 0;
+static size_t global_sounds_index = 0;
+static size_t global_sounds_max_count = 0;
 
 static int IRAM_ATTR _convertPcm(tsgl_sound* sound, void* source) {
     if (sound->bit_rate == 4) {
