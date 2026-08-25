@@ -61,8 +61,9 @@ static tsgl_sound* play_sound(const char* path, int test) {
         current_sound_index = 0;
     }
 
+    current_sound->freeOnEnd = true;
+
     tsgl_sound_output* sound_outputs[] = {sound_output};
-    tsgl_sound_attachCallback_end(current_sound, tsgl_sound_play);
     tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
     tsgl_sound_setVolume(current_sound, 0.2);
     tsgl_sound_setSpeed(current_sound, 2);
@@ -77,6 +78,9 @@ void game_start() {
     game_load();
 
     tsgl_sound* sound = play_sound("/storage/test.pcm", 8000);
+
+    tsgl_delay(2000);
+    tsgl_sound_free(sound);
 
     while (true) {
         hctl_process();

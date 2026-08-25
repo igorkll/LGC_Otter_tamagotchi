@@ -77,6 +77,8 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
     bool callback_end_run;
     void(*callback_end)(tsgl_sound* sound);
 
+    bool freeOnEnd;
+
     portMUX_TYPE lock;
 };
 
@@ -112,6 +114,7 @@ void tsgl_sound_seek(tsgl_sound* sound, int offset);
 void tsgl_sound_play(tsgl_sound* sound);
 void tsgl_sound_stop(tsgl_sound* sound);
 void tsgl_sound_free(tsgl_sound* sound);
+void tsgl_sound_enableFreeOnEnd(tsgl_sound* sound, bool freeOnEnd);
 
 void tsgl_sound_attachCallback_end(tsgl_sound* sound, void(*callback)(tsgl_sound* sound));
 

@@ -93,6 +93,10 @@ static void _soundServiceTask(void* _sound) {
             sound->callback_end_run = false;
             if (!sound->loop) tsgl_sound_stop(sound);
             if (sound->callback_end != NULL) sound->callback_end(sound);
+            if (sound->freeOnEnd) {
+                tsgl_sound_free(sound);
+                return;
+            }
         }
 
         vTaskSuspend(NULL);
@@ -573,8 +577,7 @@ void tsgl_sound_free(tsgl_sound* sound) {
     if (sound->file != NULL) {
         fclose(sound->file);
     }
-    _freeOutputs(sound);
-    if (sound->heap) free(sound);
+    //_freeOutputs(sound);
     if (use_global_timer) {
         portENTER_CRITICAL(&global_sounds_lock);
         for (size_t i = 0; i < global_sounds_index; i++) {
@@ -588,7 +591,13 @@ void tsgl_sound_free(tsgl_sound* sound) {
         portEXIT_CRITICAL(&global_sounds_lock);
     }
     portEXIT_CRITICAL(&sound->lock);
+    
     memset(sound, 0, sizeof(tsgl_sound));
+    if (sound->heap) free(sound);
+}
+
+void tsgl_sound_enableFreeOnEnd(tsgl_sound* sound, bool freeOnEnd) {
+    sound->freeOnEnd = freeOnEnd;
 }
 
 void tsgl_sound_attachCallback_end(tsgl_sound* sound, void(*callback)(tsgl_sound* sound)) {
