@@ -77,6 +77,9 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
     void(*callback_end)(tsgl_sound* sound);
 };
 
+// If you want to produce multiple sounds at the same time, you must activate the global timer.
+// the frequency of the global timer should be such that it can be divided by the frequency of each sound without remainder or fraction.
+// for example, if you have sounds with a sample_rate of 16000 and 8000, then the timer frequency should be 16000
 void tsgl_sound_enableGlobalTimer(int freq, size_t max_sounds);
 
 //the bitrate is set not in bits but in bytes
