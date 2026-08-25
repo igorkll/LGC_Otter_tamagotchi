@@ -79,7 +79,6 @@ static void _soundTask(void* _sound) {
             }
         }
 
-        vTaskDelay(1);
         vTaskSuspend(NULL);
     }
 }
@@ -96,7 +95,6 @@ static void _soundServiceTask(void* _sound) {
             if (sound->callback_end != NULL) sound->callback_end(sound);
         }
 
-        vTaskDelay(1);
         vTaskSuspend(NULL);
     }
 }
@@ -398,7 +396,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
             fread(sound->buffer2, sound->bit_rate, bufferSize, sound->file);
         }
 
-        xTaskCreate(_soundTask, NULL, 1024, sound, 1, &sound->task);
+        xTaskCreate(_soundTask, NULL, 4096, sound, 1, &sound->task);
         sound->task_used = true;
     } else {
         sound->bufferSize = sound->len;
@@ -415,7 +413,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
         sound->file = NULL;
     }
 
-    xTaskCreate(_soundServiceTask, NULL, 1024, sound, 1, &sound->task_service);
+    xTaskCreate(_soundServiceTask, NULL, 4096, sound, 1, &sound->task_service);
     sound->task_service_used = true;
 
     if (use_global_timer && global_sounds_index < global_sounds_max_count) {
@@ -512,7 +510,6 @@ void tsgl_sound_seek(tsgl_sound* sound, int offset) {
 
 void tsgl_sound_play(tsgl_sound* sound) {
     if (sound->playing) {
-        ESP_LOGW(TAG, "tsgl_sound_play skipped. the track is already playing");
         return;
     } else if (sound->buffer == NULL) {
         ESP_LOGE(TAG, "tsgl_sound_play skipped. uninitialized audio cannot be started");
