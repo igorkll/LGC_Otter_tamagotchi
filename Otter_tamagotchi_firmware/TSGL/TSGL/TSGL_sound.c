@@ -107,8 +107,11 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
                 (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
             );
 
-            output->currentUse = (output->currentUse + 1) % output->ownersCount;
-            if (output->currentUse) tsgl_sound_flushOutput(output);
+            output->currentUse++;
+            if (output->currentUse >= output->ownersCount) {
+                tsgl_sound_flushOutput(output);
+                output->currentUse = 0;
+            }
         }
     }
 
@@ -400,6 +403,11 @@ void tsgl_sound_stop(tsgl_sound* sound) {
 }
 
 void tsgl_sound_free(tsgl_sound* sound) {
+    for (size_t i = 0; i < sound->outputsCount; i++) {
+        tsgl_sound_output* output = sound->outputs[i];
+        output->ownersCount--;
+    }
+    
     if (sound->playing) tsgl_sound_stop(sound);
     if (sound->buffer != NULL) free(sound->buffer);
     if (sound->buffer2 != NULL) free(sound->buffer2);

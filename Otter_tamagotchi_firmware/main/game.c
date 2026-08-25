@@ -76,6 +76,8 @@ void game_start() {
     play_sound("/storage/test.pcm");
     tsgl_delay(100);
     play_sound("/storage/test.pcm");
+    tsgl_delay(500);
+    play_sound("/storage/test.pcm");
 
     while (true) {
         hctl_process();
