@@ -42,6 +42,7 @@ void hctl_init() {
     }
 
     // sound
+    tsgl_sound_enableGlobalTimer(SOUND_GLOBAL_TIMER_FREQ);
     sound_output = tsgl_sound_newLedcOutput(SPEAKER_PIN);
 
     // backlight

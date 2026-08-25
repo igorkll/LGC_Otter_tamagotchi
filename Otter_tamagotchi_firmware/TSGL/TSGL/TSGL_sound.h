@@ -73,7 +73,7 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
     void(*callback_end)(tsgl_sound* sound);
 };
 
-void tsgl_sound_enableGlobalTimer(int freq);
+void tsgl_sound_enableGlobalTimer(int freq, size_t max_sounds);
 
 //the bitrate is set not in bits but in bytes
 //however, due to the features of the DAC in esp32, it does not make sense to use more than 8 bit (this will not increase the sound quality)
