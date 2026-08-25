@@ -230,7 +230,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
     for (size_t i = 0; i < global_sounds_index; i++) {
         tsgl_sound* sound = global_sounds[i];
 
-        if (sound->playing) {
+        if (sound->playing || true) {
             if (!sound->mute) {
                 void* ptr = sound->buffer + sound->bufferPosition;
 
@@ -252,7 +252,12 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
                 }
             }
 
-            _read_next_block(sound, sound->bit_rate * sound->channels);
+            if (sound->global_timer_state >= sound->global_timer_div || true) {
+                _read_next_block(sound, sound->bit_rate * sound->channels);
+                sound->global_timer_state = 0;
+            } else {
+                sound->global_timer_state++;
+            }
         }
     }
 
@@ -312,6 +317,12 @@ esp_err_t tsgl_sound_load_pcmPart(tsgl_sound* sound, size_t offset, size_t loads
     return tsgl_sound_load_pcmPartEx(sound, offset, loadsize, bufferSize, caps, path, sample_rate, bit_rate, channels, pcm_format, false);
 }
 
+static void afterUpdateSpeed(tsgl_sound* sound) {
+    if (!sound->use_local_timer) {
+        sound->global_timer_div = global_timer_freq / (sound->sample_rate * sound->speed);
+    }
+}
+
 esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loadsize, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format, bool doubleSwapBuffer) {
     memset(sound, 0, sizeof(tsgl_sound));
     sound->file = fopen(path, "rb");
@@ -333,6 +344,8 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
     sound->bufferSize = bufferSize;
     sound->doubleSwapBuffer = doubleSwapBuffer;
     sound->use_local_timer = !use_global_timer;
+
+    afterUpdateSpeed(sound);
 
     if (bufferSize != TSGL_SOUND_FULLBUFFER) {
         uint16_t t = bit_rate * channels;
@@ -384,8 +397,6 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
         global_sounds[global_sounds_index++] = sound;
     }
 
-    printf("%p %p %i %i\n", global_sounds[0], global_sounds[1], global_sounds_index, global_sounds_max_count);
-
     return ESP_OK;
 }
 
@@ -414,6 +425,8 @@ void tsgl_sound_setOutputs(tsgl_sound* sound, tsgl_sound_output** outputs, size_
 
 void tsgl_sound_setSpeed(tsgl_sound* sound, float speed) {
     sound->speed = speed;
+
+    afterUpdateSpeed(sound);
 
     if (sound->playing && sound->use_local_timer) {
         gptimer_stop(sound->timer);
