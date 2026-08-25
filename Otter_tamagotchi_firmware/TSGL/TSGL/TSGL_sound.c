@@ -190,11 +190,21 @@ static void _initTimer(tsgl_sound* sound) {
     ESP_ERROR_CHECK(gptimer_enable(sound->timer));
 }
 
+static void _resetOutputs(tsgl_sound* sound) {
+    for (size_t i = 0; i < sound->outputsCount; i++) {
+        tsgl_sound_output* output = sound->outputs[i];
+        output->value = 0;
+        tsgl_sound_flushOutput(output);
+    }
+}
+
 static void _freeOutputs(tsgl_sound* sound) {
     if (sound->freeOutputs) {
         for (size_t i = 0; i < sound->outputsCount; i++) {
             tsgl_sound_freeOutput(sound->outputs[i]);
         }
+    } else {
+        _resetOutputs(sound);
     }
     free(sound->outputs);
 }
@@ -248,6 +258,9 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
 void tsgl_sound_enableGlobalTimer(int freq, size_t max_sounds) {
     if (use_global_timer) return;
 
+    global_sounds = calloc(max_sounds, sizeof(size_t));
+    global_sounds_max_count = max_sounds;
+
     gptimer_alarm_config_t alarm_config = {
         .alarm_count = 1,
         .flags = {
@@ -269,9 +282,6 @@ void tsgl_sound_enableGlobalTimer(int freq, size_t max_sounds) {
     ESP_ERROR_CHECK(gptimer_set_alarm_action(global_timer, &alarm_config));
     ESP_ERROR_CHECK(gptimer_register_event_callbacks(global_timer, &callback_config, NULL));
     ESP_ERROR_CHECK(gptimer_enable(global_timer));
-
-    global_sounds = calloc(max_sounds, sizeof(size_t));
-    global_sounds_max_count = max_sounds;
 
     use_global_timer = true;
 }
@@ -437,11 +447,14 @@ void tsgl_sound_play(tsgl_sound* sound) {
         return;
     }
 
+    sound->playing = true;
+
     if (sound->use_local_timer) {
         _initTimer(sound);
         gptimer_start(sound->timer);
+    } else {
+        gptimer_start(global_timer);
     }
-    sound->playing = true;
 }
 
 void tsgl_sound_stop(tsgl_sound* sound) {
@@ -450,12 +463,27 @@ void tsgl_sound_stop(tsgl_sound* sound) {
         return;
     }
 
+    sound->playing = false;
+
     if (sound->use_local_timer) {
         gptimer_stop(sound->timer);
         gptimer_disable(sound->timer);
         gptimer_del_timer(sound->timer);
+        
+        _resetOutputs(sound);
+    } else {
+        bool found_playing = false;
+        for (size_t i = 0; i < global_sounds_max_count; i++) {
+            tsgl_sound* sound = global_sounds[i];
+            if (sound->playing) {
+                found_playing = true;
+                break;
+            }
+        }
+        if (found_playing) {
+            gptimer_stop(global_timer);
+        }
     }
-    sound->playing = false;
 }
 
 void tsgl_sound_free(tsgl_sound* sound) {
