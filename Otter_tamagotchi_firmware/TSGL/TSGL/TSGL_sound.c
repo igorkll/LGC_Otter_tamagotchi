@@ -255,6 +255,15 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
         _read_next_block(sound, sound->bit_rate * sound->channels);
     }
 
+    for (size_t i = 0; i < global_sounds_index; i++) {
+        tsgl_sound* sound = global_sounds[i];
+
+        for (size_t i = 0; i < sound->outputsCount; i++) {
+            tsgl_sound_output* output = sound->outputs[i];
+            tsgl_sound_flushOutput(output);
+        }
+    }
+
     return false;
 }
 
