@@ -19,6 +19,7 @@
 #include <TSGL_spi.h>
 #include <TSGL_bmp.h>
 #include <TSGL_keyboard.h>
+#include <TSGL_sound.h>
 #include <TSGL_fonts/font.h>
 
 #include <freertos/FreeRTOS.h>

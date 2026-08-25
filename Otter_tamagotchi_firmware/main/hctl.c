@@ -10,8 +10,9 @@ static bool isIdle = false;
 
 void hctl_init() {
     time_t currentTime = tsgl_time();
-
     lastInteractTime = currentTime;
+
+    // keyboard
 
     tsgl_keyboard_init(&keyboard);
     tsgl_keyboard_bindButton(&keyboard, 0, true, false, BUTTON_0_PIN);
@@ -22,6 +23,10 @@ void hctl_init() {
     for (size_t i = 0; i < KEYS_COUNT; i++) {
         tsgl_keyboard_setDebounce(&keyboard, i, KEYS_DEBOUNCE_PRESSING_MS, KEYS_DEBOUNCE_RELEASING_MS);
     }
+
+    // sound
+
+    sound_output = tsgl_sound_newLedcOutput(SPEAKER_PIN);
 }
 
 static void change_backlight_timer_callback(TimerHandle_t xTimer) {

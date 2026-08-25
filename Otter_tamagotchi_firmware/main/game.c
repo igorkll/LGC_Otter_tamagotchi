@@ -2,6 +2,8 @@
 #include "gfx.h"
 #include "hctl.h"
 
+#define MAX_SOUNDS 16
+
 static const char* game_state_path = "/storage/game_state";
 static const char* game_rooms_images_paths[] = {
     "/storage/rooms/bedroom.bmp",
@@ -40,11 +42,21 @@ static void game_load() {
     }
 }
 
+static void play_sound(const char* path) {
+    static tsgl_sound sounds[MAX_SOUNDS];
+    static uint8_t current_sound = 0;
+    tsgl_sound_load_pcm(sounds[current_sound++], 0, 0, path, 8000, 1, 1, tsgl_sound_pcm_unsigned);
+    if (current_sound >= MAX_SOUNDS) {
+        current_sound = 0;
+    }
+}
 
 void game_start() {
     ESP_LOGI(TAG, "game started!");
     tsgl_benchmark_reset(&benchmark);
     game_load();
+
+    play_sound("/storage/test.pcm");
 
     while (true) {
         hctl_process();
