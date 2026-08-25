@@ -2,6 +2,8 @@
 #include "gfx.h"
 #include "hctl.h"
 
+// ------------------------------------ consts
+
 #define MAX_SOUNDS 16
 
 static const char* game_state_path = "/storage/game_state";
@@ -10,18 +12,20 @@ static const char* game_rooms_images_paths[] = {
     "/storage/rooms/kitchen.bmp"
 };
 
-static Game_state default_state = {
+static const Game_state default_state = {
     .room = 0
 };
 
+// ------------------------------------ vars
+
 Game_state current_state;
-
 static tsgl_benchmark benchmark;
-
 static tsgl_sprite* room_sprite = NULL;
-static int room_sprite_old_index = 0;
+
+// ------------------------------------ functions
 
 static void loadSprites() {
+    static int room_sprite_old_index = 0;
     if (room_sprite == NULL || current_state.room != room_sprite_old_index) {
         room_sprite_old_index = current_state.room;
         if (room_sprite != NULL) tsgl_bmp_free(room_sprite);
@@ -44,11 +48,22 @@ static void game_load() {
 
 static void play_sound(const char* path) {
     static tsgl_sound sounds[MAX_SOUNDS];
-    static uint8_t current_sound = 0;
-    tsgl_sound_load_pcm(sounds[current_sound++], 0, 0, path, 8000, 1, 1, tsgl_sound_pcm_unsigned);
-    if (current_sound >= MAX_SOUNDS) {
-        current_sound = 0;
+    static uint8_t current_sound_index = 0;
+
+    tsgl_sound* current_sound = &sounds[current_sound_index];
+    if (tsgl_sound_load_pcm(current_sound, 0, 0, path, 8000, 1, 1, tsgl_sound_pcm_unsigned) != ESP_OK) {
+        return;
     }
+    
+    current_sound_index++;
+    if (current_sound_index >= MAX_SOUNDS) {
+        current_sound_index = 0;
+    }
+
+    tsgl_sound_output* sound_outputs[] = {sound_output};
+    tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
+    tsgl_sound_setVolume(current_sound, 1);
+    tsgl_sound_play(current_sound);
 }
 
 void game_start() {
