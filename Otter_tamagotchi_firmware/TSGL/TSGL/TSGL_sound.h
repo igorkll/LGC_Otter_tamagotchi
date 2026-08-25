@@ -20,8 +20,8 @@ typedef struct {
     #endif
     tsgl_ledc* ledc;
     int value;
-    uint8_t ownersCount;
-    uint8_t currentUse;
+    uint64_t ownersCount;
+    uint64_t currentUse;
 } tsgl_sound_output;
 
 typedef enum {
@@ -60,6 +60,8 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
     size_t bit_rate;
     size_t channels;
     tsgl_sound_pcm_format pcm_format;
+
+    size_t freq_div_mul;
 
     tsgl_sound_output** outputs;
     size_t outputsCount;
