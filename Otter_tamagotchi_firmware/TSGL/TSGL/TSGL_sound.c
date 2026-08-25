@@ -96,32 +96,7 @@ static void _soundServiceTask(void* _sound) {
     }
 }
 
-static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
-    tsgl_sound* sound = user_ctx;
-
-    if (!sound->mute) {
-        void* ptr = sound->buffer + sound->bufferPosition;
-        int div;
-        if (sound->bit_rate == 4) {
-            div = 256 * 256 * 256;
-        } else if (sound->bit_rate == 2) {
-            div = 256;
-        } else {
-            div = 1;
-        }
-
-        for (size_t i = 0; i < sound->outputsCount; i++) {
-            tsgl_sound_output* output = sound->outputs[i];
-
-            tsgl_sound_addOutputValue(output,
-                (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
-            );
-
-            tsgl_sound_flushOutput(output);
-        }
-    }
-
-    int bufOffset = sound->bit_rate * sound->channels;
+static void IRAM_ATTR _read_next_block(tsgl_sound* sound, int bufOffset) {
     bool readFile = false;
 
     sound->bufferPosition += bufOffset;
@@ -157,6 +132,34 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
             xTaskResumeFromISR(sound->task);
         }
     }
+}
+
+static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
+    tsgl_sound* sound = user_ctx;
+
+    if (!sound->mute) {
+        void* ptr = sound->buffer + sound->bufferPosition;
+        int div;
+        if (sound->bit_rate == 4) {
+            div = 256 * 256 * 256;
+        } else if (sound->bit_rate == 2) {
+            div = 256;
+        } else {
+            div = 1;
+        }
+
+        for (size_t i = 0; i < sound->outputsCount; i++) {
+            tsgl_sound_output* output = sound->outputs[i];
+
+            tsgl_sound_addOutputValue(output,
+                (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
+            );
+
+            tsgl_sound_flushOutput(output);
+        }
+    }
+
+    _read_next_block(sound, sound->bit_rate * sound->channels);
 
     return false;
 }
@@ -211,7 +214,33 @@ static void _setPosition(tsgl_sound* sound, size_t position) {
 }
 
 static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
+    for (size_t i = 0; i < global_sounds_max_count; i++) {
+        tsgl_sound* sound = global_sounds[i];
 
+        if (!sound->mute) {
+            void* ptr = sound->buffer + sound->bufferPosition;
+            int div;
+            if (sound->bit_rate == 4) {
+                div = 256 * 256 * 256;
+            } else if (sound->bit_rate == 2) {
+                div = 256;
+            } else {
+                div = 1;
+            }
+
+            for (size_t i = 0; i < sound->outputsCount; i++) {
+                tsgl_sound_output* output = sound->outputs[i];
+
+                tsgl_sound_addOutputValue(output,
+                    (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
+                );
+
+                tsgl_sound_flushOutput(output);
+            }
+        }
+
+        _read_next_block(sound, sound->bit_rate * sound->channels);
+    }
 
     return false;
 }
