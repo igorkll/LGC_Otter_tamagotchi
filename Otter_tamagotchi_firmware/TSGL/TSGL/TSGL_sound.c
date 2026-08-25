@@ -77,7 +77,7 @@ static void _soundServiceTask(void* _sound) {
 
     while (true) {
         if (sound->callback_end_run) {
-            sound->callback_end(sound);
+            if (sound->callback_end != NULL) sound->callback_end(sound);
             sound->callback_end_run = false;
         }
 
@@ -257,7 +257,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
             fread(sound->buffer2, sound->bit_rate, bufferSize, sound->file);
         }
 
-        xTaskCreate(_soundTask, NULL, 1024, sound, 1, &sound->task);
+        xTaskCreate(_soundTask, NULL, 2048, sound, 1, &sound->task);
         sound->task_used = true;
     } else {
         sound->bufferSize = sound->len;
@@ -274,7 +274,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
         sound->file = NULL;
     }
 
-    xTaskCreate(_soundServiceTask, NULL, 1024, sound, 1, &sound->task_service);
+    xTaskCreate(_soundServiceTask, NULL, 2048, sound, 1, &sound->task_service);
     sound->task_service_used = true;
 
     return ESP_OK;
