@@ -530,7 +530,14 @@ void tsgl_sound_free(tsgl_sound* sound) {
     _freeOutputs(sound);
     if (sound->heap) free(sound);
     if (use_global_timer) {
-
+        for (size_t i = 0; i < global_sounds_index; i++) {
+            tsgl_sound* globalSound = global_sounds[i];
+            if (globalSound == sound) {
+                global_sounds[i] = global_sounds[global_sounds_index - 1];
+                global_sounds_index--;
+                break;
+            }
+        }
     }
     memset(sound, 0, sizeof(tsgl_sound));
 }
