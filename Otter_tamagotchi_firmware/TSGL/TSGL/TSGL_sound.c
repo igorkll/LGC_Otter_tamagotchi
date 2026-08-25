@@ -292,11 +292,18 @@ esp_err_t tsgl_sound_instance(tsgl_sound* sound, tsgl_sound* parent) {
 }
 
 void tsgl_sound_setOutputs(tsgl_sound* sound, tsgl_sound_output** outputs, size_t outputsCount, bool freeOutputs) {
+    for (size_t i = 0; i < sound->outputsCount; i++) {
+        tsgl_sound_output* output = sound->outputs[i];
+        output->ownersCount--;
+    }
+
     _freeOutputs(sound);
     sound->outputsCount = outputsCount;
     sound->outputs = malloc(outputsCount * sizeof(size_t));
     for (size_t i = 0; i < sound->outputsCount; i++) {
-        sound->outputs[i] = outputs[i];
+        tsgl_sound_output* output = outputs[i];
+        output->ownersCount++;
+        sound->outputs[i] = output;
     }
     sound->freeOutputs = freeOutputs;
 }

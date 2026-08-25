@@ -5,7 +5,7 @@
 // ------------------------------------ consts
 
 #define MAX_SOUNDS 16
-#define SOUND_BUFFER_SIZE (16 * 1024)
+#define SOUND_BUFFER_SIZE (4 * 1024)
 
 static const char* game_state_path = "/storage/game_state";
 static const char* game_rooms_images_paths[] = {
@@ -73,6 +73,8 @@ void game_start() {
     tsgl_benchmark_reset(&benchmark);
     game_load();
 
+    play_sound("/storage/test.pcm");
+    tsgl_delay(100);
     play_sound("/storage/test.pcm");
 
     while (true) {
