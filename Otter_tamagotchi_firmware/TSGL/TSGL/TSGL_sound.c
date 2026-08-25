@@ -230,7 +230,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
     for (size_t i = 0; i < global_sounds_index; i++) {
         tsgl_sound* sound = global_sounds[i];
 
-        if (sound->playing || true) {
+        if (sound->playing) {
             if (!sound->mute) {
                 void* ptr = sound->buffer + sound->bufferPosition;
 
@@ -249,10 +249,12 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
                     tsgl_sound_addOutputValue(output,
                         (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
                     );
+
+                    tsgl_sound_flushOutput(output);
                 }
             }
 
-            if (sound->global_timer_state >= sound->global_timer_div || true) {
+            if (sound->global_timer_state >= sound->global_timer_div) {
                 _read_next_block(sound, sound->bit_rate * sound->channels);
                 sound->global_timer_state = 0;
             } else {
