@@ -40,8 +40,6 @@ static int IRAM_ATTR _convertPcm(tsgl_sound* sound, void* source) {
 }
 
 static void _soundTask(void* _sound) {
-    vTaskSuspend(NULL);
-
     tsgl_sound* sound = _sound;
     
     void* buffer;
@@ -50,8 +48,7 @@ static void _soundTask(void* _sound) {
     } else {
         buffer = sound->buffer;
     }
-    
-    fread(buffer, sound->bit_rate, sound->bufferSize, sound->file);
+
     vTaskSuspend(NULL);
 
     while (true) {
