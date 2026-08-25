@@ -138,11 +138,12 @@ static void IRAM_ATTR _read_next_block(tsgl_sound* sound, int bufOffset) {
 }
 
 static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
-    portENTER_CRITICAL_ISR(&global_sounds_lock);
-
     tsgl_sound* sound = user_ctx;
+
+    portENTER_CRITICAL_ISR(&sound->lock);
+    
     if (sound->callback_end_run) {
-        portEXIT_CRITICAL_ISR(&global_sounds_lock);
+        portEXIT_CRITICAL_ISR(&sound->lock);
         return false;
     }
 
@@ -170,7 +171,7 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
 
     _read_next_block(sound, sound->bit_rate * sound->channels);
 
-    portEXIT_CRITICAL_ISR(&global_sounds_lock);
+    portEXIT_CRITICAL_ISR(&sound->lock);
 
     return false;
 }
@@ -239,6 +240,8 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
     for (size_t i = 0; i < global_sounds_index; i++) {
         tsgl_sound* sound = global_sounds[i];
 
+        portENTER_CRITICAL_ISR(&sound->lock);
+
         if (sound->playing && !sound->callback_end_run) {
             if (!sound->mute) {
                 void* ptr = sound->buffer + sound->bufferPosition;
@@ -268,15 +271,21 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
                 sound->global_timer_state++;
             }
         }
+
+        portEXIT_CRITICAL_ISR(&sound->lock);
     }
 
     for (size_t i = 0; i < global_sounds_index; i++) {
         tsgl_sound* sound = global_sounds[i];
 
+        portENTER_CRITICAL_ISR(&sound->lock);
+
         for (size_t i = 0; i < sound->outputsCount; i++) {
             tsgl_sound_output* output = sound->outputs[i];
             if (output->count > 0) tsgl_sound_flushOutput(output);
         }
+
+        portEXIT_CRITICAL_ISR(&sound->lock);
     }
 
     portEXIT_CRITICAL_ISR(&global_sounds_lock);
@@ -285,6 +294,8 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
 
 void tsgl_sound_enableGlobalTimer(int freq, size_t max_sounds) {
     if (use_global_timer) return;
+
+    portENTER_CRITICAL_ISR(&global_sounds_lock);
 
     global_sounds = calloc(max_sounds, sizeof(size_t));
     global_sounds_max_count = max_sounds;
@@ -313,6 +324,8 @@ void tsgl_sound_enableGlobalTimer(int freq, size_t max_sounds) {
 
     global_timer_freq = freq;
     use_global_timer = true;
+
+    portEXIT_CRITICAL_ISR(&global_sounds_lock);
 }
 
 esp_err_t tsgl_sound_load_pcm(tsgl_sound* sound, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format) {
