@@ -107,7 +107,7 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
                 (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
             );
 
-            output->currentUse++;
+            output->currentUse += sound->freq_div_mul;
             if (output->currentUse >= output->ownersCount) {
                 tsgl_sound_flushOutput(output);
                 output->currentUse = 0;
@@ -302,11 +302,9 @@ esp_err_t tsgl_sound_instance(tsgl_sound* sound, tsgl_sound* parent) {
 }
 
 void tsgl_sound_setOutputs(tsgl_sound* sound, tsgl_sound_output** outputs, size_t outputsCount, bool freeOutputs) {
-    uint64_t freq = sound->sample_rate * sound->speed;
-
     for (size_t i = 0; i < sound->outputsCount; i++) {
         tsgl_sound_output* output = sound->outputs[i];
-        output->ownersCount -= freq;
+        output->ownersCount -= sound->freq_div_mul;
     }
 
     _freeOutputs(sound);
@@ -315,7 +313,7 @@ void tsgl_sound_setOutputs(tsgl_sound* sound, tsgl_sound_output** outputs, size_
     sound->outputs = malloc(outputsCount * sizeof(size_t));
     for (size_t i = 0; i < sound->outputsCount; i++) {
         tsgl_sound_output* output = outputs[i];
-        output->ownersCount += freq;
+        output->ownersCount += sound->freq_div_mul;
         sound->outputs[i] = output;
     }
     sound->freeOutputs = freeOutputs;
@@ -422,11 +420,9 @@ void tsgl_sound_stop(tsgl_sound* sound) {
 }
 
 void tsgl_sound_free(tsgl_sound* sound) {
-    uint64_t freq = sound->sample_rate * sound->speed;
-
     for (size_t i = 0; i < sound->outputsCount; i++) {
         tsgl_sound_output* output = sound->outputs[i];
-        output->ownersCount -= freq;
+        output->ownersCount -= sound->freq_div_mul;
     }
     
     if (sound->playing) tsgl_sound_stop(sound);
