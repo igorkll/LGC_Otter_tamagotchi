@@ -139,7 +139,7 @@ static void IRAM_ATTR _read_next_block(tsgl_sound* sound, int bufOffset) {
 
 static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
     portENTER_CRITICAL_ISR(&global_sounds_lock);
-    
+
     tsgl_sound* sound = user_ctx;
     if (sound->callback_end_run) return false;
 
@@ -543,7 +543,7 @@ void tsgl_sound_free(tsgl_sound* sound) {
     _freeOutputs(sound);
     if (sound->heap) free(sound);
     if (use_global_timer) {
-        portENTER_CRITICAL(&sound->lock);
+        portENTER_CRITICAL(&global_sounds_lock);
         for (size_t i = 0; i < global_sounds_index; i++) {
             tsgl_sound* globalSound = global_sounds[i];
             if (globalSound == sound) {
@@ -552,7 +552,7 @@ void tsgl_sound_free(tsgl_sound* sound) {
                 break;
             }
         }
-        portEXIT_CRITICAL(&sound->lock);
+        portEXIT_CRITICAL(&global_sounds_lock);
     }
     memset(sound, 0, sizeof(tsgl_sound));
 }
