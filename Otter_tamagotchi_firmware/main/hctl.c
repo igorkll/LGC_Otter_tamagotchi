@@ -6,6 +6,7 @@ static TimerHandle_t change_backlight_timer_handle = NULL;
 
 static time_t lastInteractTime = 0;
 static bool isIdle = false;
+static bool oldIsIdle = false;
 
 tsgl_keyboard keyboard;
 tsgl_sound_output* sound_output;
@@ -77,5 +78,8 @@ void hctl_process() {
     }
 
     bool isIdle = tsgl_time() - lastInteractTime > IDLE_AFTER_TIME;
-    //hctl_setBacklight(isIdle ? BACKLIGHT_IDLE : BACKLIGHT_MAX);
+    if (isIdle != oldIsIdle) {
+        hctl_setBacklight(isIdle ? BACKLIGHT_IDLE : BACKLIGHT_MAX);
+        oldIsIdle = isIdle;
+    }
 }
