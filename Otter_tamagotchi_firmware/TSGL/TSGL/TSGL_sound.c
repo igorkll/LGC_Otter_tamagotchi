@@ -502,14 +502,13 @@ void tsgl_sound_stop(tsgl_sound* sound) {
         _resetOutputs(sound);
     } else {
         bool found_playing = false;
-        for (size_t i = 0; i < global_sounds_max_count; i++) {
-            tsgl_sound* sound = global_sounds[i];
-            if (sound->playing) {
+        for (size_t i = 0; i < global_sounds_index; i++) {
+            if (global_sounds[i]->playing) {
                 found_playing = true;
                 break;
             }
         }
-        if (found_playing) {
+        if (!found_playing) {
             gptimer_stop(global_timer);
         }
     }
