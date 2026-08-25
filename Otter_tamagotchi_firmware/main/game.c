@@ -31,7 +31,7 @@ static void loadSprites() {
         room_sprite_old_index = current_state.room;
         if (room_sprite != NULL) tsgl_bmp_free(room_sprite);
         room_sprite = gfx_loadSprite(game_rooms_images_paths[current_state.room]);
-        printf("load room\n");
+        ESP_LOGI(TAG, "room loaded");
     }
 }
 
@@ -64,6 +64,7 @@ static tsgl_sound* play_sound(const char* path, int test) {
     current_sound->freeOnEnd = true;
 
     tsgl_sound_output* sound_outputs[] = {sound_output};
+    tsgl_sound_enableFreeOnEnd(current_sound, true);
     tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
     tsgl_sound_setVolume(current_sound, 0.2);
     tsgl_sound_setSpeed(current_sound, 2);
@@ -78,9 +79,6 @@ void game_start() {
     game_load();
 
     tsgl_sound* sound = play_sound("/storage/test.pcm", 8000);
-
-    tsgl_delay(2000);
-    tsgl_sound_free(sound);
 
     while (true) {
         hctl_process();

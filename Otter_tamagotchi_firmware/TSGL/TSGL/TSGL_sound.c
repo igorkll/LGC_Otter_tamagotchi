@@ -564,6 +564,10 @@ void tsgl_sound_stop(tsgl_sound* sound) {
 }
 
 void tsgl_sound_free(tsgl_sound* sound) {
+    if (sound->file != NULL) {
+        fclose(sound->file);
+    }
+    
     portENTER_CRITICAL(&sound->lock);
     if (sound->playing) _stop(sound);
     if (sound->buffer != NULL) free(sound->buffer);
@@ -574,10 +578,7 @@ void tsgl_sound_free(tsgl_sound* sound) {
     if (sound->task_service_used) {
         vTaskDelete(sound->task_service);
     }
-    if (sound->file != NULL) {
-        fclose(sound->file);
-    }
-    //_freeOutputs(sound);
+    _freeOutputs(sound);
     if (use_global_timer) {
         portENTER_CRITICAL(&global_sounds_lock);
         for (size_t i = 0; i < global_sounds_index; i++) {
