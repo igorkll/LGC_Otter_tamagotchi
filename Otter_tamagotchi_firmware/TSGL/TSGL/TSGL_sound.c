@@ -91,9 +91,9 @@ static void _soundServiceTask(void* _sound) {
 
     while (true) {
         if (sound->callback_end_run) {
+            sound->callback_end_run = false;
             if (!sound->loop) tsgl_sound_stop(sound);
             if (sound->callback_end != NULL) sound->callback_end(sound);
-            sound->callback_end_run = false;
         }
 
         vTaskDelay(1);
