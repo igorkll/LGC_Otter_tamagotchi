@@ -64,6 +64,8 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
     bool freeOutputs;
 
     gptimer_handle_t timer;
+    bool use_local_timer;
+
     bool mute;
     bool reload;
 

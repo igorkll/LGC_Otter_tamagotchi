@@ -10,6 +10,8 @@
 
 static const char* TAG = "TSGL_sound";
 
+static gptimer_handle_t global_timer;
+
 static int IRAM_ATTR _convertPcm(tsgl_sound* sound, void* source) {
     if (sound->bit_rate == 4) {
         switch (sound->pcm_format) {
@@ -200,6 +202,35 @@ static void _setPosition(tsgl_sound* sound, size_t position) {
     }
 }
 
+static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
+
+
+    return false;
+}
+
+void tsgl_sound_enableGlobalTimer(int freq) {
+    gptimer_alarm_config_t alarm_config = {
+        .alarm_count = 1,
+        .flags = {
+            .auto_reload_on_alarm = true
+        }
+    };
+
+    gptimer_config_t timer_config = {
+        .clk_src = GPTIMER_CLK_SRC_DEFAULT,
+        .direction = GPTIMER_COUNT_UP,
+        .resolution_hz = freq
+    };
+  
+    gptimer_event_callbacks_t callback_config = {
+        .on_alarm = _global_timer_ISR,
+    };
+
+    ESP_ERROR_CHECK(gptimer_new_timer(&timer_config, &global_timer));
+    ESP_ERROR_CHECK(gptimer_set_alarm_action(global_timer, &alarm_config));
+    ESP_ERROR_CHECK(gptimer_register_event_callbacks(global_timer, &callback_config, sound));
+    ESP_ERROR_CHECK(gptimer_enable(global_timer));
+}
 
 esp_err_t tsgl_sound_load_pcm(tsgl_sound* sound, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format) {
     return tsgl_sound_load_pcmPart(sound, 0, 0, bufferSize, caps, path, sample_rate, bit_rate, channels, pcm_format);
@@ -357,24 +388,6 @@ void tsgl_sound_play(tsgl_sound* sound) {
         ESP_LOGE(TAG, "tsgl_sound_play skipped. uninitialized audio cannot be started");
         return;
     }
-
-    /*
-    timer_config_t config = {
-		.divider = 8,
-		.counter_dir = TIMER_COUNT_UP,
-		.counter_en = TIMER_PAUSE,
-		.alarm_en = TIMER_ALARM_EN,
-		.intr_type = TIMER_INTR_LEVEL,
-		.auto_reload = 1
-	};
-    */
-
-	//ESP_ERROR_CHECK(timer_init(sound->timerGroup, sound->timer, &config));
-	//ESP_ERROR_CHECK(timer_set_counter_value(sound->timerGroup, sound->timer, 0x00000000ULL));
-	//ESP_ERROR_CHECK(timer_set_alarm_value(sound->timerGroup, sound->timer, APB_CLK_FREQ / config.divider / sound->sample_rate / sound->speed));
-	//ESP_ERROR_CHECK(timer_enable_intr(sound->timerGroup, sound->timer));
-	//timer_isr_register(sound->timerGroup, sound->timer, _timer_ISR, sound, ESP_INTR_FLAG_IRAM, NULL);
-	//timer_start(sound->timerGroup, sound->timer);
 
     _initTimer(sound);
     gptimer_start(sound->timer);
