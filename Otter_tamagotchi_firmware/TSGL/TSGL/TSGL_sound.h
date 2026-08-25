@@ -10,6 +10,7 @@
 #include <freertos/task.h>
 #include <driver/gptimer.h>
 #include <driver/gpio.h>
+#include <freertos/portmacro.h>
 
 //use this instead of the bufferSize to load the track immediately into RAM without loading on playing
 #define TSGL_SOUND_FULLBUFFER (2 ^ sizeof(size_t))
@@ -75,6 +76,8 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
 
     bool callback_end_run;
     void(*callback_end)(tsgl_sound* sound);
+
+    portMUX_TYPE lock;
 };
 
 // If you want to produce multiple sounds at the same time, you must activate the global timer.

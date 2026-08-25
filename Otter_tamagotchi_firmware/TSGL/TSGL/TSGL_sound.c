@@ -12,6 +12,7 @@ static const char* TAG = "TSGL_sound";
 
 static bool use_global_timer = false;
 
+static portMUX_TYPE global_sounds_lock = portMUX_INITIALIZER_UNLOCKED;
 static gptimer_handle_t global_timer;
 static int global_timer_freq = 0;
 
@@ -137,6 +138,8 @@ static void IRAM_ATTR _read_next_block(tsgl_sound* sound, int bufOffset) {
 }
 
 static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
+    portENTER_CRITICAL_ISR(&global_sounds_lock);
+    
     tsgl_sound* sound = user_ctx;
     if (sound->callback_end_run) return false;
 
@@ -163,6 +166,8 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
     }
 
     _read_next_block(sound, sound->bit_rate * sound->channels);
+
+    portEXIT_CRITICAL_ISR(&global_sounds_lock);
 
     return false;
 }
@@ -227,6 +232,7 @@ static void _setPosition(tsgl_sound* sound, size_t position) {
 }
 
 static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
+    portENTER_CRITICAL_ISR(&global_sounds_lock);
     for (size_t i = 0; i < global_sounds_index; i++) {
         tsgl_sound* sound = global_sounds[i];
 
@@ -270,6 +276,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
         }
     }
 
+    portEXIT_CRITICAL_ISR(&global_sounds_lock);
     return false;
 }
 
@@ -325,6 +332,8 @@ static void afterUpdateSpeed(tsgl_sound* sound) {
 
 esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loadsize, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format, bool doubleSwapBuffer) {
     memset(sound, 0, sizeof(tsgl_sound));
+    sound->lock = (portMUX_TYPE)portMUX_INITIALIZER_UNLOCKED;
+
     sound->file = fopen(path, "rb");
     if (sound->file == NULL) return ESP_FAIL;
     fseek(sound->file, offset, SEEK_SET);
@@ -394,7 +403,9 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
     sound->task_service_used = true;
 
     if (use_global_timer && global_sounds_index < global_sounds_max_count) {
+        portENTER_CRITICAL(&global_sounds_lock);
         global_sounds[global_sounds_index++] = sound;
+        portEXIT_CRITICAL(&global_sounds_lock);
     }
 
     return ESP_OK;
@@ -502,6 +513,7 @@ void tsgl_sound_stop(tsgl_sound* sound) {
         _resetOutputs(sound);
     } else {
         bool found_playing = false;
+        portENTER_CRITICAL(&global_sounds_lock);
         for (size_t i = 0; i < global_sounds_index; i++) {
             if (global_sounds[i]->playing) {
                 found_playing = true;
@@ -511,6 +523,7 @@ void tsgl_sound_stop(tsgl_sound* sound) {
         if (!found_playing) {
             gptimer_stop(global_timer);
         }
+        portEXIT_CRITICAL(&global_sounds_lock);
     }
 }
 
@@ -530,6 +543,7 @@ void tsgl_sound_free(tsgl_sound* sound) {
     _freeOutputs(sound);
     if (sound->heap) free(sound);
     if (use_global_timer) {
+        portENTER_CRITICAL(&sound->lock);
         for (size_t i = 0; i < global_sounds_index; i++) {
             tsgl_sound* globalSound = global_sounds[i];
             if (globalSound == sound) {
@@ -538,6 +552,7 @@ void tsgl_sound_free(tsgl_sound* sound) {
                 break;
             }
         }
+        portEXIT_CRITICAL(&sound->lock);
     }
     memset(sound, 0, sizeof(tsgl_sound));
 }
