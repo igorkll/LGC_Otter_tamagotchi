@@ -11,27 +11,6 @@ static bool oldIsIdle = false;
 tsgl_keyboard keyboard;
 tsgl_sound_output* sound_output;
 
-void hctl_init() {
-    time_t currentTime = tsgl_time();
-    lastInteractTime = currentTime;
-
-    // keyboard
-
-    tsgl_keyboard_init(&keyboard);
-    tsgl_keyboard_bindButton(&keyboard, 0, true, false, BUTTON_0_PIN);
-    tsgl_keyboard_bindButton(&keyboard, 1, true, false, BUTTON_1_PIN);
-    tsgl_keyboard_bindButton(&keyboard, 2, true, false, BUTTON_2_PIN);
-    tsgl_keyboard_bindButton(&keyboard, 3, true, false, BUTTON_3_PIN);
-
-    for (size_t i = 0; i < KEYS_COUNT; i++) {
-        tsgl_keyboard_setDebounce(&keyboard, i, KEYS_DEBOUNCE_PRESSING_MS, KEYS_DEBOUNCE_RELEASING_MS);
-    }
-
-    // sound
-
-    sound_output = tsgl_sound_newLedcOutput(SPEAKER_PIN);
-}
-
 static void change_backlight_timer_callback(TimerHandle_t xTimer) {
     if (targetBackgroundValue > currentBackgroundValue) {
         currentBackgroundValue += BACKLIGHT_CHANGE_STEP;
@@ -43,24 +22,42 @@ static void change_backlight_timer_callback(TimerHandle_t xTimer) {
     tsgl_display_setBacklight(&display, currentBackgroundValue);
 
     if (currentBackgroundValue == targetBackgroundValue) {
-        xTimerDelete(xTimer, 0);
-        change_backlight_timer_handle = NULL;
+        xTimerStop(xTimer, 0);
     }
+}
+
+void hctl_init() {
+    time_t currentTime = tsgl_time();
+    lastInteractTime = currentTime;
+
+    // keyboard
+    tsgl_keyboard_init(&keyboard);
+    tsgl_keyboard_bindButton(&keyboard, 0, true, false, BUTTON_0_PIN);
+    tsgl_keyboard_bindButton(&keyboard, 1, true, false, BUTTON_1_PIN);
+    tsgl_keyboard_bindButton(&keyboard, 2, true, false, BUTTON_2_PIN);
+    tsgl_keyboard_bindButton(&keyboard, 3, true, false, BUTTON_3_PIN);
+
+    for (size_t i = 0; i < KEYS_COUNT; i++) {
+        tsgl_keyboard_setDebounce(&keyboard, i, KEYS_DEBOUNCE_PRESSING_MS, KEYS_DEBOUNCE_RELEASING_MS);
+    }
+
+    // sound
+    sound_output = tsgl_sound_newLedcOutput(SPEAKER_PIN);
+
+    // backlight
+    change_backlight_timer_handle = xTimerCreate(
+        NULL,
+        pdMS_TO_TICKS(BACKLIGHT_CHANGE_PERIOD),
+        pdTRUE,
+        NULL, 
+        change_backlight_timer_callback
+    );
 }
 
 void hctl_setBacklight(uint8_t value) {
     targetBackgroundValue = value;
     
-    if (change_backlight_timer_handle == NULL) {
-        change_backlight_timer_handle = xTimerCreate(
-            NULL,
-            pdMS_TO_TICKS(BACKLIGHT_CHANGE_PERIOD),
-            pdTRUE,
-            NULL, 
-            change_backlight_timer_callback
-        );
-        if (change_backlight_timer_handle != NULL) xTimerStart(change_backlight_timer_handle, 0);
-    }
+    //xTimerStart(change_backlight_timer_handle, 0);
 }
 
 bool hctl_isBacklightChangeProcess() {
