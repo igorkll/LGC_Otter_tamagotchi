@@ -90,6 +90,7 @@ static void _soundServiceTask(void* _sound) {
 
     while (true) {
         if (sound->callback_end_run) {
+            if (!sound->loop) tsgl_sound_stop(sound);
             if (sound->callback_end != NULL) sound->callback_end(sound);
             sound->callback_end_run = false;
         }
@@ -114,8 +115,6 @@ static void IRAM_ATTR _read_next_block(tsgl_sound* sound, int bufOffset) {
         if (sound->loop) {
             sound->reload = true;
             readFile = true;
-        } else {
-            tsgl_sound_stop(sound);
         }
 
         sound->callback_end_run = true;
@@ -139,6 +138,7 @@ static void IRAM_ATTR _read_next_block(tsgl_sound* sound, int bufOffset) {
 
 static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
     tsgl_sound* sound = user_ctx;
+    if (sound->callback_end_run) return false;
 
     if (!sound->mute) {
         void* ptr = sound->buffer + sound->bufferPosition;
@@ -230,7 +230,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
     for (size_t i = 0; i < global_sounds_index; i++) {
         tsgl_sound* sound = global_sounds[i];
 
-        if (sound->playing) {
+        if (sound->playing && !sound->callback_end_run) {
             if (!sound->mute) {
                 void* ptr = sound->buffer + sound->bufferPosition;
 
