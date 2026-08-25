@@ -56,12 +56,11 @@ void hctl_init() {
 
 void hctl_setBacklight(uint8_t value) {
     targetBackgroundValue = value;
-    
-    //xTimerStart(change_backlight_timer_handle, 0);
+    xTimerStart(change_backlight_timer_handle, 0);
 }
 
 bool hctl_isBacklightChangeProcess() {
-    return change_backlight_timer_handle != NULL;
+    return currentBackgroundValue != targetBackgroundValue;
 }
 
 void hctl_process() {
@@ -74,7 +73,7 @@ void hctl_process() {
         }
     }
 
-    bool isIdle = tsgl_time() - lastInteractTime > IDLE_AFTER_TIME;
+    isIdle = tsgl_time() - lastInteractTime > IDLE_AFTER_TIME;
     if (isIdle != oldIsIdle) {
         hctl_setBacklight(isIdle ? BACKLIGHT_IDLE : BACKLIGHT_MAX);
         oldIsIdle = isIdle;
