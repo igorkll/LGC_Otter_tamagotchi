@@ -107,11 +107,7 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
                 (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
             );
 
-            output->currentUse += sound->freq_div_mul;
-            if (output->currentUse >= output->ownersCount) {
-                tsgl_sound_flushOutput(output);
-                output->currentUse = 0;
-            }
+            tsgl_sound_flushOutput(output);
         }
     }
 
@@ -223,8 +219,6 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
     if (sound->file == NULL) return ESP_FAIL;
     fseek(sound->file, offset, SEEK_SET);
 
-    uint64_t freq = sound->sample_rate * sound->speed;
-
     sound->offset = offset;
     sound->speed = 1.0;
     tsgl_sound_setVolume(sound, 1);
@@ -239,7 +233,6 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
     sound->pcm_format = pcm_format;
     sound->bufferSize = bufferSize;
     sound->doubleSwapBuffer = doubleSwapBuffer;
-    sound->freq_div_mul = 128000 / freq;
 
     if (bufferSize != TSGL_SOUND_FULLBUFFER) {
         uint16_t t = bit_rate * channels;
@@ -302,38 +295,19 @@ esp_err_t tsgl_sound_instance(tsgl_sound* sound, tsgl_sound* parent) {
 }
 
 void tsgl_sound_setOutputs(tsgl_sound* sound, tsgl_sound_output** outputs, size_t outputsCount, bool freeOutputs) {
-    for (size_t i = 0; i < sound->outputsCount; i++) {
-        tsgl_sound_output* output = sound->outputs[i];
-        output->ownersCount -= sound->freq_div_mul;
-    }
-
     _freeOutputs(sound);
 
     sound->outputsCount = outputsCount;
     sound->outputs = malloc(outputsCount * sizeof(size_t));
     for (size_t i = 0; i < sound->outputsCount; i++) {
         tsgl_sound_output* output = outputs[i];
-        output->ownersCount += sound->freq_div_mul;
         sound->outputs[i] = output;
     }
     sound->freeOutputs = freeOutputs;
 }
 
 void tsgl_sound_setSpeed(tsgl_sound* sound, float speed) {
-    for (size_t i = 0; i < sound->outputsCount; i++) {
-        tsgl_sound_output* output = sound->outputs[i];
-        output->ownersCount -= sound->freq_div_mul;
-    }
-
     sound->speed = speed;
-
-    uint64_t freq = sound->sample_rate * sound->speed;
-    sound->freq_div_mul = 128000 / freq;
-
-    for (size_t i = 0; i < sound->outputsCount; i++) {
-        tsgl_sound_output* output = sound->outputs[i];
-        output->ownersCount += sound->freq_div_mul;
-    }
 
     if (sound->playing) {
         //ESP_ERROR_CHECK(timer_set_alarm_value(sound->timerGroup, sound->timer, APB_CLK_FREQ / 8 / sound->sample_rate / speed));
@@ -420,11 +394,6 @@ void tsgl_sound_stop(tsgl_sound* sound) {
 }
 
 void tsgl_sound_free(tsgl_sound* sound) {
-    for (size_t i = 0; i < sound->outputsCount; i++) {
-        tsgl_sound_output* output = sound->outputs[i];
-        output->ownersCount -= sound->freq_div_mul;
-    }
-    
     if (sound->playing) tsgl_sound_stop(sound);
     if (sound->buffer != NULL) free(sound->buffer);
     if (sound->buffer2 != NULL) free(sound->buffer2);

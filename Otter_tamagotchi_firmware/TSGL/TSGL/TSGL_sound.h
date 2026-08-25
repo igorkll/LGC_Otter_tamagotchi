@@ -20,8 +20,6 @@ typedef struct {
     #endif
     tsgl_ledc* ledc;
     int value;
-    uint64_t ownersCount;
-    uint64_t currentUse;
 } tsgl_sound_output;
 
 typedef enum {
@@ -61,8 +59,6 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
     size_t channels;
     tsgl_sound_pcm_format pcm_format;
 
-    size_t freq_div_mul;
-
     tsgl_sound_output** outputs;
     size_t outputsCount;
     bool freeOutputs;
@@ -74,6 +70,8 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
     bool callback_end_run;
     void(*callback_end)(tsgl_sound* sound);
 };
+
+void tsgl_sound_enableGlobalTimer(int freq);
 
 //the bitrate is set not in bits but in bytes
 //however, due to the features of the DAC in esp32, it does not make sense to use more than 8 bit (this will not increase the sound quality)
