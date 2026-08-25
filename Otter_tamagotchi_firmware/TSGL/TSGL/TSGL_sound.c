@@ -388,7 +388,6 @@ void tsgl_sound_stop(tsgl_sound* sound) {
 }
 
 void tsgl_sound_free(tsgl_sound* sound) {
-    printf("TEST\n");
     if (sound->playing) tsgl_sound_stop(sound);
     if (sound->buffer != NULL) free(sound->buffer);
     if (sound->buffer2 != NULL) free(sound->buffer2);

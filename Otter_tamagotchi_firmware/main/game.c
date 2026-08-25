@@ -62,7 +62,7 @@ static void play_sound(const char* path) {
     }
 
     tsgl_sound_output* sound_outputs[] = {sound_output};
-    //tsgl_sound_attachCallback_end(current_sound, tsgl_sound_free);
+    tsgl_sound_attachCallback_end(current_sound, tsgl_sound_free);
     tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
     tsgl_sound_setVolume(current_sound, 1);
     tsgl_sound_play(current_sound);

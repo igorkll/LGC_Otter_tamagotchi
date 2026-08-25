@@ -77,5 +77,5 @@ void hctl_process() {
     }
 
     bool isIdle = tsgl_time() - lastInteractTime > IDLE_AFTER_TIME;
-    hctl_setBacklight(isIdle ? BACKLIGHT_IDLE : BACKLIGHT_MAX);
+    //hctl_setBacklight(isIdle ? BACKLIGHT_IDLE : BACKLIGHT_MAX);
 }
