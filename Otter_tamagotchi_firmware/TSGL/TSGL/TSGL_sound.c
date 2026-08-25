@@ -42,7 +42,8 @@ static int IRAM_ATTR _convertPcm(tsgl_sound* sound, void* source) {
 static void _soundTask(void* _sound) {
     tsgl_sound* sound = _sound;
     fread(sound->buffer, sound->bit_rate, sound->bufferSize, sound->file);
-    vTaskSuspend(NULL);
+
+    if (!sound->doubleSwapBuffer) vTaskSuspend(NULL);
 
     while (true) {
         if (sound->reload) {
@@ -50,7 +51,7 @@ static void _soundTask(void* _sound) {
             fseek(sound->file, sound->position + sound->offset, SEEK_SET);
         }
         fread(sound->buffer, sound->bit_rate, sound->bufferSize, sound->file);
-        gptimer_start(sound->timer);
+        if (!sound->doubleSwapBuffer) gptimer_start(sound->timer);
 
         vTaskDelay(1);
         vTaskSuspend(NULL);
@@ -169,8 +170,12 @@ esp_err_t tsgl_sound_load_pcm(tsgl_sound* sound, size_t bufferSize, int64_t caps
     return tsgl_sound_load_pcmPart(sound, 0, 0, bufferSize, caps, path, sample_rate, bit_rate, channels, pcm_format);
 }
 
+esp_err_t tsgl_sound_load_pcmEx(tsgl_sound* sound, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format, bool doubleSwapBuffer) {
+    return tsgl_sound_load_pcmPartEx(sound, 0, 0, bufferSize, caps, path, sample_rate, bit_rate, channels, pcm_format, doubleSwapBuffer);
+}
+
 esp_err_t tsgl_sound_load_pcmPart(tsgl_sound* sound, size_t offset, size_t loadsize, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format) {
-    return tsgl_sound_load_pcmPartEx(sound, offset, loadsize, bufferSize, caps, path, sample_rate, bit_rate, channels, pcm_format, false)
+    return tsgl_sound_load_pcmPartEx(sound, offset, loadsize, bufferSize, caps, path, sample_rate, bit_rate, channels, pcm_format, false);
 }
 
 esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loadsize, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format, bool doubleSwapBuffer) {
@@ -218,6 +223,10 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
 
         xTaskCreate(_soundTask, NULL, 2048, sound, 1, &sound->task);
         sound->task_used = true;
+
+        if (doubleSwapBuffer) {
+            vTaskResume(sound->task);
+        }
     } else {
         sound->bufferSize = sound->len;
 
