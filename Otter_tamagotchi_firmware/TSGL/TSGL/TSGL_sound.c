@@ -439,6 +439,8 @@ esp_err_t tsgl_sound_instance(tsgl_sound* sound, tsgl_sound* parent) {
 }
 
 void tsgl_sound_setOutputs(tsgl_sound* sound, tsgl_sound_output** outputs, size_t outputsCount, bool freeOutputs) {
+    portENTER_CRITICAL(&sound->lock);
+
     _freeOutputs(sound);
 
     sound->outputsCount = outputsCount;
@@ -448,9 +450,13 @@ void tsgl_sound_setOutputs(tsgl_sound* sound, tsgl_sound_output** outputs, size_
         sound->outputs[i] = output;
     }
     sound->freeOutputs = freeOutputs;
+
+    portEXIT_CRITICAL(&sound->lock);
 }
 
 void tsgl_sound_setSpeed(tsgl_sound* sound, float speed) {
+    portENTER_CRITICAL(&sound->lock);
+
     sound->speed = speed;
 
     afterUpdateSpeed(sound);
@@ -462,13 +468,18 @@ void tsgl_sound_setSpeed(tsgl_sound* sound, float speed) {
         _initTimer(sound);
         ESP_ERROR_CHECK_WITHOUT_ABORT(gptimer_start(sound->timer));
     }
+
+    portEXIT_CRITICAL(&sound->lock);
 }
 
 void tsgl_sound_setLoop(tsgl_sound* sound, bool loop) {
+    portENTER_CRITICAL(&sound->lock);
     sound->loop = loop;
+    portEXIT_CRITICAL(&sound->lock);
 }
 
 void tsgl_sound_setVolume(tsgl_sound* sound, float volume) {
+    portENTER_CRITICAL(&sound->lock);
     if (volume == 0) {
         sound->volume = 0;
         sound->mute = true;
@@ -476,22 +487,27 @@ void tsgl_sound_setVolume(tsgl_sound* sound, float volume) {
         sound->volume = volume * 255;
         sound->mute = false;
     }
+    portEXIT_CRITICAL(&sound->lock);
 }
 
 void tsgl_sound_setPosition(tsgl_sound* sound, size_t position) {
+    portENTER_CRITICAL(&sound->lock);
     bool timerAction = sound->playing && sound->use_local_timer;
     if (timerAction) gptimer_stop(sound->timer);
     _setPosition(sound, position);
     if (timerAction) gptimer_start(sound->timer);
+    portEXIT_CRITICAL(&sound->lock);
 }
 
 void tsgl_sound_seek(tsgl_sound* sound, int offset) {
+    portENTER_CRITICAL(&sound->lock);
     bool timerAction = sound->playing && sound->use_local_timer;
     if (timerAction) gptimer_stop(sound->timer);
     int64_t newpos = ((int64_t)sound->position) + offset;
     if (newpos < 0) newpos = 0;
     _setPosition(sound, newpos);
     if (timerAction) gptimer_start(sound->timer);
+    portEXIT_CRITICAL(&sound->lock);
 }
 
 void tsgl_sound_play(tsgl_sound* sound) {
@@ -503,22 +519,18 @@ void tsgl_sound_play(tsgl_sound* sound) {
         return;
     }
 
+    portENTER_CRITICAL(&sound->lock);
     sound->playing = true;
-
     if (sound->use_local_timer) {
         _initTimer(sound);
         gptimer_start(sound->timer);
     } else {
         gptimer_start(global_timer);
     }
+    portEXIT_CRITICAL(&sound->lock);
 }
 
-void tsgl_sound_stop(tsgl_sound* sound) {
-    if (!sound->playing) {
-        ESP_LOGW(TAG, "tsgl_sound_stop skipped. the track is not playing");
-        return;
-    }
-
+static void _stop(tsgl_sound* sound) {
     sound->playing = false;
 
     if (sound->use_local_timer) {
@@ -543,8 +555,16 @@ void tsgl_sound_stop(tsgl_sound* sound) {
     }
 }
 
+void tsgl_sound_stop(tsgl_sound* sound) {
+    if (!sound->playing) return;
+    portENTER_CRITICAL(&sound->lock);
+    _stop(sound);
+    portEXIT_CRITICAL(&sound->lock);
+}
+
 void tsgl_sound_free(tsgl_sound* sound) {
-    if (sound->playing) tsgl_sound_stop(sound);
+    portENTER_CRITICAL(&sound->lock);
+    if (sound->playing) _stop(sound);
     if (sound->buffer != NULL) free(sound->buffer);
     if (sound->buffer2 != NULL) free(sound->buffer2);
     if (sound->task_used) {
@@ -570,6 +590,7 @@ void tsgl_sound_free(tsgl_sound* sound) {
         }
         portEXIT_CRITICAL(&global_sounds_lock);
     }
+    portEXIT_CRITICAL(&sound->lock);
     memset(sound, 0, sizeof(tsgl_sound));
 }
 
