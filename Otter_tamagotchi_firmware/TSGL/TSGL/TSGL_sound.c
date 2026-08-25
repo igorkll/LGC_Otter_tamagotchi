@@ -230,29 +230,30 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
     for (size_t i = 0; i < global_sounds_index; i++) {
         tsgl_sound* sound = global_sounds[i];
 
-        if (!sound->mute) {
-            void* ptr = sound->buffer + sound->bufferPosition;
-            int div;
-            if (sound->bit_rate == 4) {
-                div = 256 * 256 * 256;
-            } else if (sound->bit_rate == 2) {
-                div = 256;
-            } else {
-                div = 1;
+        if (sound->playing) {
+            if (!sound->mute) {
+                void* ptr = sound->buffer + sound->bufferPosition;
+
+                int div;
+                if (sound->bit_rate == 4) {
+                    div = 256 * 256 * 256;
+                } else if (sound->bit_rate == 2) {
+                    div = 256;
+                } else {
+                    div = 1;
+                }
+
+                for (size_t i = 0; i < sound->outputsCount; i++) {
+                    tsgl_sound_output* output = sound->outputs[i];
+
+                    tsgl_sound_addOutputValue(output,
+                        (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
+                    );
+                }
             }
 
-            for (size_t i = 0; i < sound->outputsCount; i++) {
-                tsgl_sound_output* output = sound->outputs[i];
-
-                tsgl_sound_addOutputValue(output,
-                    (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
-                );
-
-                tsgl_sound_flushOutput(output);
-            }
+            _read_next_block(sound, sound->bit_rate * sound->channels);
         }
-
-        _read_next_block(sound, sound->bit_rate * sound->channels);
     }
 
     for (size_t i = 0; i < global_sounds_index; i++) {
