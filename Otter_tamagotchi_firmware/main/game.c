@@ -48,7 +48,7 @@ static void game_load() {
 }
 
 static void play_sound(const char* path) {
-    static tsgl_sound sounds[MAX_SOUNDS];
+    static tsgl_sound sounds[MAX_SOUNDS] = {0};
     static uint8_t current_sound_index = 0;
 
     tsgl_sound* current_sound = &sounds[current_sound_index];
@@ -62,6 +62,7 @@ static void play_sound(const char* path) {
     }
 
     tsgl_sound_output* sound_outputs[] = {sound_output};
+    tsgl_sound_attachCallback_end(current_sound, tsgl_sound_free);
     tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
     tsgl_sound_setVolume(current_sound, 1);
     tsgl_sound_play(current_sound);

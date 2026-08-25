@@ -70,6 +70,22 @@ static void _soundTask(void* _sound) {
     }
 }
 
+static void _soundServiceTask(void* _sound) {
+    tsgl_sound* sound = _sound;
+    
+    vTaskSuspend(NULL);
+
+    while (true) {
+        if (sound->callback_end_run) {
+            sound->callback_end(sound);
+            sound->callback_end_run = false;
+        }
+
+        vTaskDelay(1);
+        vTaskSuspend(NULL);
+    }
+}
+
 static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
     tsgl_sound* sound = user_ctx;
 
@@ -103,12 +119,16 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
     sound->position += bufOffset;
     if (sound->position >= sound->len) {
         sound->position = 0;
+
         if (sound->loop) {
             sound->reload = true;
             readFile = true;
         } else {
             tsgl_sound_stop(sound);
         }
+
+        sound->callback_end_run = true;
+        xTaskResumeFromISR(sound->task_service);
     }
 
     if (readFile) {
@@ -237,7 +257,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
             fread(sound->buffer2, sound->bit_rate, bufferSize, sound->file);
         }
 
-        xTaskCreate(_soundTask, NULL, 2048, sound, 1, &sound->task);
+        xTaskCreate(_soundTask, NULL, 1024, sound, 1, &sound->task);
         sound->task_used = true;
     } else {
         sound->bufferSize = sound->len;
@@ -253,6 +273,9 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
         fclose(sound->file);
         sound->file = NULL;
     }
+
+    xTaskCreate(_soundServiceTask, NULL, 1024, sound, 1, &sound->task_service);
+    sound->task_service_used = true;
 
     return ESP_OK;
 }
@@ -365,11 +388,15 @@ void tsgl_sound_stop(tsgl_sound* sound) {
 }
 
 void tsgl_sound_free(tsgl_sound* sound) {
+    printf("TEST\n");
     if (sound->playing) tsgl_sound_stop(sound);
     if (sound->buffer != NULL) free(sound->buffer);
     if (sound->buffer2 != NULL) free(sound->buffer2);
     if (sound->task_used) {
         vTaskDelete(sound->task);
+    }
+    if (sound->task_service_used) {
+        vTaskDelete(sound->task_service);
     }
     if (sound->file != NULL) {
         fclose(sound->file);
@@ -377,6 +404,10 @@ void tsgl_sound_free(tsgl_sound* sound) {
     _freeOutputs(sound);
     if (sound->heap) free(sound);
     memset(sound, 0, sizeof(tsgl_sound));
+}
+
+void tsgl_sound_attachCallback_end(tsgl_sound* sound, void(*callback)(tsgl_sound* sound)) {
+    sound->callback_end = callback;
 }
 
 #ifdef HARDWARE_DAC

@@ -27,7 +27,8 @@ typedef enum {
     tsgl_sound_pcm_signed
 } tsgl_sound_pcm_format;
 
-typedef struct { //do not write ANYTHING in the fields of the structure. use methods. you can only write values to the first two configuration fields
+typedef struct tsgl_sound tsgl_sound;
+struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use methods. you can only write values to the first two configuration fields
     bool heap; //it will automatically call free when calling tsgl_sound_free
 
     bool playing;
@@ -38,6 +39,10 @@ typedef struct { //do not write ANYTHING in the fields of the structure. use met
 
     TaskHandle_t task;
     bool task_used;
+
+    TaskHandle_t task_service;
+    bool task_service_used;
+
     FILE* file;
 
     void* buffer;
@@ -61,7 +66,10 @@ typedef struct { //do not write ANYTHING in the fields of the structure. use met
     gptimer_handle_t timer;
     bool mute;
     bool reload;
-} tsgl_sound;
+
+    bool callback_end_run;
+    void(*callback_end)(tsgl_sound* sound);
+};
 
 //the bitrate is set not in bits but in bytes
 //however, due to the features of the DAC in esp32, it does not make sense to use more than 8 bit (this will not increase the sound quality)
@@ -90,6 +98,8 @@ void tsgl_sound_seek(tsgl_sound* sound, int offset);
 void tsgl_sound_play(tsgl_sound* sound);
 void tsgl_sound_stop(tsgl_sound* sound);
 void tsgl_sound_free(tsgl_sound* sound);
+
+void tsgl_sound_attachCallback_end(tsgl_sound* sound, void(*callback)(tsgl_sound* sound));
 
 #ifdef HARDWARE_DAC
     tsgl_sound_output* tsgl_sound_newDacOutput(dac_channel_t channel);
