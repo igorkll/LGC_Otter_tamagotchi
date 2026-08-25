@@ -40,17 +40,32 @@ static int IRAM_ATTR _convertPcm(tsgl_sound* sound, void* source) {
 }
 
 static void _soundTask(void* _sound) {
-    tsgl_sound* sound = _sound;
-    fread(sound->buffer, sound->bit_rate, sound->bufferSize, sound->file);
+    vTaskSuspend(NULL);
 
-    if (!sound->doubleSwapBuffer) vTaskSuspend(NULL);
+    tsgl_sound* sound = _sound;
+    
+    void* buffer;
+    if (sound->doubleSwapBuffer) {
+        buffer = sound->buffer2;
+    } else {
+        buffer = sound->buffer;
+    }
+    
+    fread(buffer, sound->bit_rate, sound->bufferSize, sound->file);
+    vTaskSuspend(NULL);
 
     while (true) {
+        if (sound->doubleSwapBuffer) {
+            buffer = sound->buffer2;
+        } else {
+            buffer = sound->buffer;
+        }
+        
         if (sound->reload) {
             sound->reload = false;
             fseek(sound->file, sound->position + sound->offset, SEEK_SET);
         }
-        fread(sound->buffer, sound->bit_rate, sound->bufferSize, sound->file);
+        fread(buffer, sound->bit_rate, sound->bufferSize, sound->file);
         if (!sound->doubleSwapBuffer) gptimer_start(sound->timer);
 
         vTaskDelay(1);
@@ -102,12 +117,12 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
     if (readFile) {
         sound->bufferPosition = 0;
         if (sound->task_used) {
-            if (!sound->doubleSwapBuffer) {
-                gptimer_stop(sound->timer);
-            } else {
+            if (sound->doubleSwapBuffer) {
                 void* buffer = sound->buffer;
                 sound->buffer = sound->buffer2;
                 sound->buffer2 = buffer;
+            } else {
+                gptimer_stop(sound->timer);
             }
             xTaskResumeFromISR(sound->task);
         }
@@ -211,22 +226,22 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
             return ESP_ERR_NO_MEM;
         }
 
+        fread(sound->buffer, sound->bit_rate, bufferSize, sound->file);
+
         if (doubleSwapBuffer) {
-            sound->buffer2 = tsgl_malloc(sound->len, caps);
+            sound->buffer2 = tsgl_malloc(bufferSize, caps);
             if (sound->buffer2 == NULL) {
                 free(sound->buffer);
                 ESP_LOGE(TAG, "the buffer2 for the sound could not be allocated: %i bytes", sound->len);
                 memset(sound, 0, sizeof(tsgl_sound));
                 return ESP_ERR_NO_MEM;
             }
+
+            fread(sound->buffer2, sound->bit_rate, bufferSize, sound->file);
         }
 
         xTaskCreate(_soundTask, NULL, 2048, sound, 1, &sound->task);
         sound->task_used = true;
-
-        if (doubleSwapBuffer) {
-            vTaskResume(sound->task);
-        }
     } else {
         sound->bufferSize = sound->len;
 
