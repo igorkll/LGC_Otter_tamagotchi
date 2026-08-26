@@ -4,9 +4,6 @@
 
 // ------------------------------------ consts
 
-#define MAX_SOUNDS 16
-#define SOUND_BUFFER_SIZE (4 * 1024)
-
 static const char* game_state_path = "/storage/game_state";
 static const char* game_rooms_images_paths[] = {
     "/storage/rooms/bedroom.bmp",
@@ -47,37 +44,23 @@ static void game_load() {
     }
 }
 
-static tsgl_sound* play_sound(const char* path, int test) {
-    static tsgl_sound sounds[MAX_SOUNDS] = {0};
-    static uint8_t current_sound_index = 0;
-
-    tsgl_sound* current_sound = &sounds[current_sound_index];
-    if (tsgl_sound_load_pcmEx(current_sound, SOUND_BUFFER_SIZE, 0, path, 8000, 1, 1, tsgl_sound_pcm_unsigned, true) != ESP_OK) {
-        return NULL;
-    }
-    
-    current_sound_index++;
-    if (current_sound_index >= MAX_SOUNDS) {
-        current_sound_index = 0;
-    }
-
-    current_sound->freeOnEnd = true;
-
-    tsgl_sound_output* sound_outputs[] = {sound_output};
-    tsgl_sound_enableFreeOnEnd(current_sound, true);
-    tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
-    tsgl_sound_setVolume(current_sound, 0.2);
-    tsgl_sound_play(current_sound);
-
-    return current_sound;
-}
-
 void game_start() {
     ESP_LOGI(TAG, "game started!");
     tsgl_benchmark_reset(&benchmark);
     game_load();
 
-    tsgl_sound* sound = play_sound("/storage/test.pcm", 8000);
+    hctl_sound_play("/storage/sounds/question.pcm", 16000, 3);
+    tsgl_delay(3000);
+
+    hctl_sound_play("/storage/sounds/sadness.pcm", 16000, 3);
+    tsgl_delay(3000);
+
+    hctl_sound_play("/storage/sounds/trigger.pcm", 16000, 3);
+    tsgl_delay(3000);
+
+    tsgl_sound* sound = hctl_sound_play("/storage/test.pcm", 8000, 1);
+
+    tsgl_delay(16000);
 
     while (true) {
         hctl_process();
