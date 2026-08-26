@@ -1,6 +1,7 @@
 #include "game.h"
 #include "gfx.h"
 #include "hctl.h"
+#include "pushsound.h"
 
 // ------------------------------------ consts
 
@@ -49,16 +50,16 @@ void game_start() {
     tsgl_benchmark_reset(&benchmark);
     game_load();
 
-    hctl_sound_play("/storage/sounds/question.pcm", 16000, 3);
+    pushsound_play("/storage/sounds/question.pcm", 16000, 3);
     tsgl_delay(3000);
 
-    hctl_sound_play("/storage/sounds/sadness.pcm", 16000, 3);
+    pushsound_play("/storage/sounds/sadness.pcm", 16000, 3);
     tsgl_delay(3000);
 
-    hctl_sound_play("/storage/sounds/trigger.pcm", 16000, 3);
+    pushsound_play("/storage/sounds/trigger.pcm", 16000, 3);
     tsgl_delay(3000);
 
-    tsgl_sound* sound = hctl_sound_play("/storage/test.pcm", 8000, 1);
+    tsgl_sound* sound = pushsound_play("/storage/test.pcm", 8000, 1);
 
     while (true) {
         hctl_process();
