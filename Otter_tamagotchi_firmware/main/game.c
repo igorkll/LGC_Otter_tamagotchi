@@ -60,8 +60,6 @@ void game_start() {
 
     tsgl_sound* sound = hctl_sound_play("/storage/test.pcm", 8000, 1);
 
-    tsgl_delay(16000);
-
     while (true) {
         hctl_process();
 

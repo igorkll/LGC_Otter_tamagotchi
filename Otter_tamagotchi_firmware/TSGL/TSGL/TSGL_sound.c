@@ -94,7 +94,9 @@ static void _soundServiceTask(void* _sound) {
             if (!sound->loop) tsgl_sound_stop(sound);
             if (sound->callback_end != NULL) sound->callback_end(sound);
             if (sound->freeOnEnd) {
+                sound->task_service_used = false;
                 tsgl_sound_free(sound);
+                vTaskDelete(NULL);
                 return;
             }
         }
@@ -352,8 +354,6 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
     memset(sound, 0, sizeof(tsgl_sound));
     sound->lock = (portMUX_TYPE)portMUX_INITIALIZER_UNLOCKED;
 
-    printf("file open\n");
-
     sound->file = fopen(path, "rb");
     if (sound->file == NULL) return ESP_FAIL;
     fseek(sound->file, offset, SEEK_SET);
@@ -566,15 +566,13 @@ void tsgl_sound_stop(tsgl_sound* sound) {
 }
 
 void tsgl_sound_free(tsgl_sound* sound) {
-    printf("free start %p\n", sound->file);
-
     portENTER_CRITICAL(&sound->lock);
     if (sound->playing) _stop(sound);
     if (sound->task_used) {
         vTaskDelete(sound->task);
     }
     if (sound->task_service_used) {
-        //vTaskDelete(sound->task_service);
+        vTaskDelete(sound->task_service);
     }
     if (sound->buffer != NULL) free(sound->buffer);
     if (sound->buffer2 != NULL) free(sound->buffer2);
@@ -593,10 +591,7 @@ void tsgl_sound_free(tsgl_sound* sound) {
     }
     portEXIT_CRITICAL(&sound->lock);
 
-    printf("free end %p\n", sound->file); // КОД СЮДА НЕ ДОХОДИТ!!!
-
     if (sound->file != NULL) {
-        printf("file close\n");
         fclose(sound->file);
     }
     
