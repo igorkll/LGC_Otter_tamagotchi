@@ -79,14 +79,14 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         tsgl_pos fillSizeX = iconWidth + 2;
         tsgl_pos fillSizeY = iconHeight + 2;
         tsgl_pos pos2X = posX + (fillSizeX - 1);
-        tsgl_pos pos2Y = posY - (fillSizeY - 1);
+        tsgl_pos pos2Y = posY + (fillSizeY - 1);
         tsgl_framebuffer_fill(&framebuffer, posX, posY, fillSizeX, fillSizeY, fillColor);
 
         tsgl_framebuffer_fill(&framebuffer, posX, posY, FRAME2_LINE_LEN, 1, fillColor2);
         tsgl_framebuffer_fill(&framebuffer, posX, posY, 1, FRAME2_LINE_LEN, fillColor2);
 
-        tsgl_framebuffer_fill(&framebuffer, x - 1, y - 1, FRAME2_LINE_LEN, 1, fillColor2);
-        tsgl_framebuffer_fill(&framebuffer, x - 1, y - 1, 1, FRAME2_LINE_LEN, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, pos2X - FRAME2_LINE_LEN, pos2Y, FRAME2_LINE_LEN, 1, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, pos2X, pos2Y - FRAME2_LINE_LEN, 1, FRAME2_LINE_LEN, fillColor2);
 
         tsgl_framebuffer_pushFast(&framebuffer, x, y, sprites[i2]);
     }
