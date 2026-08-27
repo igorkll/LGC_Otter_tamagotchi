@@ -100,13 +100,21 @@ static void run_myaaaa() {
 
 static void process() {
     hctl_process();
+
+    bool allPressed = true;
+    for (size_t i = 0; i < KEYS_COUNT; i++) {
+        if (!tsgl_keyboard_getState(&keyboard, i)) {
+            allPressed = false;
+            break;
+        }
+    }
+    if (allPressed) {
+        run_myaaaa();
+    }
     
     int used = game_upmenu_process();
     if (used >= 0 && used < ROOMS_COUNT) {
         selectRoom(used);
-        if (used == 1) {
-            run_myaaaa();
-        }
     }
 
     if (memcmp(&current_state, &old_state, sizeof(Game_state)) != 0) {
