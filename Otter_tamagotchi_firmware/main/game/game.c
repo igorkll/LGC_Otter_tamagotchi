@@ -30,7 +30,6 @@ static void loadSprites() {
         room_sprite_old_index = current_state.room;
         if (room_sprite != NULL) tsgl_bmp_free(room_sprite);
         room_sprite = gfx_loadSprite(game_rooms_images_paths[current_state.room]);
-        ESP_LOGI(TAG, "room loaded");
     }
 }
 
@@ -51,16 +50,18 @@ void game_start() {
     tsgl_benchmark_reset(&benchmark);
     game_load();
 
-    pushsound_play("/storage/sounds/question.pcm", 16000);
-    tsgl_delay(3000);
+    //pushsound_play("/storage/sounds/question.pcm", 16000);
+    //tsgl_delay(3000);
 
-    pushsound_play("/storage/sounds/sadness.pcm", 16000);
-    tsgl_delay(3000);
+    //pushsound_play("/storage/sounds/sadness.pcm", 16000);
+    //tsgl_delay(3000);
 
-    pushsound_play("/storage/sounds/trigger.pcm", 16000);
-    tsgl_delay(3000);
+    //pushsound_play("/storage/sounds/trigger.pcm", 16000);
+    //tsgl_delay(3000);
 
-    tsgl_sound* sound = pushsound_play("/storage/test.pcm", 8000);
+    //tsgl_sound* sound = pushsound_play("/storage/test.pcm", 8000);
+
+    game_upmenu_init();
 
     while (true) {
         hctl_process();
