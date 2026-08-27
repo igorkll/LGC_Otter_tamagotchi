@@ -12,7 +12,7 @@ static const char* game_rooms_images_paths[] = {
     "/storage/rooms/kitchen.bmp"
 };
 
-#define ROOMS_COUNT sizeof(game_rooms_images_paths)
+#define ROOMS_COUNT (sizeof(game_rooms_images_paths) / sizeof(&game_rooms_images_paths))
 
 static const Game_state default_state = {
     .room = 0
@@ -66,7 +66,6 @@ static void process() {
     hctl_process();
     
     int used = game_upmenu_process();
-    printf("%i\n", ROOMS_COUNT);
     if (used >= 0 && used < ROOMS_COUNT) {
         selectRoom(used);
     }
@@ -99,7 +98,7 @@ void game_start() {
         tsgl_display_send(&display, &framebuffer);
         tsgl_benchmark_endSend(&benchmark);
 
-        //tsgl_benchmark_print(&benchmark);
+        tsgl_benchmark_print(&benchmark);
         tsgl_benchmark_wait(&benchmark, 15);
     }
 }
