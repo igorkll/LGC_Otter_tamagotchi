@@ -18,7 +18,7 @@ void game_upmenu_init() {
 }
 
 void game_upmenu_process() {
-
+    
 }
 
 static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
