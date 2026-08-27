@@ -1,6 +1,7 @@
 #include "game_upmenu.h"
 #include "../gfx.h"
 #include "../hctl.h"
+#include "../funcs.h"
 
 static tsgl_sprite* sprites[GAME_UPMENU_COUNTS_COUNT];
 static bool sprites_active[GAME_UPMENU_COUNTS_COUNT];
@@ -9,8 +10,9 @@ static int current_selected = 0;
 
 void game_upmenu_init() {
     for (size_t i = 0; i < GAME_UPMENU_COUNTS_COUNT; i++) {
-        char path[40] = "";
-        sprintf(path, "/storage/icons/%i.bmp", i);
+        char path[MAX_PATH_LEN];
+        slnprintf(path, MAX_PATH_LEN, "/storage/icons/%i.bmp", i);
+
         tsgl_sprite* sprite = gfx_loadSprite(path);
         if (sprite == NULL) {
             sprite = gfx_loadSprite("/storage/icons/null.bmp");

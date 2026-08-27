@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include <esp_heap_caps.h>
 #include <esp_vfs.h>
@@ -26,6 +27,7 @@
 #include <freertos/timers.h>
 
 #include "configs/display.h"
+#include "configs/consts.h"
 #include "configs/config.h"
 
 extern const char* TAG;

@@ -7,12 +7,12 @@
 // ------------------------------------ consts
 
 static const char* game_state_path = "/storage/game_state";
-static const char* game_rooms_images_paths[] = {
-    "/storage/rooms/bedroom.bmp",
-    "/storage/rooms/kitchen.bmp"
+static const char* game_rooms_images[] = {
+    "bedroom",
+    "kitchen"
 };
 
-#define ROOMS_COUNT (sizeof(game_rooms_images_paths) / sizeof(&game_rooms_images_paths))
+#define ROOMS_COUNT (sizeof(game_rooms_images) / sizeof(&game_rooms_images))
 
 static const Game_state default_state = {
     .room = 0
@@ -32,7 +32,10 @@ static void loadSprites() {
     if (room_sprite == NULL || current_state.room != room_sprite_old_index) {
         room_sprite_old_index = current_state.room;
         if (room_sprite != NULL) tsgl_bmp_free(room_sprite);
-        room_sprite = gfx_loadSprite(game_rooms_images_paths[current_state.room]);
+
+        char path[MAX_PATH_LEN];
+        slnprintf(path, MAX_PATH_LEN, "/storage/rooms/%s.bmp", game_rooms_images[current_state.room])
+        room_sprite = gfx_loadSprite(path);
     }
 }
 
