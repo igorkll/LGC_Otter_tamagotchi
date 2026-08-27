@@ -46,6 +46,18 @@ static void game_load() {
     }
 }
 
+// ------------------------------------ process
+
+static void selectRoom(int index) {
+    current_state.room = index;
+    game_upmenu_setActivate(0, index == 0);
+    game_upmenu_setActivate(1, index == 1);
+}
+
+static void start() {
+    selectRoom(current_state.room)
+}
+
 static void process() {
     hctl_process();
     game_upmenu_process();
@@ -63,18 +75,8 @@ void game_start() {
     tsgl_benchmark_reset(&benchmark);
     game_load();
 
-    //pushsound_play("/storage/sounds/question.pcm", 16000);
-    //tsgl_delay(3000);
-
-    //pushsound_play("/storage/sounds/sadness.pcm", 16000);
-    //tsgl_delay(3000);
-
-    //pushsound_play("/storage/sounds/trigger.pcm", 16000);
-    //tsgl_delay(3000);
-
-    //tsgl_sound* sound = pushsound_play("/storage/test.pcm", 8000);
-
     game_upmenu_init();
+    start();
 
     while (true) {
         process();
