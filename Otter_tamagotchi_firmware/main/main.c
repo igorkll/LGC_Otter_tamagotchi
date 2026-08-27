@@ -85,6 +85,7 @@ void app_main() {
 
     ESP_ERROR_CHECK(tsgl_spi_initManual(framebuffer.buffersize, SPI, SPI_MOSI, SPI_MISO, SPI_CLK));
     ESP_ERROR_CHECK(tsgl_display_spi(&display, settings, SPI, FREQ, DC, CS, RST));
+    tsgl_display_incompleteSending(&display, false, NULL);
     if (USE_HARDWARE_ROTATE) {
         tsgl_display_rotate(&display, ROTATE);
     }

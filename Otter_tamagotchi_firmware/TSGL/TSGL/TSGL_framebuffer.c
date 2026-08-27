@@ -331,6 +331,8 @@ void tsgl_framebuffer_push(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y
 }
 
 void tsgl_framebuffer_pushFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite) {
+    framebuffer->changed = true;
+    
     tsgl_pos spriteWidth = sprite->sprite->defaultWidth;
     tsgl_pos spriteHeight = sprite->sprite->defaultHeight;
 

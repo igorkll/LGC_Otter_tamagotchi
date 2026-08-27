@@ -70,8 +70,8 @@ void game_upmenu_draw() {
     int lineHeight = sprite_iconline->sprite->height;
     int bottomLineY = height - lineHeight;
 
-    tsgl_framebuffer_push(&framebuffer, 0, 0, sprite_iconline);
-    tsgl_framebuffer_push(&framebuffer, 0, bottomLineY, sprite_iconline);
+    tsgl_framebuffer_pushFast(&framebuffer, 0, 0, sprite_iconline);
+    tsgl_framebuffer_pushFast(&framebuffer, 0, bottomLineY, sprite_iconline);
     
     draw_icons(0, 0, current_selected);
     draw_icons(GAME_UPMENU_LINE_COUNTS_COUNT, bottomLineY, current_selected);

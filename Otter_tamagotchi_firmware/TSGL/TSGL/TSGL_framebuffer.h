@@ -61,7 +61,7 @@ void tsgl_framebuffer_hardwareRotate(tsgl_framebuffer* framebuffer, uint8_t rota
 
 // graphic
 void tsgl_framebuffer_push(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite); //allows you to draw sprites and rotate them when drawing. the tsgl_framebuffer_rotate method on sprite is ignored (because it changes the indexing)
-void tsgl_framebuffer_pushFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite); //an extremely dumb and simplistic function. supports only the 666/888 color mode, does not support rotated framebuffers, not as a target, not as a renderable one. It does not support flip and rotation of sprites. does not support transparency. Because it works fast
+void tsgl_framebuffer_pushFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite); //an extremely dumb and simplistic function. supports only the 666/888 color mode, does not support rotated framebuffers, not as a target, not as a renderable one. It does not support flip and rotation of sprites. does not support transparency. Because it works fast. You also need to disable incomplete sending.
 void tsgl_framebuffer_setWithoutCheck(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_rawcolor color);
 void tsgl_framebuffer_setWithoutCheckFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_rawcolor color);
 void tsgl_framebuffer_set(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_rawcolor color);
