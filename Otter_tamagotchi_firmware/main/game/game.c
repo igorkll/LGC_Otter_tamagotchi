@@ -86,7 +86,7 @@ static void run_myaaaa() {
 
     tsgl_sound* sound = pushsound_play("/storage/myaaaa/myaaaa.pcm", 8000);
     tsgl_sound_setVolume(sound, 6);
-    sound->userData = (void*)running;
+    sound->userData = (void*)&running;
     tsgl_sound_attachCallback_end(sound, exit_myaaaa);
 
     while (running) {
