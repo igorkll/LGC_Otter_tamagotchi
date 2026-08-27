@@ -1,7 +1,7 @@
 #include "main.h"
 #include "gfx.h"
 #include "hctl.h"
-#include "game.h"
+#include "game/game.h"
 
 #define TARGET_FPS 20
 

@@ -1,7 +1,7 @@
 #include "game.h"
-#include "gfx.h"
-#include "hctl.h"
-#include "pushsound.h"
+#include "../gfx.h"
+#include "../hctl.h"
+#include "../pushsound.h"
 
 // ------------------------------------ consts
 
@@ -63,11 +63,13 @@ void game_start() {
 
     while (true) {
         hctl_process();
+        game_upmenu_process();
 
         tsgl_benchmark_startRendering(&benchmark);
         loadSprites();
         //tsgl_framebuffer_clear(&framebuffer, black);
         gfx_drawCenteredScreenImageSprite(room_sprite);
+        game_upmenu_draw();
         tsgl_benchmark_endRendering(&benchmark);
 
         tsgl_benchmark_startSend(&benchmark);

@@ -1,5 +1,5 @@
 #pragma once
-#include "main.h"
+#include "../main.h"
 
 typedef enum {
     game_room_bedroom = 0,
