@@ -331,7 +331,7 @@ void tsgl_framebuffer_push(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y
 }
 
 void tsgl_framebuffer_pushFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite) {
-    tsgl_gfx_pushFast(framebuffer, (TSGL_SET_REFERENCE())tsgl_framebuffer_setWithoutCheck, x, y, sprite);
+    tsgl_gfx_pushFast(framebuffer, (TSGL_SET_REFERENCE())tsgl_framebuffer_setWithoutCheckFast, x, y, sprite);
 }
 
 void tsgl_framebuffer_line(tsgl_framebuffer* framebuffer, tsgl_pos x1, tsgl_pos y1, tsgl_pos x2, tsgl_pos y2, tsgl_rawcolor color, tsgl_pos stroke) {
@@ -391,6 +391,12 @@ void tsgl_framebuffer_setWithoutCheck(tsgl_framebuffer* framebuffer, tsgl_pos x,
             break;
         }
     }
+}
+
+void tsgl_framebuffer_setWithoutCheckFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_rawcolor color) {
+    size_t index = (x + (y * framebuffer->width)) * 3;
+    _doubleSet(framebuffer, index, color);
+    framebuffer->buffer[index + 2] = color.arr[2];
 }
 
 void tsgl_framebuffer_fill(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_pos width, tsgl_pos height, tsgl_rawcolor color) {
@@ -560,6 +566,14 @@ tsgl_rawcolor tsgl_framebuffer_getWithoutCheck(tsgl_framebuffer* framebuffer, ts
             return rawcolor;
         }
     }
+}
+
+tsgl_rawcolor tsgl_framebuffer_getWithoutCheckFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y) {
+    size_t index = (x + (y * framebuffer->width)) * 3;
+    return (tsgl_rawcolor) {
+        .invalid = false,
+        .arr = [framebuffer->buffer[index + 0], framebuffer->buffer[index + 1], framebuffer->buffer[index + 2]]
+    };
 }
 
 tsgl_rawcolor tsgl_framebuffer_get(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y) {

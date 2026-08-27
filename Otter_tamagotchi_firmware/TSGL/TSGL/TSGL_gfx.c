@@ -161,7 +161,7 @@ void tsgl_gfx_pushFast(void* arg, TSGL_SET_REFERENCE(set), tsgl_pos x, tsgl_pos 
         tsgl_pos setPosX = posX + x;
         for (tsgl_pos posY = 0; posY < spriteHeight; posY++) {
             tsgl_pos setPosY = posY + y;
-            set(arg, setPosX, setPosY, tsgl_framebuffer_getWithoutCheck(sprite->sprite, posX, posY));
+            set(arg, setPosX, setPosY, tsgl_framebuffer_getWithoutCheckFast(sprite->sprite, posX, posY));
         }
     }
 }
