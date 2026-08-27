@@ -20,7 +20,19 @@ void game_upmenu_init() {
 }
 
 void game_upmenu_process() {
-    
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
+        current_selected--;
+        if (current_selected < 0) {
+            current_selected = GAME_UPMENU_COUNTS_COUNT - 1;
+        }
+    }
+
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
+        current_selected++;
+        if (current_selected >= GAME_UPMENU_COUNTS_COUNT) {
+            current_selected = 0;
+        }
+    }
 }
 
 static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
