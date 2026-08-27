@@ -22,13 +22,14 @@ void game_upmenu_process() {
 }
 
 void game_upmenu_draw() {
-    int iconWidth = sprites[0]->sprite->width;
     int lineHeight = sprite_iconline->sprite->height;
 
     tsgl_framebuffer_push(&framebuffer, 0, 0, sprite_iconline);
     tsgl_framebuffer_push(&framebuffer, 0, framebuffer.height - lineHeight, sprite_iconline);
     
     for (size_t i = 0; i < GAME_UPMENU_LINE_COUNTS_COUNT; i++) {
-        tsgl_framebuffer_push(&framebuffer, (i * (width / 5)) + (iconWidth / 2), lineHeight / 2, sprites[i]);
+        int iconWidth = sprites[0]->sprite->width;
+        int iconHeight = sprites[0]->sprite->height;
+        tsgl_framebuffer_push(&framebuffer, (i * (width / 5)) + (GAME_UPMENU_LINE_COUNTS_COUNT), (lineHeight / 2) - (iconHeight / 2), sprites[i]);
     }
 }
