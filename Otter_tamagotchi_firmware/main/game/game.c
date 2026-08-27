@@ -10,7 +10,10 @@
 static const char* game_state_path = "/storage/game_state";
 static const char* game_rooms_images[] = {
     "bedroom",
-    "kitchen"
+    "kitchen",
+    "gaming",
+    "toilet",
+    "yard"
 };
 
 #define ROOMS_COUNT (sizeof(game_rooms_images) / sizeof(&game_rooms_images))
