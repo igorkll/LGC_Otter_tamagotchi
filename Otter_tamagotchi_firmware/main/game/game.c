@@ -65,7 +65,10 @@ static void start() {
 static void process() {
     hctl_process();
     
-
+    int used = game_upmenu_process();
+    if (used >= 0 && used < ROOMS_COUNT) {
+        selectRoom(used);
+    }
 
     if (memcmp(&current_state, &old_state, sizeof(Game_state)) != 0) {
         old_state = current_state;
