@@ -15,6 +15,10 @@ tsgl_pos height;
 tsgl_colormode colormode;
 
 tsgl_rawcolor white;
+tsgl_rawcolor red;
+tsgl_rawcolor green;
+tsgl_rawcolor yellow;
+tsgl_rawcolor blue;
 tsgl_rawcolor black;
 
 tsgl_print_settings printsettings_title = {
