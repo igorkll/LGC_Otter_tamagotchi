@@ -2,6 +2,7 @@
 #include "gfx.h"
 #include "hctl.h"
 #include "game/game.h"
+#include "funcs.h"
 
 #define TARGET_FPS 20
 
@@ -37,10 +38,17 @@ tsgl_print_settings printsettings_title = {
     .bg = TSGL_INVALID_RAWCOLOR
 };
 
-static void bootlogo() {
+static void bootlogo(int index, const char* title) {
     tsgl_framebuffer_clear(&framebuffer, black);
-    gfx_drawCenteredScreenImage("/storage/bootlogo.bmp");
-    tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, "Otter");
+    char path[MAX_PATH_LEN];
+    slnprintf(path, MAX_PATH_LEN, "/storage/bootlogo/bgrt%i.bmp", index);
+    gfx_drawCenteredScreenImage(path);
+    tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
+}
+
+static void setBacklightAndWait(uint8_t value) {
+    hctl_setBacklight(value);
+    while (hctl_isBacklightChangeProcess()) tsgl_delay(50);
 }
 
 void app_main() {
@@ -78,7 +86,7 @@ void app_main() {
     printsettings_title.width = width;
     printsettings_title.height = TITLE_HEIGHT;
 
-    bootlogo();
+    bootlogo(0, "Otter");
 
     settings.init_state = tsgl_display_init_framebuffer;
     settings.init_framebuffer_ptr = framebuffer.buffer;
@@ -95,10 +103,18 @@ void app_main() {
     }
 
     hctl_init();
-
     tsgl_delay(100);
-    hctl_setBacklight(BACKLIGHT_MAX);
-    while (hctl_isBacklightChangeProcess()) tsgl_delay(50);
+
+    setBacklightAndWait(BACKLIGHT_MAX);
     tsgl_delay(3000);
+
+    setBacklightAndWait(BACKLIGHT_OFF);
+    bootlogo(1, "Developer");
+    tsgl_display_send(&display, &framebuffer);
+    tsgl_delay(100);
+
+    setBacklightAndWait(BACKLIGHT_MAX);
+    tsgl_delay(3000);
+
     game_start();
 }
