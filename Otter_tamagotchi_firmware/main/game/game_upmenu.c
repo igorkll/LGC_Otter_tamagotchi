@@ -30,6 +30,6 @@ void game_upmenu_draw() {
     for (size_t i = 0; i < GAME_UPMENU_LINE_COUNTS_COUNT; i++) {
         int iconWidth = sprites[0]->sprite->width;
         int iconHeight = sprites[0]->sprite->height;
-        tsgl_framebuffer_push(&framebuffer, (i * (width / 5)) + (GAME_UPMENU_LINE_COUNTS_COUNT), (lineHeight / 2) - (iconHeight / 2), sprites[i]);
+        tsgl_framebuffer_push(&framebuffer, (i * (width / 5)), (lineHeight / 2) - (iconHeight / 2), sprites[i]);
     }
 }

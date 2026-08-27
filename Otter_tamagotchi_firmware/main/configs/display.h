@@ -2,7 +2,7 @@
 
 #include <TSGL_drivers/st77XX.h>
 
-#define FREQ 60000000
+#define FREQ 20000000
 #define BUFFER TSGL_RAM
 
 #define RST -1
