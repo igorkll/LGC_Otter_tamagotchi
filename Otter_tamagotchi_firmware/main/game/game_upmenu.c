@@ -7,5 +7,5 @@ void game_upmenu_process() {
 }
 
 void game_upmenu_draw() {
-
+    
 }
