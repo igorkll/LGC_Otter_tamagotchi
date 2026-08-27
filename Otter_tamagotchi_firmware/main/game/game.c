@@ -70,6 +70,11 @@ static void start() {
     selectRoom(current_state.room);
 }
 
+static void exit_myaaaa(tsgl_sound* sound) {
+    bool* running = (bool*)sound->userData;
+    *running = false;
+}
+
 static void run_myaaaa() {
     hctl_resetIdleTimer();
     hctl_setBacklight(BACKLIGHT_MAX);
@@ -77,7 +82,13 @@ static void run_myaaaa() {
     gfx_drawCenteredScreenImage("/storage/easter_eggs/myaaaa.bmp");
     tsgl_display_send(&display, &framebuffer);
 
-    while (true) {
+    bool running = true;
+
+    tsgl_sound* sound = pushsound_play("/storage/easter_eggs/myaaaa.pcm", 8000);
+    sound->userData = (void*)running;
+    tsgl_sound_attachCallback_end(sound, exit_myaaaa);
+
+    while (running) {
         tsgl_keyboard_readAll(&keyboard);
 
         if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) break;

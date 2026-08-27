@@ -80,6 +80,9 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
     bool freeOnEnd;
 
     portMUX_TYPE lock;
+
+    void* userData;
+    int userData_int;
 };
 
 // If you want to produce multiple sounds at the same time, you must activate the global timer.
