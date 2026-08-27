@@ -65,8 +65,9 @@ static void game_load() {
 
 static void selectRoom(int index) {
     current_state.room = index;
-    game_upmenu_setActivate(0, index == 0);
-    game_upmenu_setActivate(1, index == 1);
+    for (size_t i = 0; i < ROOMS_COUNT; i++) {
+        game_upmenu_setActivate(i, index == i);
+    }
 }
 
 static void start() {
