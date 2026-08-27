@@ -23,7 +23,7 @@ void game_upmenu_process() {
 
 static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
     int lineHeight = sprite_iconline->sprite->height;
-    
+
     for (size_t i = 0; i < GAME_UPMENU_LINE_COUNTS_COUNT; i++) {
         size_t i2 = i + offsetIndex;
 
@@ -33,10 +33,10 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         int x = (i * (width / 5));
         int y = offsetHeight + ((lineHeight / 2) - (iconHeight / 2));
 
-        tsgl_framebuffer_push(&framebuffer, x, y, sprites[i2]);
         if (i2 == selected) {
             tsgl_framebuffer_fill(&framebuffer, x - 1, y - 1, iconWidth + 2, iconHeight + 2, yellow);
         }
+        tsgl_framebuffer_push(&framebuffer, x, y, sprites[i2]);
     }
 }
 
