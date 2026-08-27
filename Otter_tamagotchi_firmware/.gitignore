@@ -2,4 +2,3 @@ build
 sdkconfig
 sdkconfig.old
 .vscode
-storage/test.pcm

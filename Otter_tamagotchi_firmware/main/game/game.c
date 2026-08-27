@@ -70,12 +70,31 @@ static void start() {
     selectRoom(current_state.room);
 }
 
+static void run_myaaaa() {
+    hctl_resetIdleTimer();
+    hctl_setBacklight(BACKLIGHT_MAX);
+
+    gfx_drawCenteredScreenImage("/storage/easter_eggs/myaaaa.bmp");
+    tsgl_display_send(&display, &framebuffer);
+
+    while (true) {
+        tsgl_keyboard_readAll(&keyboard);
+
+        if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) break;
+    }
+    
+    tsgl_benchmark_reset(&benchmark);
+}
+
 static void process() {
     hctl_process();
     
     int used = game_upmenu_process();
     if (used >= 0 && used < ROOMS_COUNT) {
         selectRoom(used);
+        if (used == 1) {
+            run_myaaaa();
+        }
     }
 
     if (memcmp(&current_state, &old_state, sizeof(Game_state)) != 0) {

@@ -80,3 +80,7 @@ void hctl_process() {
         oldIsIdle = isIdle;
     }
 }
+
+void hctl_resetIdleTimer() {
+    lastInteractTime = tsgl_time();
+}
