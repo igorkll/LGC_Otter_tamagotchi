@@ -87,12 +87,12 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
 
         // corner border
         // left & top
-        tsgl_framebuffer_fill(&framebuffer, posX, posY, FRAME2_LINE_LEN, 1, fillColor2);
-        tsgl_framebuffer_fill(&framebuffer, posX, posY, 1, FRAME2_LINE_LEN, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, posX, posY,                             FRAME2_LINE_LEN, 1, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, posX, posY,                             1, FRAME2_LINE_LEN, fillColor2);
 
         // right & bottom
-        tsgl_framebuffer_fill(&framebuffer, pos2X - FRAME2_LINE_OFFSET, pos2Y, FRAME2_LINE_LEN, 1, fillColor2);
-        tsgl_framebuffer_fill(&framebuffer, pos2X, pos2Y - FRAME2_LINE_OFFSET, 1, FRAME2_LINE_LEN, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, pos2X - FRAME2_LINE_OFFSET, pos2Y,      FRAME2_LINE_LEN, 1, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, pos2X, pos2Y - FRAME2_LINE_OFFSET,      1, FRAME2_LINE_LEN, fillColor2);
 
         // left & bottom
         tsgl_framebuffer_fill(&framebuffer, posX, pos2Y,                            FRAME2_LINE_LEN, 1, fillColor2);
