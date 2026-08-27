@@ -10,6 +10,7 @@ static tsgl_sprite* sprite_iconline;
 static int current_selected = 0;
 
 #define ICON_FAILBACK "/storage/icons/null.bmp"
+#define FRAME2_LINE_LEN 8
 
 void game_upmenu_reloadIcons() {
     for (size_t i = 0; i < GAME_UPMENU_COUNTS_COUNT; i++) {
@@ -72,12 +73,20 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
 
         tsgl_rawcolor fillColor = sprites_active[i2] ? red : transparent;
         tsgl_rawcolor fillColor2 = i2 == selected ? yellow : fillColor;
-        
-        tsgl_framebuffer_fill(&framebuffer, x - 1, y - 1, iconWidth + 2, iconHeight + 2, fillColor);
-        
-        tsgl_framebuffer_set(&framebuffer, x - 1, y - 1, fillColor2);
-        tsgl_framebuffer_set(&framebuffer, x, y - 1, fillColor2);
-        tsgl_framebuffer_set(&framebuffer, x - 1, y, fillColor2);
+
+        tsgl_pos posX = x - 1;
+        tsgl_pos posY = y - 1;
+        tsgl_pos fillSizeX = iconWidth + 2;
+        tsgl_pos fillSizeY = iconHeight + 2;
+        tsgl_pos pos2X = posX + (fillSizeX - 1);
+        tsgl_pos pos2Y = posY - (fillSizeY - 1);
+        tsgl_framebuffer_fill(&framebuffer, posX, posY, fillSizeX, fillSizeY, fillColor);
+
+        tsgl_framebuffer_fill(&framebuffer, posX, posY, FRAME2_LINE_LEN, 1, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, posX, posY, 1, FRAME2_LINE_LEN, fillColor2);
+
+        tsgl_framebuffer_fill(&framebuffer, x - 1, y - 1, FRAME2_LINE_LEN, 1, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, x - 1, y - 1, 1, FRAME2_LINE_LEN, fillColor2);
 
         tsgl_framebuffer_pushFast(&framebuffer, x, y, sprites[i2]);
     }
