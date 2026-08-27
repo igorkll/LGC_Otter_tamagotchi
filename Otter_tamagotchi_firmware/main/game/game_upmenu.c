@@ -1,5 +1,6 @@
 #include "game_upmenu.h"
 #include "../gfx.h"
+#include "../hctl.h"
 
 static tsgl_sprite* sprites[GAME_UPMENU_COUNTS_COUNT];
 static bool sprites_active[GAME_UPMENU_COUNTS_COUNT];
@@ -19,7 +20,7 @@ void game_upmenu_init() {
     sprite_iconline = gfx_loadSprite("/storage/images/iconline.bmp");
 }
 
-void game_upmenu_process() {
+int game_upmenu_process() {
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
         current_selected--;
         if (current_selected < 0) {
@@ -33,6 +34,16 @@ void game_upmenu_process() {
             current_selected = 0;
         }
     }
+
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
+        current_selected = -1;
+    }
+
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
+        return current_selected;
+    }
+
+    return -1;
 }
 
 static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
@@ -71,7 +82,7 @@ int game_upmenu_currentSelected() {
 }
 
 void game_upmenu_setActivate(int index, bool state) {
-    sprites_active[index] = state
+    sprites_active[index] = state;
 }
 
 bool game_upmenu_isActivate(int index) {

@@ -12,6 +12,8 @@ static const char* game_rooms_images_paths[] = {
     "/storage/rooms/kitchen.bmp"
 };
 
+#define ROOMS_COUNT sizeof(game_rooms_images_paths)
+
 static const Game_state default_state = {
     .room = 0
 };
@@ -36,6 +38,7 @@ static void loadSprites() {
 
 static void game_save() {
     tsgl_filesystem_writeFile(game_state_path, &current_state, sizeof(Game_state));
+    ESP_LOGI(TAG, "game saved!");
 }
 
 static void game_load() {
@@ -44,6 +47,7 @@ static void game_load() {
     } else {
         memcpy(&current_state, &default_state, sizeof(Game_state));
     }
+    ESP_LOGI(TAG, "game loaded!");
 }
 
 // ------------------------------------ process
@@ -55,16 +59,19 @@ static void selectRoom(int index) {
 }
 
 static void start() {
-    selectRoom(current_state.room)
+    selectRoom(current_state.room);
 }
 
 static void process() {
     hctl_process();
-    game_upmenu_process();
-
     
+    int used = game_upmenu_process();
+    printf("%i\n", ROOMS_COUNT);
+    if (used >= 0 && used < ROOMS_COUNT) {
+        selectRoom(used);
+    }
 
-    if (current_state != old_state) {
+    if (memcmp(&current_state, &old_state, sizeof(Game_state)) != 0) {
         old_state = current_state;
         game_save();
     }
