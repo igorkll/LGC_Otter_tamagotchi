@@ -62,7 +62,7 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
             tsgl_rawcolor fillColor = sprites_active[i2] ? red : yellow;
             tsgl_framebuffer_fill(&framebuffer, x - 1, y - 1, iconWidth + 2, iconHeight + 2, fillColor);
         }
-        tsgl_framebuffer_push(&framebuffer, x, y, sprites[i2]);
+        tsgl_framebuffer_pushFast(&framebuffer, x, y, sprites[i2]);
     }
 }
 
@@ -70,8 +70,8 @@ void game_upmenu_draw() {
     int lineHeight = sprite_iconline->sprite->height;
     int bottomLineHeight = height - lineHeight;
 
-    tsgl_framebuffer_push(&framebuffer, 0, 0, sprite_iconline);
-    tsgl_framebuffer_push(&framebuffer, 0, bottomLineHeight, sprite_iconline);
+    tsgl_framebuffer_pushFast(&framebuffer, 0, 0, sprite_iconline);
+    tsgl_framebuffer_pushFast(&framebuffer, 0, bottomLineHeight, sprite_iconline);
     
     draw_icons(0, 0, current_selected);
     draw_icons(GAME_UPMENU_LINE_COUNTS_COUNT, bottomLineHeight, current_selected);
