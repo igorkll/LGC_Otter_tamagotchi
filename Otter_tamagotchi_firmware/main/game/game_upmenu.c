@@ -10,7 +10,7 @@ static tsgl_sprite* sprite_iconline;
 static int current_selected = 0;
 
 #define ICON_FAILBACK "/storage/icons/null.bmp"
-#define FRAME2_LINE_LEN 2
+#define FRAME2_LINE_LEN 5
 #define FRAME2_LINE_OFFSET (FRAME2_LINE_LEN - 1)
 
 void game_upmenu_reloadIcons() {
