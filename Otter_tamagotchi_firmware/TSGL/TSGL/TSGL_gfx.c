@@ -153,19 +153,6 @@ void tsgl_gfx_push(void* arg, TSGL_SET_REFERENCE(set), tsgl_pos x, tsgl_pos y, t
     }
 }
 
-void tsgl_gfx_pushFast(void* arg, TSGL_SET_REFERENCE(set), tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite) {
-    tsgl_pos spriteWidth = sprite->sprite->defaultWidth;
-    tsgl_pos spriteHeight = sprite->sprite->defaultHeight;
-
-    for (tsgl_pos posX = 0; posX < spriteWidth; posX++) {
-        tsgl_pos setPosX = posX + x;
-        for (tsgl_pos posY = 0; posY < spriteHeight; posY++) {
-            tsgl_pos setPosY = posY + y;
-            set(arg, setPosX, setPosY, tsgl_framebuffer_getWithoutCheckFast(sprite->sprite, posX, posY));
-        }
-    }
-}
-
 static size_t _len(const char* str) {
     size_t size = 0;
     while (str[size] != '\n' && str[size] != '\0') size++;
