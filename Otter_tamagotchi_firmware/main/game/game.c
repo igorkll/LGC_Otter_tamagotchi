@@ -79,12 +79,13 @@ static void run_myaaaa() {
     hctl_resetIdleTimer();
     hctl_setBacklight(BACKLIGHT_MAX);
 
-    gfx_drawCenteredScreenImage("/storage/easter_eggs/myaaaa.bmp");
+    gfx_drawCenteredScreenImage("/storage/myaaaa/myaaaa.bmp");
     tsgl_display_send(&display, &framebuffer);
 
     bool running = true;
 
-    tsgl_sound* sound = pushsound_play("/storage/easter_eggs/myaaaa.pcm", 8000);
+    tsgl_sound* sound = pushsound_play("/storage/myaaaa/myaaaa.pcm", 8000);
+    tsgl_sound_setVolume(sound, 6);
     sound->userData = (void*)running;
     tsgl_sound_attachCallback_end(sound, exit_myaaaa);
 
