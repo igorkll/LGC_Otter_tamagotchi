@@ -50,13 +50,13 @@ tsgl_sound* pushsound_load(const char* path, int sample_rate) {
     return current_sound;
 }
 
-tsgl_sound* pushsound_play(const char* path, int sample_rate, float volume) {
+tsgl_sound* pushsound_play(const char* path, int sample_rate) {
     tsgl_sound* current_sound = pushsound_load(path, sample_rate);
 
     tsgl_sound_output* sound_outputs[] = {sound_output};
     tsgl_sound_enableFreeOnEnd(current_sound, true);
     tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
-    tsgl_sound_setVolume(current_sound, volume * VOLUME_MUL);
+    tsgl_sound_setVolume(current_sound, VOLUME_MUL);
     tsgl_sound_play(current_sound);
 
     return current_sound;
