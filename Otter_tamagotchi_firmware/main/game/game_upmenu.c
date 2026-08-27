@@ -30,7 +30,7 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         int iconWidth = sprites[0]->sprite->width;
         int iconHeight = sprites[0]->sprite->height;
 
-        int x = (i * (width / 5));
+        int x = (width / 2) + (i * (width / 5));
         int y = offsetHeight + ((lineHeight / 2) - (iconHeight / 2));
 
         if (i2 == selected) {
@@ -48,5 +48,5 @@ void game_upmenu_draw() {
     tsgl_framebuffer_push(&framebuffer, 0, bottomLineHeight, sprite_iconline);
     
     draw_icons(0, 0, 2);
-    draw_icons(1, bottomLineHeight, 2);
+    draw_icons(GAME_UPMENU_LINE_COUNTS_COUNT, bottomLineHeight, 2);
 }
