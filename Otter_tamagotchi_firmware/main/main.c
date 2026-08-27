@@ -44,6 +44,10 @@ void app_main() {
     colormode = settings.driver->colormode;
 
     white = tsgl_color_raw(TSGL_WHITE, colormode);
+    red = tsgl_color_raw(TSGL_RED, colormode);
+    green = tsgl_color_raw(TSGL_GREEN, colormode);
+    yellow = tsgl_color_raw(TSGL_YELLOW, colormode);
+    blue = tsgl_color_raw(TSGL_BLUE, colormode);
     black = tsgl_color_raw(TSGL_BLACK, colormode);
 
     printsettings_title.fg = tsgl_color_raw(TSGL_RED, colormode);

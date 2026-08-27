@@ -38,6 +38,10 @@ extern tsgl_pos height;
 extern tsgl_colormode colormode;
 
 extern tsgl_rawcolor white;
+extern tsgl_rawcolor red;
+extern tsgl_rawcolor green;
+extern tsgl_rawcolor yellow;
+extern tsgl_rawcolor blue;
 extern tsgl_rawcolor black;
 
 #define TITLE_WIDTH 8
