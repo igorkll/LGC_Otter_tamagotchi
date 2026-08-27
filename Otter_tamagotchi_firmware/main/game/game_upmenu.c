@@ -2,7 +2,9 @@
 #include "../gfx.h"
 
 static tsgl_sprite* sprites[GAME_UPMENU_COUNTS_COUNT];
+static bool sprites_active[GAME_UPMENU_COUNTS_COUNT];
 static tsgl_sprite* sprite_iconline;
+static int current_selected = 0;
 
 void game_upmenu_init() {
     for (size_t i = 0; i < GAME_UPMENU_COUNTS_COUNT; i++) {
@@ -18,7 +20,7 @@ void game_upmenu_init() {
 }
 
 void game_upmenu_process() {
-    
+
 }
 
 static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
@@ -34,7 +36,8 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         int y = offsetHeight + ((lineHeight / 2) - (iconHeight / 2));
 
         if (i2 == selected) {
-            tsgl_framebuffer_fill(&framebuffer, x - 1, y - 1, iconWidth + 2, iconHeight + 2, yellow);
+            tsgl_rawcolor fillColor = sprites_active[i2] ? red : yellow;
+            tsgl_framebuffer_fill(&framebuffer, x - 1, y - 1, iconWidth + 2, iconHeight + 2, fillColor);
         }
         tsgl_framebuffer_push(&framebuffer, x, y, sprites[i2]);
     }
@@ -47,6 +50,18 @@ void game_upmenu_draw() {
     tsgl_framebuffer_push(&framebuffer, 0, 0, sprite_iconline);
     tsgl_framebuffer_push(&framebuffer, 0, bottomLineHeight, sprite_iconline);
     
-    draw_icons(0, 0, 2);
-    draw_icons(GAME_UPMENU_LINE_COUNTS_COUNT, bottomLineHeight, 2);
+    draw_icons(0, 0, current_selected);
+    draw_icons(GAME_UPMENU_LINE_COUNTS_COUNT, bottomLineHeight, current_selected);
+}
+
+int game_upmenu_currentSelected() {
+    return current_selected;
+}
+
+void game_upmenu_setActivate(int index, bool state) {
+    sprites_active[index] = state
+}
+
+bool game_upmenu_isActivate(int index) {
+    return sprites_active[index];
 }

@@ -19,6 +19,7 @@ static const Game_state default_state = {
 // ------------------------------------ vars
 
 Game_state current_state;
+Game_state old_state;
 static tsgl_benchmark benchmark;
 static tsgl_sprite* room_sprite = NULL;
 
@@ -45,6 +46,18 @@ static void game_load() {
     }
 }
 
+static void process() {
+    hctl_process();
+    game_upmenu_process();
+
+    
+
+    if (current_state != old_state) {
+        old_state = current_state;
+        game_save();
+    }
+}
+
 void game_start() {
     ESP_LOGI(TAG, "game started!");
     tsgl_benchmark_reset(&benchmark);
@@ -64,8 +77,7 @@ void game_start() {
     game_upmenu_init();
 
     while (true) {
-        hctl_process();
-        game_upmenu_process();
+        process();
 
         tsgl_benchmark_startRendering(&benchmark);
         loadSprites();

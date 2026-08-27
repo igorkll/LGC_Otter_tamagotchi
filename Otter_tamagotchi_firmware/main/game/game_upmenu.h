@@ -7,3 +7,7 @@
 void game_upmenu_init();
 void game_upmenu_process();
 void game_upmenu_draw();
+
+int game_upmenu_currentSelected();
+void game_upmenu_setActivate(int index, bool state);
+bool game_upmenu_isActivate(int index);
