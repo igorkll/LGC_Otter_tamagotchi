@@ -11,4 +11,12 @@ idf_component_register(
         "../TSGL/TSGL"
 )
 
+target_compile_options(${COMPONENT_LIB} PRIVATE
+    -O3
+    -ffast-math
+    -funsafe-math-optimizations
+    -funroll-loops
+    -fomit-frame-pointer
+)
+
 fatfs_create_spiflash_image(storage ../storage FLASH_IN_PROJECT)
