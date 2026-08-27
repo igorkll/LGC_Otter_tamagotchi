@@ -15,6 +15,7 @@ tsgl_pos height;
 tsgl_colormode colormode;
 
 tsgl_rawcolor white;
+tsgl_rawcolor orange;
 tsgl_rawcolor red;
 tsgl_rawcolor green;
 tsgl_rawcolor yellow;
@@ -49,6 +50,7 @@ void app_main() {
     colormode = settings.driver->colormode;
 
     white = tsgl_color_raw(TSGL_WHITE, colormode);
+    orange = tsgl_color_raw(TSGL_ORANGE, colormode);
     red = tsgl_color_raw(TSGL_RED, colormode);
     green = tsgl_color_raw(TSGL_GREEN, colormode);
     yellow = tsgl_color_raw(TSGL_YELLOW, colormode);
