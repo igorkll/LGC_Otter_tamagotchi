@@ -42,6 +42,7 @@ extern tsgl_rawcolor red;
 extern tsgl_rawcolor green;
 extern tsgl_rawcolor yellow;
 extern tsgl_rawcolor blue;
+extern tsgl_rawcolor transparent;
 extern tsgl_rawcolor black;
 
 #define TITLE_WIDTH 8

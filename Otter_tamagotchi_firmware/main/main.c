@@ -19,6 +19,7 @@ tsgl_rawcolor red;
 tsgl_rawcolor green;
 tsgl_rawcolor yellow;
 tsgl_rawcolor blue;
+tsgl_rawcolor transparent;
 tsgl_rawcolor black;
 
 tsgl_print_settings printsettings_title = {
@@ -52,6 +53,7 @@ void app_main() {
     green = tsgl_color_raw(TSGL_GREEN, colormode);
     yellow = tsgl_color_raw(TSGL_YELLOW, colormode);
     blue = tsgl_color_raw(TSGL_BLUE, colormode);
+    transparent = tsgl_color_raw(TRANSPARENT_COLOR, colormode);
     black = tsgl_color_raw(TSGL_BLACK, colormode);
 
     printsettings_title.fg = tsgl_color_raw(TSGL_RED, colormode);

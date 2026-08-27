@@ -58,10 +58,11 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         int x = ((width / 2) - (iconWidth / 2)) + ((i - (GAME_UPMENU_LINE_COUNTS_COUNT / 2)) * (width / 5));
         int y = offsetHeight + ((lineHeight / 2) - (iconHeight / 2));
 
-        if (i2 == selected) {
-            tsgl_rawcolor fillColor = sprites_active[i2] ? red : yellow;
-            tsgl_framebuffer_fill(&framebuffer, x - 1, y - 1, iconWidth + 2, iconHeight + 2, fillColor);
-        }
+        tsgl_rawcolor fillColor = transparent;
+        if (i2 == selected)
+            fillColor = sprites_active[i2] ? red : yellow;
+        
+        tsgl_framebuffer_fill(&framebuffer, x - 1, y - 1, iconWidth + 2, iconHeight + 2, fillColor);
         tsgl_framebuffer_pushFast(&framebuffer, x, y, sprites[i2]);
     }
 }
