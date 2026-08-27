@@ -30,7 +30,7 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         int iconWidth = sprites[0]->sprite->width;
         int iconHeight = sprites[0]->sprite->height;
 
-        int x = (width / 2) + (i * (width / 5));
+        int x = ((width / 2) - (iconWidth / 2)) + ((i - (GAME_UPMENU_LINE_COUNTS_COUNT / 2)) * (width / 5));
         int y = offsetHeight + ((lineHeight / 2) - (iconHeight / 2));
 
         if (i2 == selected) {
