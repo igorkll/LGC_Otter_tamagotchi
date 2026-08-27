@@ -10,7 +10,8 @@ static tsgl_sprite* sprite_iconline;
 static int current_selected = 0;
 
 #define ICON_FAILBACK "/storage/icons/null.bmp"
-#define FRAME2_LINE_LEN 8
+#define FRAME2_LINE_LEN 2
+#define FRAME2_LINE_OFFSET (FRAME2_LINE_LEN - 1)
 
 void game_upmenu_reloadIcons() {
     for (size_t i = 0; i < GAME_UPMENU_COUNTS_COUNT; i++) {
@@ -85,8 +86,11 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         tsgl_framebuffer_fill(&framebuffer, posX, posY, FRAME2_LINE_LEN, 1, fillColor2);
         tsgl_framebuffer_fill(&framebuffer, posX, posY, 1, FRAME2_LINE_LEN, fillColor2);
 
-        tsgl_framebuffer_fill(&framebuffer, pos2X - FRAME2_LINE_LEN, pos2Y, FRAME2_LINE_LEN, 1, fillColor2);
-        tsgl_framebuffer_fill(&framebuffer, pos2X, pos2Y - FRAME2_LINE_LEN, 1, FRAME2_LINE_LEN, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, pos2X - FRAME2_LINE_OFFSET, pos2Y, FRAME2_LINE_LEN, 1, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, pos2X, pos2Y - FRAME2_LINE_OFFSET, 1, FRAME2_LINE_LEN, fillColor2);
+
+        tsgl_framebuffer_fill(&framebuffer, posX, pos2Y, FRAME2_LINE_OFFSET, 1, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, posX, pos2Y - FRAME2_LINE_OFFSET, 1, FRAME2_LINE_LEN, fillColor2);
 
         tsgl_framebuffer_pushFast(&framebuffer, x, y, sprites[i2]);
     }
