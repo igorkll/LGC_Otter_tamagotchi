@@ -68,13 +68,13 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
 
 void game_upmenu_draw() {
     int lineHeight = sprite_iconline->sprite->height;
-    int bottomLineHeight = height - lineHeight;
+    int bottomLineY = height - lineHeight;
 
-    tsgl_framebuffer_pushFast(&framebuffer, 0, 0, sprite_iconline);
-    tsgl_framebuffer_pushFast(&framebuffer, 0, bottomLineHeight, sprite_iconline);
+    tsgl_framebuffer_push(&framebuffer, 0, 0, sprite_iconline);
+    tsgl_framebuffer_push(&framebuffer, 0, bottomLineY, sprite_iconline);
     
     draw_icons(0, 0, current_selected);
-    draw_icons(GAME_UPMENU_LINE_COUNTS_COUNT, bottomLineHeight, current_selected);
+    draw_icons(GAME_UPMENU_LINE_COUNTS_COUNT, bottomLineY, current_selected);
 }
 
 int game_upmenu_currentSelected() {
