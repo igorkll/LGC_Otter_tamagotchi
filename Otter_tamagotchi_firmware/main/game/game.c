@@ -2,6 +2,7 @@
 #include "../gfx.h"
 #include "../hctl.h"
 #include "../pushsound.h"
+#include "../funcs.h"
 #include "game_upmenu.h"
 
 // ------------------------------------ consts
@@ -27,6 +28,10 @@ static tsgl_sprite* room_sprite = NULL;
 
 // ------------------------------------ functions
 
+const char* game_getCurrentRoom() {
+    return game_rooms_images[current_state.room];
+}
+
 static void loadSprites() {
     static int room_sprite_old_index = 0;
     if (room_sprite == NULL || current_state.room != room_sprite_old_index) {
@@ -34,7 +39,7 @@ static void loadSprites() {
         if (room_sprite != NULL) tsgl_bmp_free(room_sprite);
 
         char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/storage/rooms/%s.bmp", game_rooms_images[current_state.room])
+        slnprintf(path, MAX_PATH_LEN, "/storage/rooms/%s.bmp", game_getCurrentRoom());
         room_sprite = gfx_loadSprite(path);
     }
 }

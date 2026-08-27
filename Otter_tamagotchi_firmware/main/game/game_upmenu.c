@@ -1,4 +1,5 @@
 #include "game_upmenu.h"
+#include "game.h"
 #include "../gfx.h"
 #include "../hctl.h"
 #include "../funcs.h"
@@ -8,18 +9,27 @@ static bool sprites_active[GAME_UPMENU_COUNTS_COUNT];
 static tsgl_sprite* sprite_iconline;
 static int current_selected = 0;
 
-void game_upmenu_init() {
+#define ICON_FAILBACK "/storage/icons/null.bmp"
+
+void game_upmenu_reloadIcons() {
     for (size_t i = 0; i < GAME_UPMENU_COUNTS_COUNT; i++) {
         char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/storage/icons/%i.bmp", i);
+        slnprintf(path, MAX_PATH_LEN, "/storage/icons/%s/%i.bmp", game_getCurrentRoom(), i);
+        if (!tsgl_filesystem_exists(path)) slnprintf(path, MAX_PATH_LEN, "/storage/icons/%i.bmp", i);
+        if (!tsgl_filesystem_exists(path)) slnprintf(path, MAX_PATH_LEN, ICON_FAILBACK, i);
+
+        if (sprites[i] != NULL)
+            tsgl_bmp_free(sprites[i]);
 
         tsgl_sprite* sprite = gfx_loadSprite(path);
-        if (sprite == NULL) {
-            sprite = gfx_loadSprite("/storage/icons/null.bmp");
-        }
+        if (sprite == NULL) sprite = gfx_loadSprite(ICON_FAILBACK);
         sprites[i] = sprite;
     }
+}
+
+void game_upmenu_init() {
     sprite_iconline = gfx_loadSprite("/storage/images/iconline.bmp");
+    game_upmenu_reloadIcons();
 }
 
 int game_upmenu_process() {
