@@ -1,7 +1,9 @@
 #pragma once
 #include "main.h"
 
-#define TRANSPARENT_COLOR tsgl_color_pack(254, 125, 33)
+//#define TRANSPARENT_COLOR tsgl_color_pack(254, 125, 33)
+//#define TRANSPARENT_COLOR tsgl_color_pack(160, 160, 160)
+#define TRANSPARENT_COLOR tsgl_color_pack(64, 64, 64)
 
 tsgl_sprite* gfx_loadSprite(const char* path);
 
