@@ -25,16 +25,16 @@ static const tsgl_pos game_rooms_person_pos_x[] = {
     (WIDTH / 4) * 3,
     64,
     64,
-    64,
-    64
+    WIDTH / 4,
+    (WIDTH / 4) * 3
 };
 
 static const tsgl_pos game_rooms_person_pos_y[] = {
-    90,
+    (HEIGHT / 4) * 2,
     64,
     64,
-    64,
-    64
+    (HEIGHT / 4) - 20,
+    HEIGHT / 4
 };
 
 #define ROOMS_COUNT (sizeof(game_rooms_images) / sizeof(&game_rooms_images))
@@ -165,7 +165,7 @@ static void process() {
 }
 
 static void drawPerson() {
-    gfx_drawCenteredImageSpriteWithTransparentSupport(game_rooms_person_pos_x[current_state.person], game_rooms_person_pos_y[current_state.person], person_sprite);
+    gfx_drawCenteredImageSpriteWithTransparentSupport(game_rooms_person_pos_x[current_state.room], game_rooms_person_pos_y[current_state.room], person_sprite);
 }
 
 void game_start() {
