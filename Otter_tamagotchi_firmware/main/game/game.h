@@ -20,4 +20,5 @@ typedef struct {
 extern Game_state current_state;
 
 const char* game_getCurrentRoom();
+const char* game_getPersonRoom();
 void game_start();

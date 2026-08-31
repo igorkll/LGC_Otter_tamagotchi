@@ -345,6 +345,24 @@ void tsgl_framebuffer_pushFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_p
     }
 }
 
+void tsgl_framebuffer_pushFastWithTransparentSupport(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite) {
+    framebuffer->changed = true;
+    
+    tsgl_pos spriteWidth = sprite->sprite->defaultWidth;
+    tsgl_pos spriteHeight = sprite->sprite->defaultHeight;
+
+    for (tsgl_pos posX = 0; posX < spriteWidth; posX++) {
+        tsgl_pos setPosX = posX + x;
+        for (tsgl_pos posY = 0; posY < spriteHeight; posY++) {
+            tsgl_pos setPosY = posY + y;
+            tsgl_rawcolor color = tsgl_framebuffer_getWithoutCheckFast(sprite->sprite, posX, posY);
+            if (sprite->transparentColor.invalid || !tsgl_color_rawColorCompare(color, sprite->transparentColor, sprite->sprite->colorsize)) {
+                tsgl_framebuffer_setWithoutCheckFast(framebuffer, setPosX, setPosY, color);
+            }
+        }
+    }
+}
+
 void tsgl_framebuffer_line(tsgl_framebuffer* framebuffer, tsgl_pos x1, tsgl_pos y1, tsgl_pos x2, tsgl_pos y2, tsgl_rawcolor color, tsgl_pos stroke) {
     tsgl_gfx_line(framebuffer, (TSGL_SET_REFERENCE())tsgl_framebuffer_setWithoutCheck, (TSGL_FILL_REFERENCE())tsgl_framebuffer_fill, x1, y1, x2, y2, color, stroke, framebuffer->viewport_minX, framebuffer->viewport_minY, framebuffer->viewport_maxX, framebuffer->viewport_maxY);
 }

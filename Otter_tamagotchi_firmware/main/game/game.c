@@ -8,12 +8,17 @@
 // ------------------------------------ consts
 
 static const char* game_state_path = "/storage/game_state";
+
 static const char* game_rooms_images[] = {
     "bedroom",
     "kitchen",
     "gaming",
     "toilet",
     "yard"
+};
+
+static const char* game_persons_images[] = {
+    "otter"
 };
 
 static const tsgl_pos game_rooms_person_pos_x[] = {
@@ -35,7 +40,8 @@ static const tsgl_pos game_rooms_person_pos_y[] = {
 #define ROOMS_COUNT (sizeof(game_rooms_images) / sizeof(&game_rooms_images))
 
 static const Game_state default_state = {
-    .room = 0
+    .room = game_room_bedroom,
+    .person = game_person_otter
 };
 
 // ------------------------------------ vars
@@ -44,11 +50,16 @@ Game_state current_state;
 Game_state old_state;
 static tsgl_benchmark benchmark;
 static tsgl_sprite* room_sprite = NULL;
+static tsgl_sprite* person_sprite = NULL;
 
 // ------------------------------------ functions
 
 const char* game_getCurrentRoom() {
     return game_rooms_images[current_state.room];
+}
+
+const char* game_getPersonRoom() {
+    return game_persons_images[current_state.person];
 }
 
 static void loadSprites() {
@@ -60,6 +71,16 @@ static void loadSprites() {
         char path[MAX_PATH_LEN];
         slnprintf(path, MAX_PATH_LEN, "/storage/rooms/%s.bmp", game_getCurrentRoom());
         room_sprite = gfx_loadSprite(path);
+    }
+
+    static int room_person_old_index = 0;
+    if (person_sprite == NULL || current_state.person != room_person_old_index) {
+        room_person_old_index = current_state.person;
+        if (person_sprite != NULL) tsgl_bmp_free(person_sprite);
+
+        char path[MAX_PATH_LEN];
+        slnprintf(path, MAX_PATH_LEN, "/storage/persons/%s.bmp", game_getPersonRoom());
+        person_sprite = gfx_loadSprite(path);
     }
 }
 
@@ -143,9 +164,8 @@ static void process() {
     }
 }
 
-const void drawPerson() {
-    game_rooms_person_pos_x
-    
+static void drawPerson() {
+    gfx_drawCenteredImageSpriteWithTransparentSupport(game_rooms_person_pos_x[current_state.person], game_rooms_person_pos_y[current_state.person], person_sprite);
 }
 
 void game_start() {

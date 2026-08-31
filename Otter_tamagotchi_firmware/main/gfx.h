@@ -12,4 +12,5 @@ void gfx_drawCenteredImage(tsgl_pos x, tsgl_pos y, const char* path);
 void gfx_drawCenteredScreenImage(const char* path);
 
 void gfx_drawCenteredImageSprite(tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite);
+void gfx_drawCenteredImageSpriteWithTransparentSupport(tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite);
 void gfx_drawCenteredScreenImageSprite(tsgl_sprite* sprite);

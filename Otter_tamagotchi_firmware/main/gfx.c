@@ -30,6 +30,10 @@ void gfx_drawCenteredImageSprite(tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite) {
     tsgl_framebuffer_pushFast(&framebuffer, x - (sprite->sprite->width / 2), y - (sprite->sprite->height / 2), sprite);
 }
 
+void gfx_drawCenteredImageSpriteWithTransparentSupport(tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite) {
+    tsgl_framebuffer_pushFastWithTransparentSupport(&framebuffer, x - (sprite->sprite->width / 2), y - (sprite->sprite->height / 2), sprite);
+}
+
 void gfx_drawCenteredScreenImageSprite(tsgl_sprite* sprite) {
     gfx_drawCenteredImageSprite(
         width / 2,
