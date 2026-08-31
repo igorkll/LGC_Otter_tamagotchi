@@ -125,6 +125,7 @@ void tsgl_sound_attachCallback_end(tsgl_sound* sound, void(*callback)(tsgl_sound
     tsgl_sound_output* tsgl_sound_newDacOutput(dac_channel_t channel);
 #endif
 tsgl_sound_output* tsgl_sound_newLedcOutput(gpio_num_t pin);
+void tsgl_sound_rawSetOutput(tsgl_sound_output* output, uint8_t value);
 void tsgl_sound_addOutputValue(tsgl_sound_output* output, int value);
 void tsgl_sound_flushOutput(tsgl_sound_output* output); //mixes all added samples and sets the output voltages
 void tsgl_sound_freeOutput(tsgl_sound_output* output);
