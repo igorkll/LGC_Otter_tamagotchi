@@ -6,6 +6,7 @@
 #include "pushsound.h"
 
 #define TARGET_FPS 20
+#define DEBUG_TEXT true
 
 const char* TAG = "otter_tamagotchi";
 
@@ -45,7 +46,14 @@ static void bootlogo(int index, const char* title) {
     char path[MAX_PATH_LEN];
     slnprintf(path, MAX_PATH_LEN, "/storage/bootlogo/bgrt%i.bmp", index);
     gfx_drawCenteredScreenImage(path);
+
+    if (DEBUG_TEXT) {
+        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
+        tsgl_framebuffer_fillWithoutCheck(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
+    }
+
     tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
+
 }
 
 static void setBacklightAndWait(uint8_t value) {

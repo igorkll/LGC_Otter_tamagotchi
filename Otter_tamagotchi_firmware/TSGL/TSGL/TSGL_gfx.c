@@ -185,11 +185,12 @@ static int _getYMode(tsgl_print_settings sets) {
     return yMode;
 }
 
-static tsgl_pos _getY(tsgl_print_settings sets, tsgl_pos y, tsgl_pos iy) {
-    switch (_getYMode(sets)) {
-        case 0:
+static tsgl_pos _getY(tsgl_print_settings sets, tsgl_pos y, tsgl_pos iy, tsgl_pos scaleCharHeight) {
+    switch (sets.locationMode) {
+        case tsgl_print_start_bottom:
             return y - iy;
-        case 1:
+
+        case tsgl_print_start_top:
             return y + iy;
     }
     return 0;
@@ -351,7 +352,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                 uint16_t blockCheckY = charHeight / scaleCharHeight;
                 if (blockCheckY < 1 || set == NULL) blockCheckY = 1;
                 for (tsgl_pos iy = 0; iy < scaleCharHeight; iy++) {
-                    tsgl_pos checkPy = _getY(sets, y, iy);
+                    tsgl_pos checkPy = _getY(sets, y, iy, scaleCharHeight);
                     if (checkPy < minY) continue;
                     if (checkPy >= maxY) break;
                     if (sets._clamp) {
@@ -371,7 +372,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                         }
                         if (px > textArea.right) textArea.right = px;
 
-                        tsgl_pos py = _getY(sets, y, iy);
+                        tsgl_pos py = _getY(sets, y, iy, scaleCharHeight);
 
                         float findedCount = 0;
                         float allCount = 0;
@@ -383,11 +384,12 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                                 if (oiy >= charHeight) break;
 
                                 size_t index = 0;
-                                switch (_getYMode(sets)) {
-                                    case 0:
+                                switch (sets.locationMode) {
+                                    case tsgl_print_start_bottom:
                                         index = oix + (((charHeight - 1) - oiy) * charWidth);
                                         break;
-                                    case 1:
+                            
+                                    case tsgl_print_start_top:
                                         index = oix + (oiy * charWidth);
                                         break;
                                 }
