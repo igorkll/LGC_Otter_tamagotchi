@@ -42,6 +42,8 @@ typedef struct {
     tsgl_pos width; //the width and height can be specified so that the text does not bulge out of the frame
     tsgl_pos height;
     bool globalCentering; //place the content in the middle of the box
+    bool globalCenteringX;
+    bool globalCenteringY;
     tsgl_print_alignment alignment;
     
     tsgl_pos _minWidth;

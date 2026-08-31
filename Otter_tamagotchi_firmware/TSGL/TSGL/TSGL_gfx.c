@@ -238,10 +238,12 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
     if (sets.multiline) {
         tsgl_pos oldX = x;
 
-        if (sets.globalCentering) {
+        if (sets.globalCentering || sets.globalCenteringX || sets.globalCenteringY) {
             tsgl_print_settings lSets;
             memcpy(&lSets, &sets, sizeof(tsgl_print_settings));
             lSets.globalCentering = false;
+            lSets.globalCenteringX = false;
+            lSets.globalCenteringY = false;
             lSets._minWidth = oldX;
             lSets._maxWidth = (oldX + sets.width) - 1;
             lSets._clamp = true;
@@ -259,8 +261,8 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             }
 
             tsgl_print_textArea textArea = tsgl_font_getTextArea(x, y, lSets, text);
-            if (sets.width > 0) x = (x + (sets.width / 2)) - (textArea.width / 2);
-            if (sets.height > 0) y = (y + (sets.height / 2)) - (textArea.height / 2);
+            if (sets.width > 0 && (sets.globalCentering || sets.globalCenteringX)) x = (x + (sets.width / 2)) - (textArea.width / 2);
+            if (sets.height > 0 && (sets.globalCentering || sets.globalCenteringY)) y = (y + (sets.height / 2)) - (textArea.height / 2);
         }
 
         tsgl_print_settings newSets = {
@@ -298,16 +300,16 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
         textArea.left = TSGL_POS_MAX;
         textArea.right = TSGL_POS_MIN;
 
-        if (set != NULL) printf("-- %i %i - %i %i\n", x, y, sets.width, sets.height);
+        //if (set != NULL) printf("-- %i %i - %i %i\n", x, y, sets.width, sets.height);
         tsgl_pos currentY = y;
         for (size_t i = 0; i < realsize;) {
-            if (set != NULL) printf("--- %i %i\n", x, currentY);
+            //if (set != NULL) printf("--- %i %i\n", x, currentY);
             tsgl_print_textArea lTextArea = tsgl_gfx_text(arg, set, fill, x, currentY, newSets, text + i, minX, minY, maxX, maxY);
             if (lTextArea.top < textArea.top) textArea.top = lTextArea.top;
             if (lTextArea.bottom > textArea.bottom) textArea.bottom = lTextArea.bottom;
             if (lTextArea.left < textArea.left) textArea.left = lTextArea.left;
             if (lTextArea.right > textArea.right) textArea.right = lTextArea.right;
-            if (set != NULL) printf("---- %i %i %i %i %s %i\n", lTextArea.top, lTextArea.bottom, lTextArea.left, lTextArea.right, text + i, lTextArea.strlen);
+            //if (set != NULL) printf("---- %i %i %i %i %s %i\n", lTextArea.top, lTextArea.bottom, lTextArea.left, lTextArea.right, text + i, lTextArea.strlen);
             i += lTextArea.strlen + 1;
             if (*((const char*)(text + i)) == '\0') break;
             switch (sets.locationMode) {

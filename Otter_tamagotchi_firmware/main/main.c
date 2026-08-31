@@ -31,7 +31,7 @@ tsgl_print_settings printsettings_title = {
     .locationMode = tsgl_print_start_bottom,
     .localLocationMode = tsgl_print_localLocationMode_center,
     .multiline = true,
-    .globalCentering = true,
+    .globalCenteringX = true,
 
     .font = DejaVuSerif,
     .targetWidth = TITLE_WIDTH,
@@ -106,7 +106,7 @@ void app_main() {
     height = framebuffer.height;
 
     printsettings_title.width = width;
-    printsettings_title.height = TITLE_HEIGHT;
+    printsettings_title.height = height;
 
     bootlogo(0, "\xCC\xE8\xED\xE8\x20\xC2\xFB\xE4\xF0\xE0\x20\x3E\x3C"); // "Мини Выдра ><"
 
