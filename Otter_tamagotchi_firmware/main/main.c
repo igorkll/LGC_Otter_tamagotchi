@@ -29,7 +29,7 @@ tsgl_rawcolor black;
 tsgl_print_settings printsettings_title = {
     .alignment = tsgl_print_alignment_center,
     .locationMode = tsgl_print_start_top,
-    .localLocationMode = tsgl_print_localLocationMode_bottom,
+    .localLocationMode = tsgl_print_localLocationMode_from_localtionMode,
     .multiline = true,
     .globalCentering = true,
 
@@ -51,9 +51,9 @@ static void bootlogo(int index, const char* title) {
         tsgl_print_locationMode _old = printsettings_title.locationMode;
 
         printsettings_title.locationMode = tsgl_print_start_bottom;
-        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN - 5, printsettings_title, title);
+        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN - 60, printsettings_title, title);
         tsgl_framebuffer_fillWithoutCheck(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
-        tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN - 5, printsettings_title, title);
+        tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN - 60, printsettings_title, title);
 
         printf("tsgl_framebuffer_text 1 %i %i\n", textArea.width, textArea.height);
 

@@ -160,13 +160,22 @@ static size_t _len(const char* str) {
 }
 
 static tsgl_pos _getY(tsgl_print_settings sets, tsgl_pos y, tsgl_pos iy, tsgl_pos scaleCharHeight, tsgl_pos maxScaleCharHeight) {
-    bool shiftIy = 
-        (sets.localLocationMode == tsgl_print_localLocationMode_bottom && sets.locationMode == tsgl_print_start_top) ||
-        (sets.localLocationMode == tsgl_print_localLocationMode_top && sets.locationMode == tsgl_print_start_bottom);
+    switch (sets.locationMode) {
+        case tsgl_print_start_bottom:
+            iy = (maxScaleCharHeight - 1) - iy;
+            break;
+
+        case tsgl_print_start_top:
+            break;
+    }
+
+    bool shiftIy =
+        sets.localLocationMode == tsgl_print_localLocationMode_bottom ||
+        (sets.localLocationMode == tsgl_print_localLocationMode_from_localtionMode && sets.locationMode == tsgl_print_start_bottom);
 
     tsgl_pos riy = iy;
     if (shiftIy) {
-        riy += maxScaleCharHeight - scaleCharHeight;
+        riy -= maxScaleCharHeight - scaleCharHeight;
     }
 
     switch (sets.locationMode) {
@@ -345,9 +354,9 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                 uint16_t scaleCharWidth = ((float)charWidth * sets._scaleX * sets.scaleX) + 0.5;
                 uint16_t scaleCharHeight = ((float)charHeight * sets._scaleY * sets.scaleY) + 0.5;
                 uint16_t blockCheckX = charWidth / scaleCharWidth;
-                if (blockCheckX < 1 || set == NULL) blockCheckX = 1;
+                if (blockCheckX < 1 || set == NULL) blockCheckX = 0;
                 uint16_t blockCheckY = charHeight / scaleCharHeight;
-                if (blockCheckY < 1 || set == NULL) blockCheckY = 1;
+                if (blockCheckY < 1 || set == NULL) blockCheckY = 0;
                 for (tsgl_pos iy = 0; iy < scaleCharHeight; iy++) {
                     tsgl_pos checkPy = _getY(sets, y, iy, scaleCharHeight, maxScaleCharHeight);
                     if (checkPy < minY) continue;
@@ -380,18 +389,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                                 tsgl_pos oiy = (((float)iy) / sets._scaleY / sets.scaleY) + liy;
                                 if (oiy >= charHeight) break;
 
-                                size_t index = 0;
-                                switch (sets.locationMode) {
-                                    case tsgl_print_start_bottom:
-                                        index = oix + (((charHeight - 1) - oiy) * charWidth);
-                                        break;
-                            
-                                    case tsgl_print_start_top:
-                                        index = oix + (oiy * charWidth);
-                                        break;
-                                }
-                                
-                                if (tsgl_font_parse(sets.font, charPosition, index))
+                                if (tsgl_font_parse(sets.font, charPosition, oix + (oiy * charWidth)))
                                     findedCount++;
                                 allCount++;
                             }
