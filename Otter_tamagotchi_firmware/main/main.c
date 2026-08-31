@@ -37,6 +37,9 @@ tsgl_print_settings printsettings_title = {
     .targetWidth = TITLE_WIDTH,
     .targetHeight = TITLE_HEIGHT,
 
+    .width = WIDTH,
+    .height = HEIGHT,
+
     .fill = TSGL_INVALID_RAWCOLOR,
     .bg = TSGL_INVALID_RAWCOLOR
 };
@@ -64,7 +67,7 @@ static void bootlogo(int index, const char* title) {
         printf("tsgl_framebuffer_text 2 %i %i\n", textArea.width, textArea.height);
     }
 
-    tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
+    tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_MARGIN, printsettings_title, title);
 
 }
 
@@ -105,9 +108,6 @@ void app_main() {
     width = framebuffer.width;
     height = framebuffer.height;
 
-    printsettings_title.width = width;
-    printsettings_title.height = height;
-
     bootlogo(0, "\xCC\xE8\xED\xE8\x20\xC2\xFB\xE4\xF0\xE0\x20\x3E\x3C"); // "Мини Выдра ><"
 
     settings.init_state = tsgl_display_init_framebuffer;
@@ -133,7 +133,7 @@ void app_main() {
     tsgl_delay(3000);
 
     setBacklightAndWait(BACKLIGHT_OFF);
-    bootlogo(1, "1\n2\n3");
+    bootlogo(1, "\xCF\xF0\xEE\xE3\xF0\xE0\xEC\xEC\xE8\xF1\xF2\xF1\xEA\xE8\xE5\n\xCB\xE0\xEF\xEA\xE8\n\x55\x77\x55"); // Программистские Лапки UwU
     tsgl_display_send(&display, &framebuffer);
     tsgl_delay(100);
 
