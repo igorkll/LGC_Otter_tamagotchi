@@ -298,7 +298,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
         textArea.left = TSGL_POS_MAX;
         textArea.right = TSGL_POS_MIN;
 
-        if (set != NULL) printf("-- %i %i\n", x, y);
+        if (set != NULL) printf("-- %i %i - %i %i\n", x, y, sets.width, sets.height);
         tsgl_pos currentY = y;
         for (size_t i = 0; i < realsize;) {
             if (set != NULL) printf("--- %i %i\n", x, currentY);
@@ -326,14 +326,15 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
     }
 
     textArea.left = x;
+    textArea.right = x;
     switch (sets.locationMode) {
         case tsgl_print_start_bottom:
-            textArea.top = TSGL_POS_MAX;
+            textArea.top = y;
             textArea.bottom = y;
             break;
         case tsgl_print_start_top:
             textArea.top = y;
-            textArea.bottom = TSGL_POS_MIN;
+            textArea.bottom = y;
             break;
     }
     size_t strsize = _len(text);
@@ -386,7 +387,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                             if (px > sets._maxWidth) break;
                         }
                         if (px > textArea.right) textArea.right = px;
-                        
+
                         float findedCount = 0;
                         float allCount = 0;
                         for (tsgl_pos lix = 0; lix < blockCheckX; lix++) {
