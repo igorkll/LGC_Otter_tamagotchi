@@ -23,18 +23,18 @@ static const char* game_persons_images[] = {
 
 static const tsgl_pos game_rooms_person_pos_x[] = {
     (WIDTH / 4) * 3,
-    64,
-    64,
     WIDTH / 4,
-    (WIDTH / 4) * 3
+    WIDTH / 4,
+    (WIDTH / 4) * 2,
+    WIDTH / 4
 };
 
 static const tsgl_pos game_rooms_person_pos_y[] = {
-    (HEIGHT / 4) * 2,
-    64,
-    64,
-    (HEIGHT / 4) - 20,
-    HEIGHT / 4
+    (HEIGHT / 4) * 3,
+    (HEIGHT / 4) * 3,
+    (HEIGHT / 4) * 3,
+    (HEIGHT / 4) * 3,
+    (HEIGHT / 4) * 2
 };
 
 #define ROOMS_COUNT (sizeof(game_rooms_images) / sizeof(&game_rooms_images))
