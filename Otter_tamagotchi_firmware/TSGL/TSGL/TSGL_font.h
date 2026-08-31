@@ -11,7 +11,8 @@ typedef enum {
 typedef enum {
     tsgl_print_localLocationMode_from_localtionMode = 0,
     tsgl_print_localLocationMode_bottom,
-    tsgl_print_localLocationMode_top
+    tsgl_print_localLocationMode_top,
+    tsgl_print_localLocationMode_center
 } tsgl_print_localLocationMode;
 
 typedef enum {

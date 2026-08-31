@@ -50,6 +50,7 @@ static void bootlogo(int index, const char* title) {
     if (DEBUG_TEXT) {
         tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
         tsgl_framebuffer_fillWithoutCheck(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
+        printf("%i %i\n", textArea.width, textArea.height);
     }
 
     tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
@@ -121,7 +122,7 @@ void app_main() {
     tsgl_delay(3000);
 
     setBacklightAndWait(BACKLIGHT_OFF);
-    bootlogo(1, "Firmware Developer");
+    bootlogo(1, "Developer");
     tsgl_display_send(&display, &framebuffer);
     tsgl_delay(100);
 

@@ -330,9 +330,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             if (charPosition > 0) {
                 uint16_t charHeight = tsgl_font_height(sets.font, chr);
                 uint16_t scaleCharHeight = ((float)charHeight * sets._scaleY * sets.scaleY) + 0.5;
-                if (scaleCharHeight > maxScaleCharHeight) {
-                    maxScaleCharHeight = scaleCharHeight;
-                }
+                if (scaleCharHeight > maxScaleCharHeight) maxScaleCharHeight = scaleCharHeight;
             }
         }
     }
