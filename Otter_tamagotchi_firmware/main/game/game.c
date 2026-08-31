@@ -22,7 +22,7 @@ static const char* game_persons_images[] = {
 };
 
 static const tsgl_pos game_rooms_person_pos_x[] = {
-    64,
+    (WIDTH / 4) * 3,
     64,
     64,
     64,
@@ -30,7 +30,7 @@ static const tsgl_pos game_rooms_person_pos_x[] = {
 };
 
 static const tsgl_pos game_rooms_person_pos_y[] = {
-    64,
+    90,
     64,
     64,
     64,
@@ -183,8 +183,8 @@ void game_start() {
         loadSprites();
         //tsgl_framebuffer_clear(&framebuffer, black);
         gfx_drawCenteredScreenImageSprite(room_sprite);
-        game_upmenu_draw();
         drawPerson();
+        game_upmenu_draw();
         tsgl_benchmark_endRendering(&benchmark);
 
         tsgl_benchmark_startSend(&benchmark);

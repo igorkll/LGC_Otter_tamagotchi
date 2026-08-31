@@ -3,8 +3,8 @@
 tsgl_display_settings settings = {
     .driver = &st7735_rgb666,
     .swapRGB = false,
-    .width = 128,
-    .height = 160,
+    .width = WIDTH,
+    .height = HEIGHT,
     .swapXY = false,
     .flipX = true,
     .flipY = true,

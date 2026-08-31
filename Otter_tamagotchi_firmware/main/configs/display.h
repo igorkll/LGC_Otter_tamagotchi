@@ -2,6 +2,9 @@
 
 #include <TSGL_drivers/st77XX.h>
 
+#define WIDTH 128
+#define HEIGHT 160
+
 #define FREQ 20000000
 #define BUFFER TSGL_RAM
 
