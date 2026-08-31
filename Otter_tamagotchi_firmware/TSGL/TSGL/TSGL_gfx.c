@@ -159,14 +159,14 @@ static size_t _len(const char* str) {
     return size;
 }
 
-static tsgl_pos _getY(tsgl_print_settings sets, tsgl_pos y, tsgl_pos iy, tsgl_pos scaleCharHeight) {
-    bool reverseIy = 
+static tsgl_pos _getY(tsgl_print_settings sets, tsgl_pos y, tsgl_pos iy, tsgl_pos scaleCharHeight, tsgl_pos maxScaleCharHeight) {
+    bool shiftIy = 
         (sets.localLocationMode == tsgl_print_localLocationMode_bottom && sets.locationMode == tsgl_print_start_top) ||
         (sets.localLocationMode == tsgl_print_localLocationMode_top && sets.locationMode == tsgl_print_start_bottom);
 
     tsgl_pos riy = iy;
-    if (reverseIy) {
-        riy = scaleCharHeight - iy - 1;
+    if (shiftIy) {
+        riy += maxScaleCharHeight - scaleCharHeight;
     }
 
     switch (sets.locationMode) {
@@ -321,6 +321,22 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
     size_t strsize = _len(text);
     textArea.strlen = strsize;
     tsgl_pos offset = 0;
+
+    uint16_t maxScaleCharHeight = 0;
+    for (size_t i = 0; i < strsize; i++) {
+        char chr = text[i];
+        if (chr != ' ') {
+            size_t charPosition = tsgl_font_find(sets.font, chr);
+            if (charPosition > 0) {
+                uint16_t charHeight = tsgl_font_height(sets.font, chr);
+                uint16_t scaleCharHeight = ((float)charHeight * sets._scaleY * sets.scaleY) + 0.5;
+                if (scaleCharHeight > maxScaleCharHeight) {
+                    maxScaleCharHeight = scaleCharHeight;
+                }
+            }
+        }
+    }
+
     for (size_t i = 0; i < strsize; i++) {
         char chr = text[i];
         if (chr != ' ') {
@@ -335,7 +351,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                 uint16_t blockCheckY = charHeight / scaleCharHeight;
                 if (blockCheckY < 1 || set == NULL) blockCheckY = 1;
                 for (tsgl_pos iy = 0; iy < scaleCharHeight; iy++) {
-                    tsgl_pos checkPy = _getY(sets, y, iy, scaleCharHeight);
+                    tsgl_pos checkPy = _getY(sets, y, iy, scaleCharHeight, maxScaleCharHeight);
                     if (checkPy < minY) continue;
                     if (checkPy >= maxY) break;
                     if (sets._clamp) {
@@ -355,7 +371,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                         }
                         if (px > textArea.right) textArea.right = px;
 
-                        tsgl_pos py = _getY(sets, y, iy, scaleCharHeight);
+                        tsgl_pos py = _getY(sets, y, iy, scaleCharHeight, maxScaleCharHeight);
 
                         float findedCount = 0;
                         float allCount = 0;
