@@ -22,6 +22,7 @@
 #include <TSGL_keyboard.h>
 #include <TSGL_sound.h>
 #include <TSGL_fonts/font.h>
+#include <TSGL_fonts/dejavu/DejaVuSerif.h>
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/timers.h>

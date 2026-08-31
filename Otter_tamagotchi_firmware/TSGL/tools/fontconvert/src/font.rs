@@ -135,5 +135,5 @@ pub fn process_font(path: &Path, contrast: u8, px: f32) {
     let parsed_font = parse(&path, px, contrast, &charmaps);
     fs::write(path.with_extension("fnt"), &parsed_font).expect("failed to write");
     fs::write(path.with_extension("h"), generate_header(&name, &info)).expect("failed to write");
-    fs::write(path.with_extension("c"), generate_executable(&parsed_font, &String::from("font"), &info)).expect("failed to write");
+    fs::write(path.with_extension("c"), generate_executable(&parsed_font, &name, &info)).expect("failed to write");
 }

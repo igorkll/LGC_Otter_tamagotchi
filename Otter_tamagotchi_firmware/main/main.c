@@ -31,7 +31,7 @@ tsgl_print_settings printsettings_title = {
     .multiline = true,
     .globalCentering = true,
 
-    .font = font,
+    .font = DejaVuSerif,
     .targetWidth = TITLE_WIDTH,
     .targetHeight = TITLE_HEIGHT,
 
@@ -87,7 +87,7 @@ void app_main() {
     printsettings_title.width = width;
     printsettings_title.height = TITLE_HEIGHT;
 
-    bootlogo(0, "Mini Otter");
+    bootlogo(0, "\xCC\xE8\xED\xE8\x20\xC2\xFB\xE4\xF0\xE0\x20\x3E\x3C"); // "Мини Выдра ><"
 
     settings.init_state = tsgl_display_init_framebuffer;
     settings.init_framebuffer_ptr = framebuffer.buffer;
