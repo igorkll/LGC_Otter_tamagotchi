@@ -159,39 +159,22 @@ static size_t _len(const char* str) {
     return size;
 }
 
-static int _getYMode(tsgl_print_settings sets) {
-    uint8_t yMode = 0;
-    switch (sets.localLocationMode) {
-        case tsgl_print_localLocationMode_from_localtionMode:
-            switch (sets.locationMode) {
-                case tsgl_print_start_bottom:
-                    yMode = 0;
-                    break;
-                case tsgl_print_start_top:
-                    yMode = 1;
-                    break;
-            }
-            break;
+static tsgl_pos _getY(tsgl_print_settings sets, tsgl_pos y, tsgl_pos iy, tsgl_pos scaleCharHeight) {
+    bool reverseIy = 
+        (sets.localLocationMode == tsgl_print_localLocationMode_bottom && sets.locationMode == tsgl_print_start_top) ||
+        (sets.localLocationMode == tsgl_print_localLocationMode_top && sets.locationMode == tsgl_print_start_bottom);
 
-        case tsgl_print_localLocationMode_bottom:
-            yMode = 0;
-            break;
-
-        case tsgl_print_localLocationMode_top:
-            yMode = 1;
-            break;
+    tsgl_pos riy = iy;
+    if (reverseIy) {
+        riy = scaleCharHeight - iy - 1;
     }
 
-    return yMode;
-}
-
-static tsgl_pos _getY(tsgl_print_settings sets, tsgl_pos y, tsgl_pos iy, tsgl_pos scaleCharHeight) {
     switch (sets.locationMode) {
         case tsgl_print_start_bottom:
-            return y - iy;
+            return y - riy;
 
         case tsgl_print_start_top:
-            return y + iy;
+            return y + riy;
     }
     return 0;
 }
