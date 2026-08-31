@@ -356,7 +356,7 @@ void tsgl_framebuffer_pushFastWithTransparentSupport(tsgl_framebuffer* framebuff
         for (tsgl_pos posY = 0; posY < spriteHeight; posY++) {
             tsgl_pos setPosY = posY + y;
             tsgl_rawcolor color = tsgl_framebuffer_getWithoutCheckFast(sprite->sprite, posX, posY);
-            if (sprite->transparentColor.invalid || memcmp(color.arr, sprite->transparentColor.arr, 3) == 0) {
+            if (sprite->transparentColor.invalid || memcmp(color.arr, sprite->transparentColor.arr, 3) != 0) {
                 tsgl_framebuffer_setWithoutCheckFast(framebuffer, setPosX, setPosY, color);
             }
         }
