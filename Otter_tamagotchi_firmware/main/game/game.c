@@ -16,6 +16,22 @@ static const char* game_rooms_images[] = {
     "yard"
 };
 
+static const tsgl_pos game_rooms_person_pos_x[] = {
+    64,
+    64,
+    64,
+    64,
+    64
+};
+
+static const tsgl_pos game_rooms_person_pos_y[] = {
+    64,
+    64,
+    64,
+    64,
+    64
+};
+
 #define ROOMS_COUNT (sizeof(game_rooms_images) / sizeof(&game_rooms_images))
 
 static const Game_state default_state = {
@@ -127,6 +143,11 @@ static void process() {
     }
 }
 
+const void drawPerson() {
+    game_rooms_person_pos_x
+    
+}
+
 void game_start() {
     ESP_LOGI(TAG, "game started!");
     tsgl_benchmark_reset(&benchmark);
@@ -143,6 +164,7 @@ void game_start() {
         //tsgl_framebuffer_clear(&framebuffer, black);
         gfx_drawCenteredScreenImageSprite(room_sprite);
         game_upmenu_draw();
+        drawPerson();
         tsgl_benchmark_endRendering(&benchmark);
 
         tsgl_benchmark_startSend(&benchmark);

@@ -3,6 +3,7 @@
 #include "hctl.h"
 #include "game/game.h"
 #include "funcs.h"
+#include "pushsound.h"
 
 #define TARGET_FPS 20
 
@@ -86,7 +87,7 @@ void app_main() {
     printsettings_title.width = width;
     printsettings_title.height = TITLE_HEIGHT;
 
-    bootlogo(0, "Otter");
+    bootlogo(0, "Mini Otter");
 
     settings.init_state = tsgl_display_init_framebuffer;
     settings.init_framebuffer_ptr = framebuffer.buffer;
@@ -105,11 +106,13 @@ void app_main() {
     hctl_init();
     tsgl_delay(100);
 
+    pushsound_play("/storage/bootlogo/startup.pcm", 8000);
+
     setBacklightAndWait(BACKLIGHT_MAX);
     tsgl_delay(3000);
 
     setBacklightAndWait(BACKLIGHT_OFF);
-    bootlogo(1, "Developer");
+    bootlogo(1, "Firmware Developer");
     tsgl_display_send(&display, &framebuffer);
     tsgl_delay(100);
 
