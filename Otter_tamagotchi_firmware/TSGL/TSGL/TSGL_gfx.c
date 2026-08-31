@@ -159,6 +159,42 @@ static size_t _len(const char* str) {
     return size;
 }
 
+static int _getYMode(tsgl_print_settings sets) {
+    uint8_t yMode = 0;
+    switch (sets.localLocationMode) {
+        case tsgl_print_localLocationMode_from_localtionMode:
+            switch (sets.locationMode) {
+                case tsgl_print_start_bottom:
+                    yMode = 0;
+                    break;
+                case tsgl_print_start_top:
+                    yMode = 1;
+                    break;
+            }
+            break;
+
+        case tsgl_print_localLocationMode_bottom:
+            yMode = 0;
+            break;
+
+        case tsgl_print_localLocationMode_top:
+            yMode = 1;
+            break;
+    }
+
+    return yMode;
+}
+
+static tsgl_pos _getY(tsgl_print_settings sets, tsgl_pos y, tsgl_pos iy) {
+    switch (_getYMode(sets)) {
+        case 0:
+            return y - iy;
+        case 1:
+            return y + iy;
+    }
+    return 0;
+}
+
 tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_REFERENCE(fill), tsgl_pos x, tsgl_pos y, tsgl_print_settings sets, const char* text, tsgl_pos minX, tsgl_pos minY, tsgl_pos maxX, tsgl_pos maxY) {
     size_t realsize = strlen(text);
     tsgl_print_textArea textArea = {
@@ -243,7 +279,8 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             ._scaleY = sets._scaleY,
             .spacing = sets.spacing,
             .spaceSize = sets.spaceSize,
-            .locationMode = sets.locationMode
+            .locationMode = sets.locationMode,
+            .localLocationMode = sets.localLocationMode
         };
 
         switch (sets.locationMode) {
@@ -314,21 +351,15 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                 uint16_t blockCheckY = charHeight / scaleCharHeight;
                 if (blockCheckY < 1 || set == NULL) blockCheckY = 1;
                 for (tsgl_pos iy = 0; iy < scaleCharHeight; iy++) {
-                    tsgl_pos checkPy = 0;
-                    switch (sets.locationMode) {
-                        case tsgl_print_start_bottom:
-                            checkPy = y - iy;
-                            break;
-                        case tsgl_print_start_top:
-                            checkPy = y + iy;
-                            break;
-                    }
+                    tsgl_pos checkPy = _getY(sets, y, iy);
                     if (checkPy < minY) continue;
                     if (checkPy >= maxY) break;
                     if (sets._clamp) {
                         if (checkPy < sets._minHeight) continue;
                         if (checkPy > sets._maxHeight) break;
                     }
+                    if (checkPy < textArea.top) textArea.top = checkPy;
+                    if (checkPy > textArea.bottom) textArea.bottom = checkPy;
 
                     for (tsgl_pos ix = 0; ix < scaleCharWidth; ix++) {
                         tsgl_pos px = x + ix + offset;
@@ -340,39 +371,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                         }
                         if (px > textArea.right) textArea.right = px;
 
-                        uint8_t yMode = 0;
-                        switch (sets.localLocationMode) {
-                            case tsgl_print_localLocationMode_from_localtionMode:
-                                switch (sets.locationMode) {
-                                    case tsgl_print_start_bottom:
-                                        yMode = 0;
-                                        break;
-                                    case tsgl_print_start_top:
-                                        yMode = 1;
-                                        break;
-                                }
-                                break;
-
-                            case tsgl_print_localLocationMode_bottom:
-                                yMode = 0;
-                                break;
-
-                            case tsgl_print_localLocationMode_top:
-                                yMode = 1;
-                                break;
-                        }
-
-                        tsgl_pos py = 0;
-                        switch (yMode) {
-                            case 0:
-                                py = y - iy;
-                                if (py < textArea.top) textArea.top = py;
-                                break;
-                            case 1:
-                                py = y + iy;
-                                if (py > textArea.bottom) textArea.bottom = py;
-                                break;
-                        }
+                        tsgl_pos py = _getY(sets, y, iy);
 
                         float findedCount = 0;
                         float allCount = 0;
@@ -384,7 +383,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                                 if (oiy >= charHeight) break;
 
                                 size_t index = 0;
-                                switch (yMode) {
+                                switch (_getYMode(sets)) {
                                     case 0:
                                         index = oix + (((charHeight - 1) - oiy) * charWidth);
                                         break;
