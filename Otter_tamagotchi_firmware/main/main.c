@@ -28,7 +28,7 @@ tsgl_rawcolor black;
 
 tsgl_print_settings printsettings_title = {
     .alignment = tsgl_print_alignment_center,
-    .locationMode = tsgl_print_start_top,
+    .locationMode = tsgl_print_start_bottom,
     .localLocationMode = tsgl_print_localLocationMode_center,
     .multiline = true,
     .globalCentering = true,
@@ -52,14 +52,14 @@ static void bootlogo(int index, const char* title) {
 
         printsettings_title.locationMode = tsgl_print_start_bottom;
         tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN - 60, printsettings_title, title);
-        tsgl_framebuffer_fillWithoutCheck(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
+        tsgl_framebuffer_fill(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
         tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN - 60, printsettings_title, title);
 
         printf("tsgl_framebuffer_text 1 %i %i\n", textArea.width, textArea.height);
 
         printsettings_title.locationMode = _old;
         textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
-        tsgl_framebuffer_fillWithoutCheck(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
+        tsgl_framebuffer_fill(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
 
         printf("tsgl_framebuffer_text 2 %i %i\n", textArea.width, textArea.height);
     }
@@ -133,7 +133,7 @@ void app_main() {
     tsgl_delay(3000);
 
     setBacklightAndWait(BACKLIGHT_OFF);
-    bootlogo(1, "Developer");
+    bootlogo(1, "1\n2\n3");
     tsgl_display_send(&display, &framebuffer);
     tsgl_delay(100);
 

@@ -10,6 +10,7 @@ if __name__ == '__main__':
         text = sys.argv[1]
         print(to_hex_escapes(text))
     else:
-        text = input("Type russian string: ")
-        print(to_hex_escapes(text))
+        while True:
+            text = input("Type russian string: ")
+            print(to_hex_escapes(text))
 
