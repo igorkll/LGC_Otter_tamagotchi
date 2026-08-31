@@ -11,8 +11,10 @@
 
 #define BUTTON_0_PIN 9 //pressing when power is applied will switch to bootloader mode, this is a smart solution
 #define BUTTON_1_PIN 10
-#define BUTTON_2_PIN 20
-#define BUTTON_3_PIN 21
+//#define BUTTON_2_PIN 20
+//#define BUTTON_3_PIN 21
+#define BUTTON_2_PIN 2
+#define BUTTON_3_PIN 3
 
 #define SPEAKER_PIN 1
 
