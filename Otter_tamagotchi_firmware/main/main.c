@@ -55,11 +55,13 @@ static void bootlogo(int index, const char* title) {
         tsgl_framebuffer_fillWithoutCheck(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
         tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN - 5, printsettings_title, title);
 
+        printf("tsgl_framebuffer_text 1 %i %i\n", textArea.width, textArea.height);
+
         printsettings_title.locationMode = _old;
         textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
         tsgl_framebuffer_fillWithoutCheck(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
 
-        printf("tsgl_framebuffer_text %i %i\n", textArea.width, textArea.height);
+        printf("tsgl_framebuffer_text 2 %i %i\n", textArea.width, textArea.height);
     }
 
     tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
