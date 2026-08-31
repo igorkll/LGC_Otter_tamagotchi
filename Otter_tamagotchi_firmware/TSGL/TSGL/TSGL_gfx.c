@@ -298,14 +298,18 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
         textArea.left = TSGL_POS_MAX;
         textArea.right = TSGL_POS_MIN;
 
+        if (set != NULL) printf("-- %i %i\n", x, y);
         tsgl_pos currentY = y;
         for (size_t i = 0; i < realsize;) {
+            if (set != NULL) printf("--- %i %i\n", x, currentY);
             tsgl_print_textArea lTextArea = tsgl_gfx_text(arg, set, fill, x, currentY, newSets, text + i, minX, minY, maxX, maxY);
             if (lTextArea.top < textArea.top) textArea.top = lTextArea.top;
             if (lTextArea.bottom > textArea.bottom) textArea.bottom = lTextArea.bottom;
             if (lTextArea.left < textArea.left) textArea.left = lTextArea.left;
             if (lTextArea.right > textArea.right) textArea.right = lTextArea.right;
+            if (set != NULL) printf("---- %i %i %i %i %s %i\n", lTextArea.top, lTextArea.bottom, lTextArea.left, lTextArea.right, text + i, lTextArea.strlen);
             i += lTextArea.strlen + 1;
+            if (*((const char*)(text + i)) == '\0') break;
             switch (sets.locationMode) {
                 case tsgl_print_start_bottom:
                     currentY -= lTextArea.height + spacing;
@@ -363,15 +367,15 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                 uint16_t blockCheckY = charHeight / scaleCharHeight;
                 if (blockCheckY < 1 || set == NULL) blockCheckY = 0;
                 for (tsgl_pos iy = 0; iy < scaleCharHeight; iy++) {
-                    tsgl_pos checkPy = _getY(sets, y, iy, scaleCharHeight, maxScaleCharHeight);
-                    if (checkPy < minY) continue;
-                    if (checkPy >= maxY) break;
+                    tsgl_pos py = _getY(sets, y, iy, scaleCharHeight, maxScaleCharHeight);
+                    if (py < minY) continue;
+                    if (py >= maxY) break;
                     if (sets._clamp) {
-                        if (checkPy < sets._minHeight) continue;
-                        if (checkPy > sets._maxHeight) break;
+                        if (py < sets._minHeight) continue;
+                        if (py > sets._maxHeight) break;
                     }
-                    if (checkPy < textArea.top) textArea.top = checkPy;
-                    if (checkPy > textArea.bottom) textArea.bottom = checkPy;
+                    if (py < textArea.top) textArea.top = py;
+                    if (py > textArea.bottom) textArea.bottom = py;
 
                     for (tsgl_pos ix = 0; ix < scaleCharWidth; ix++) {
                         tsgl_pos px = x + ix + offset;
@@ -382,9 +386,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                             if (px > sets._maxWidth) break;
                         }
                         if (px > textArea.right) textArea.right = px;
-
-                        tsgl_pos py = _getY(sets, y, iy, scaleCharHeight, maxScaleCharHeight);
-
+                        
                         float findedCount = 0;
                         float allCount = 0;
                         for (tsgl_pos lix = 0; lix < blockCheckX; lix++) {

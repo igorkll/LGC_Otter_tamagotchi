@@ -6,7 +6,7 @@
 #include "pushsound.h"
 
 #define TARGET_FPS 20
-#define DEBUG_TEXT true
+#define DEBUG_TEXT false
 
 const char* TAG = "otter_tamagotchi";
 
