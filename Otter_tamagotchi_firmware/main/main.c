@@ -48,9 +48,18 @@ static void bootlogo(int index, const char* title) {
     gfx_drawCenteredScreenImage(path);
 
     if (DEBUG_TEXT) {
-        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
+        tsgl_print_locationMode _old = printsettings_title.locationMode;
+
+        printsettings_title.locationMode = tsgl_print_start_bottom;
+        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN - 5, printsettings_title, title);
         tsgl_framebuffer_fillWithoutCheck(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
-        printf("%i %i\n", textArea.width, textArea.height);
+        tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN - 5, printsettings_title, title);
+
+        printsettings_title.locationMode = _old;
+        textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
+        tsgl_framebuffer_fillWithoutCheck(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
+
+        printf("tsgl_framebuffer_text %i %i\n", textArea.width, textArea.height);
     }
 
     tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
