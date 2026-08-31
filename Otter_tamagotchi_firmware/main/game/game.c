@@ -23,8 +23,8 @@ static const char* game_persons_images[] = {
 
 static const tsgl_pos game_rooms_person_pos_x[] = {
     (WIDTH / 4) * 3,
-    WIDTH / 4,
-    WIDTH / 4,
+    (WIDTH / 4) - 20,
+    (WIDTH / 4) + 20,
     (WIDTH / 4) * 2,
     WIDTH / 4
 };
