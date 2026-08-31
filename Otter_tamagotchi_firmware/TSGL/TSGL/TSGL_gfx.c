@@ -340,13 +340,35 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                         }
                         if (px > textArea.right) textArea.right = px;
 
+                        uint8_t yMode = 0;
+                        switch (sets.localLocationMode) {
+                            case tsgl_print_localLocationMode_from_localtionMode:
+                                switch (sets.locationMode) {
+                                    case tsgl_print_start_bottom:
+                                        yMode = 0;
+                                        break;
+                                    case tsgl_print_start_top:
+                                        yMode = 1;
+                                        break;
+                                }
+                                break;
+
+                            case tsgl_print_localLocationMode_bottom:
+                                yMode = 0;
+                                break;
+
+                            case tsgl_print_localLocationMode_top:
+                                yMode = 1;
+                                break;
+                        }
+
                         tsgl_pos py = 0;
-                        switch (sets.locationMode) {
-                            case tsgl_print_start_bottom:
+                        switch (yMode) {
+                            case 0:
                                 py = y - iy;
                                 if (py < textArea.top) textArea.top = py;
                                 break;
-                            case tsgl_print_start_top:
+                            case 1:
                                 py = y + iy;
                                 if (py > textArea.bottom) textArea.bottom = py;
                                 break;
@@ -362,11 +384,11 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                                 if (oiy >= charHeight) break;
 
                                 size_t index = 0;
-                                switch (sets.locationMode) {
-                                    case tsgl_print_start_bottom:
+                                switch (yMode) {
+                                    case 0:
                                         index = oix + (((charHeight - 1) - oiy) * charWidth);
                                         break;
-                                    case tsgl_print_start_top:
+                                    case 1:
                                         index = oix + (oiy * charWidth);
                                         break;
                                 }

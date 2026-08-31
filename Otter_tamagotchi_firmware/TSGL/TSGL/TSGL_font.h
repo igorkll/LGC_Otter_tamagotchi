@@ -9,6 +9,12 @@ typedef enum {
 } tsgl_print_locationMode;
 
 typedef enum {
+    tsgl_print_localLocationMode_from_localtionMode = 0,
+    tsgl_print_localLocationMode_bottom,
+    tsgl_print_localLocationMode_top
+} tsgl_print_localLocationMode;
+
+typedef enum {
     tsgl_print_alignment_left = 0,
     tsgl_print_alignment_center,
     tsgl_print_alignment_right,
@@ -28,6 +34,7 @@ typedef struct {
     tsgl_pos spacing; //the distance between characters. if 0, is calculated automatically
     tsgl_pos spaceSize; //the size of the space character. if 0, is calculated automatically
     tsgl_print_locationMode locationMode;
+    tsgl_print_localLocationMode localLocationMode;
 
     // the following options only work if multiline is enabled
     bool multiline;
