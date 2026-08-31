@@ -29,7 +29,7 @@ tsgl_rawcolor black;
 tsgl_print_settings printsettings_title = {
     .alignment = tsgl_print_alignment_center,
     .locationMode = tsgl_print_start_top,
-    .localLocationMode = tsgl_print_localLocationMode_from_localtionMode,
+    .localLocationMode = tsgl_print_localLocationMode_center,
     .multiline = true,
     .globalCentering = true,
 

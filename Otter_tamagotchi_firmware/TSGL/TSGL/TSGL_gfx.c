@@ -169,23 +169,28 @@ static tsgl_pos _getY(tsgl_print_settings sets, tsgl_pos y, tsgl_pos iy, tsgl_po
             break;
     }
 
+    tsgl_pos riy = 0;
+    switch (sets.locationMode) {
+        case tsgl_print_start_bottom:
+            riy = y - iy;
+            break;
+
+        case tsgl_print_start_top:
+            riy = y + iy;
+            break;
+    }
+
     bool shiftIy =
         sets.localLocationMode == tsgl_print_localLocationMode_bottom ||
         (sets.localLocationMode == tsgl_print_localLocationMode_from_localtionMode && sets.locationMode == tsgl_print_start_bottom);
 
-    tsgl_pos riy = iy;
     if (shiftIy) {
-        riy -= maxScaleCharHeight - scaleCharHeight;
+        riy += maxScaleCharHeight - scaleCharHeight;
+    } else if (sets.localLocationMode == tsgl_print_localLocationMode_center) {
+        riy += (maxScaleCharHeight - scaleCharHeight) / 2;
     }
 
-    switch (sets.locationMode) {
-        case tsgl_print_start_bottom:
-            return y - riy;
-
-        case tsgl_print_start_top:
-            return y + riy;
-    }
-    return 0;
+    return riy;
 }
 
 tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_REFERENCE(fill), tsgl_pos x, tsgl_pos y, tsgl_print_settings sets, const char* text, tsgl_pos minX, tsgl_pos minY, tsgl_pos maxX, tsgl_pos maxY) {
