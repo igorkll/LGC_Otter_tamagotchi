@@ -13,6 +13,16 @@ fn gen_ascii(start: char, end: char) -> String {
     return result;
 }
 
+fn char_to_cp1251(c: char) -> u8 {
+    match c {
+        'Ё' => 0xA8,
+        'ё' => 0xB8,
+        'А'..='Я' => (c as u32 - 'А' as u32) as u8 + 0xC0,
+        'а'..='я' => (c as u32 - 'а' as u32) as u8 + 0xE0,
+        _ => c as u8,
+    }
+}
+
 fn parse(path: &Path, px: f32, contrast:u8, charmaps: &Vec<String>) -> Vec<u8> {
     let font = fs::read(path).unwrap();
     let font = font.as_slice();
@@ -28,7 +38,7 @@ fn parse(path: &Path, px: f32, contrast:u8, charmaps: &Vec<String>) -> Vec<u8> {
     for charmap in charmaps {
         for (_i, c) in charmap.chars().enumerate() {
             let (metrics, bitmap) = font.rasterize(c, px);
-            out.push(c as u8);
+            out.push(char_to_cp1251(c));
             out.push((metrics.width >> 8) as u8);
             out.push((metrics.width & 0xff) as u8);
             out.push((metrics.height >> 8) as u8);
