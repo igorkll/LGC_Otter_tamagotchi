@@ -10,6 +10,7 @@
 typedef int16_t tsgl_pos;
 typedef struct tsgl_sprite tsgl_sprite;
 typedef struct tsgl_display tsgl_display;
+typedef float tsgl_colormode_raw;
 
 #define TSGL_VERSION "0.5.0"
 

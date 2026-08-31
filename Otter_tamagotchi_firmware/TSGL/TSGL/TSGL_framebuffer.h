@@ -14,7 +14,7 @@ typedef struct {
     tsgl_pos defaultWidth;
     tsgl_pos defaultHeight;
     tsgl_pos rotationWidth;
-    float colorsize;
+    tsgl_colormode_raw colorsize;
     bool floatColorsize;
     uint8_t rotation;
     uint8_t realRotation;
