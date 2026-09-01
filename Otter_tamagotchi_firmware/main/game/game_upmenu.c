@@ -7,7 +7,7 @@
 static tsgl_sprite* sprites[GAME_UPMENU_COUNTS_COUNT];
 static bool sprites_active[GAME_UPMENU_COUNTS_COUNT];
 static tsgl_sprite* sprite_iconline;
-static int current_selected = 0;
+static int current_selected = -1;
 
 #define ICON_FAILBACK "/storage/icons/null.bmp"
 #define FRAME2_LINE_LEN 5
