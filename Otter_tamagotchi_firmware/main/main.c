@@ -6,7 +6,7 @@
 #include "pushsound.h"
 
 #define TARGET_FPS 20
-#define DEBUG_TEXT false
+#define DEBUG_TEXT true
 
 const char* TAG = "otter_tamagotchi";
 
@@ -31,7 +31,7 @@ tsgl_print_settings printsettings_title = {
     .locationMode = tsgl_print_start_bottom,
     .localLocationMode = tsgl_print_localLocationMode_center,
     .multiline = true,
-    .globalCenteringX = true,
+    .globalAlignmentX = tsgl_print_alignment_right,
 
     .font = DejaVuSerif,
     .targetWidth = TITLE_WIDTH,
@@ -51,24 +51,22 @@ static void bootlogo(int index, const char* title) {
     gfx_drawCenteredScreenImage(path);
 
     if (DEBUG_TEXT) {
+        printsettings_title.fill = yellow;
+        printsettings_title.fg = green;
+        printsettings_title.bg = blue;
+
         tsgl_print_locationMode _old = printsettings_title.locationMode;
 
         printsettings_title.locationMode = tsgl_print_start_bottom;
         tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN - 60, printsettings_title, title);
-        tsgl_framebuffer_fill(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
-        tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN - 60, printsettings_title, title);
-
-        printf("tsgl_framebuffer_text 1 %i %i\n", textArea.width, textArea.height);
+        printf("tsgl_framebuffer_text 1 %i %i %i %i (%i %i)\n", textArea.top, textArea.bottom, textArea.left, textArea.right, textArea.width, textArea.height);
 
         printsettings_title.locationMode = _old;
         textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
-        tsgl_framebuffer_fill(&framebuffer, textArea.left, textArea.top, textArea.width, textArea.height, yellow);
-
-        printf("tsgl_framebuffer_text 2 %i %i\n", textArea.width, textArea.height);
+        printf("tsgl_framebuffer_text 2 %i %i %i %i (%i %i)\n", textArea.top, textArea.bottom, textArea.left, textArea.right, textArea.width, textArea.height);
+    } else {
+        tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_MARGIN, printsettings_title, title);
     }
-
-    tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_MARGIN, printsettings_title, title);
-
 }
 
 static void setBacklightAndWait(uint8_t value) {
