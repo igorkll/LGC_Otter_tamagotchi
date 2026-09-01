@@ -1,6 +1,8 @@
 #pragma once
 #include "../main.h"
 
+#define ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT 5
+
 typedef enum {
     game_room_bedroom = 0,
     game_room_kitchen
@@ -26,6 +28,7 @@ typedef struct {
 
 extern Game_state current_state;
 
+void game_selectRoom(int index);
 const Room* game_getCurrentRoom();
 bool game_isLockedInRoom();
 const char* game_getCurrentPerson();

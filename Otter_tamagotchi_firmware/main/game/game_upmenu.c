@@ -16,8 +16,12 @@ static int current_selected = -1;
 void game_upmenu_reloadIcons() {
     for (size_t i = 0; i < GAME_UPMENU_COUNTS_COUNT; i++) {
         char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/storage/icons/%s/%i.bmp", game_getCurrentRoom()->background, i);
-        if (!tsgl_filesystem_exists(path)) slnprintf(path, MAX_PATH_LEN, "/storage/icons/%i.bmp", i);
+        if (game_isLockedInRoom() && i < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT) {
+            slnprintf(path, MAX_PATH_LEN, "/storage/icons/locked.bmp");
+        } else {
+            slnprintf(path, MAX_PATH_LEN, "/storage/icons/%s/%i.bmp", game_getCurrentRoom()->background, i);
+            if (!tsgl_filesystem_exists(path)) slnprintf(path, MAX_PATH_LEN, "/storage/icons/%i.bmp", i);
+        }
         if (!tsgl_filesystem_exists(path)) slnprintf(path, MAX_PATH_LEN, ICON_FAILBACK, i);
 
         if (sprites[i] != NULL)

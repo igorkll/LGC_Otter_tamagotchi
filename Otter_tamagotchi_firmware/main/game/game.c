@@ -51,7 +51,6 @@ static const char* game_persons_images[] = {
 };
 
 #define ROOMS_COUNT TSGL_CALC_ARRSIZE(rooms)
-#define ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT 5
 
 static const Game_state default_state = {
     .room = game_room_bedroom,
@@ -127,7 +126,7 @@ static void game_load() {
 
 // ------------------------------------ process
 
-static void selectRoom(int index) {
+void game_selectRoom(int index) {
     current_state.room = index;
     for (size_t i = 0; i < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT; i++) {
         game_upmenu_setActivate(i, index == i);
@@ -149,7 +148,7 @@ static void selectRoom(int index) {
 }
 
 static void start() {
-    selectRoom(current_state.room);
+    game_selectRoom(current_state.room);
 }
 
 static void exit_myaaaa(tsgl_sound* sound) {
@@ -178,6 +177,7 @@ static void run_myaaaa() {
     }
     
     tsgl_benchmark_reset(&benchmark);
+    game_selectRoom(5);
 }
 
 static void process() {
@@ -196,7 +196,7 @@ static void process() {
     
     int used = game_upmenu_process();
     if (used >= 0 && used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT) {
-        selectRoom(used);
+        game_selectRoom(used);
     }
 
     if (memcmp(&current_state, &old_state, sizeof(Game_state)) != 0) {
