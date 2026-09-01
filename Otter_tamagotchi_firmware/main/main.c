@@ -33,7 +33,7 @@ tsgl_print_settings printsettings_title = {
     .height = HEIGHT - (TITLE_MARGIN * 2),
     .globalAlignmentX = tsgl_print_alignment_center,
     .globalAlignmentY = tsgl_print_alignment_right,
-    .alignment = tsgl_print_alignment_right,
+    .alignment = tsgl_print_alignment_center,
 
     // start from bottom
     .locationMode = tsgl_print_start_top,
@@ -46,7 +46,8 @@ tsgl_print_settings printsettings_title = {
     .targetHeight = TITLE_HEIGHT,
 
     .fill = TSGL_INVALID_RAWCOLOR,
-    .bg = TSGL_INVALID_RAWCOLOR
+    .bg = TSGL_INVALID_RAWCOLOR,
+    .stroke_thickness = 1
 };
 
 static void bootlogo(int index, const char* title) {
@@ -67,11 +68,6 @@ static void bootlogo(int index, const char* title) {
     #endif
 }
 
-static void setBacklightAndWait(uint8_t value) {
-    hctl_setBacklight(value);
-    while (hctl_isBacklightChangeProcess()) tsgl_delay(50);
-}
-
 void app_main() {
     esp_log_level_set("TSGL_bmp", ESP_LOG_WARN);
     esp_log_level_set("TSGL_framebuffer", ESP_LOG_WARN);
@@ -88,6 +84,7 @@ void app_main() {
     black = tsgl_color_raw(TSGL_BLACK, colormode);
 
     printsettings_title.fg = tsgl_color_raw(TSGL_RED, colormode);
+    printsettings_title.stroke = tsgl_color_raw(TSGL_ORANGE, colormode);
 
     settings.backlight_init = true;
     settings.backlight_pin = BL;
@@ -125,16 +122,19 @@ void app_main() {
 
     pushsound_play("/storage/bootlogo/startup.pcm", 8000);
 
-    setBacklightAndWait(BACKLIGHT_MAX);
-    tsgl_delay(3000);
+    hctl_setBacklightAndWait(BACKLIGHT_MAX);
+    tsgl_delay(STARTUP_IMAGE_CHANGE_DELAY);
 
-    setBacklightAndWait(BACKLIGHT_OFF);
+    hctl_setBacklightAndWait(BACKLIGHT_OFF);
     bootlogo(1, "\xCF\xF0\xEE\xE3\xF0\xE0\xEC\xEC\xE8\xF1\xF2\xF1\xEA\xE8\xE5\n\xCB\xE0\xEF\xEA\xE8\n\x55\x77\x55"); // Программистские Лапки UwU
     tsgl_display_send(&display, &framebuffer);
     tsgl_delay(100);
 
-    setBacklightAndWait(BACKLIGHT_MAX);
-    tsgl_delay(3000);
+    hctl_setBacklightAndWait(BACKLIGHT_MAX);
+    tsgl_delay(STARTUP_IMAGE_CHANGE_DELAY);
+
+    hctl_setBacklightAndWait(BACKLIGHT_OFF);
+    tsgl_delay(STARTUP_IMAGE_CHANGE_DELAY);
 
     game_start();
 }

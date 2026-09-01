@@ -64,6 +64,11 @@ bool hctl_isBacklightChangeProcess() {
     return currentBackgroundValue != targetBackgroundValue;
 }
 
+void hctl_setBacklightAndWait(uint8_t value) {
+    hctl_setBacklight(value);
+    while (hctl_isBacklightChangeProcess()) tsgl_delay(50);
+}
+
 void hctl_process() {
     tsgl_keyboard_readAll(&keyboard);
 

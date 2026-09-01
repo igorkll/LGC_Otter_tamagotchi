@@ -294,7 +294,9 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             .spacing = sets.spacing,
             .spaceSize = sets.spaceSize,
             .locationMode = sets.locationMode,
-            .localLocationMode = sets.localLocationMode
+            .localLocationMode = sets.localLocationMode,
+            .stroke = sets.stroke,
+            .stroke_thickness = sets.stroke_thickness
         };
 
         switch (sets.locationMode) {
@@ -436,10 +438,22 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                                 allCount++;
                             }
                         }
-                        if (findedCount / allCount > 0.5) {
-                            if (set != NULL && !sets.fg.invalid) set(arg, px, py, sets.fg);
-                        } else {
-                            if (set != NULL && !sets.bg.invalid) set(arg, px, py, sets.bg);
+
+                        if (set != NULL) {
+                            tsgl_rawcolor color = TSGL_INVALID_RAWCOLOR;
+                            if (findedCount / allCount > 0.5) {
+                                if (!sets.stroke.invalid && sets.stroke_thickness > 0) {
+                                    for (tsgl_pos ox = -sets.stroke_thickness; ox <= sets.stroke_thickness; ox++) {
+                                        for (tsgl_pos oy = -sets.stroke_thickness; oy <= sets.stroke_thickness; oy++) {
+                                            if (ox != 0 || oy != 0) set(arg, px + ox, py + oy, sets.stroke);
+                                        }
+                                    }
+                                }
+                                color = sets.fg;
+                            } else {
+                                color = sets.bg;
+                            }
+                            if (!color.invalid) set(arg, px, py, color);
                         }
                     }
                 }

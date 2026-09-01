@@ -176,6 +176,7 @@ void game_start() {
     game_upmenu_init();
     start();
 
+    bool firstGameFrame = true;
     while (true) {
         process();
 
@@ -195,5 +196,10 @@ void game_start() {
             tsgl_benchmark_print(&benchmark);
         #endif
         tsgl_benchmark_wait(&benchmark, TARGET_FPS);
+
+        if (firstGameFrame) {
+            hctl_setBacklightAndWait(BACKLIGHT_MAX);
+            firstGameFrame = false;
+        }
     }
 }

@@ -1,4 +1,4 @@
-# TSGL 0.5.0 - BETA
+# TSGL 0.6.0 - BETA
 * extended graphics library for the ESP 32 family controller
 * this library is written entirely in "C"
 * designed exclusively for use with ESP-IDF

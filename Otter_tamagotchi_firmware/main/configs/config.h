@@ -28,5 +28,7 @@
 #define MAX_SOUNDS_COUNT 16
 #define VOLUME_MUL 1
 
+#define STARTUP_IMAGE_CHANGE_DELAY 3000
+
 //#define DEBUG_FPS
 //#define DEBUG_TITLE

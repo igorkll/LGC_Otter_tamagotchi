@@ -27,6 +27,9 @@ typedef struct {
     tsgl_rawcolor bg; //you can make the background or text transparent using TSGL_INVALID_RAWCOLOR
     tsgl_rawcolor fg;
 
+    tsgl_pos stroke_thickness;
+    tsgl_rawcolor stroke;
+
     float scaleX; //if 0, scaling is disabled
     float scaleY;
     tsgl_pos targetWidth;
