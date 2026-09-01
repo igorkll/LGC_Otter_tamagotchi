@@ -33,5 +33,8 @@
 #define MYAAAA_SOUND_VOLUME 4
 #define STARTUP_SOUND_VOLUME 1
 
+#define USE_SOUND_DOUBLE_BUFFER true
+#define USE_SOUND_GLOBAL_TIMER true
+
 //#define DEBUG_FPS
 //#define DEBUG_TITLE

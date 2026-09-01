@@ -41,7 +41,7 @@ void pushsound_incrementSlot() {
 tsgl_sound* pushsound_load(const char* path, int sample_rate) {
     tsgl_sound* current_sound = pushsound_getFreeSlot();
 
-    if (tsgl_sound_load_pcmEx(current_sound, SOUND_BUFFER_SIZE, 0, path, sample_rate, 1, 1, tsgl_sound_pcm_unsigned, true) != ESP_OK) {
+    if (tsgl_sound_load_pcmEx(current_sound, SOUND_BUFFER_SIZE, 0, path, sample_rate, 1, 1, tsgl_sound_pcm_unsigned, USE_SOUND_DOUBLE_BUFFER) != ESP_OK) {
         return NULL;
     }
     
