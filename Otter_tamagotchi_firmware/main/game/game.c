@@ -85,17 +85,24 @@ static void loadSprites() {
 }
 
 static void game_save() {
-    tsgl_filesystem_writeFile(game_state_path, &current_state, sizeof(Game_state));
-    ESP_LOGI(TAG, "game saved!");
+    if (tsgl_filesystem_writeFile(game_state_path, &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
+        ESP_LOGI(TAG, "game saved");
+    } else {
+        ESP_LOGE(TAG, "failed to save game");
+    }
 }
 
 static void game_load() {
+    memcpy(&current_state, &default_state, sizeof(Game_state));
     if (tsgl_filesystem_exists(game_state_path)) {
-        tsgl_filesystem_readFile(game_state_path, &current_state, sizeof(Game_state));
+        if (tsgl_filesystem_readFile(game_state_path, &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
+            ESP_LOGI(TAG, "game loaded");
+        } else {
+            ESP_LOGE(TAG, "failed to load game");
+        }
     } else {
-        memcpy(&current_state, &default_state, sizeof(Game_state));
+        ESP_LOGI(TAG, "game default loaded");
     }
-    ESP_LOGI(TAG, "game loaded!");
 }
 
 // ------------------------------------ process

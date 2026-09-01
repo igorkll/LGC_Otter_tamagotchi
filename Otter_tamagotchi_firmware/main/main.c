@@ -84,8 +84,8 @@ void app_main() {
     transparent = tsgl_color_raw(TRANSPARENT_COLOR, colormode);
     black = tsgl_color_raw(TSGL_BLACK, colormode);
 
-    printsettings_title.fg = tsgl_color_raw(TSGL_RED, colormode);
-    printsettings_title.stroke = tsgl_color_raw(TSGL_ORANGE, colormode);
+    printsettings_title.fg = tsgl_color_raw(TSGL_WHITE, colormode);
+    printsettings_title.stroke = tsgl_color_raw(TSGL_BLACK, colormode);
 
     settings.backlight_init = true;
     settings.backlight_pin = BL;
