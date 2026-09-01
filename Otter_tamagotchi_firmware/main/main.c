@@ -33,7 +33,7 @@ tsgl_print_settings printsettings_title = {
     .height = HEIGHT - (TITLE_MARGIN * 2),
     .globalAlignmentX = tsgl_print_alignment_center,
     .globalAlignmentY = tsgl_print_alignment_right,
-    .alignment = tsgl_print_alignment_center,
+    .alignment = tsgl_print_alignment_left,
 
     // start from bottom
     .locationMode = tsgl_print_start_top,
