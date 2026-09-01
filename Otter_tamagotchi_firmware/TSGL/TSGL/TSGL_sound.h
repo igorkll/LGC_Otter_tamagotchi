@@ -22,6 +22,7 @@ typedef struct {
     tsgl_ledc* ledc;
     int value;
     int count;
+    bool processed;
 } tsgl_sound_output;
 
 typedef enum {

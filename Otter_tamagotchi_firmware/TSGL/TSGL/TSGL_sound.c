@@ -291,10 +291,26 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
 
         for (size_t i = 0; i < sound->outputsCount; i++) {
             tsgl_sound_output* output = sound->outputs[i];
-            if (output->count > 0) {
-                tsgl_sound_flushOutput(output);
-            } else {
-                tsgl_sound_rawSetOutput(output, 0);
+            output->processed = true;
+        }
+
+        portEXIT_CRITICAL_ISR(&sound->lock);
+    }
+
+    for (size_t i = 0; i < global_sounds_index; i++) {
+        tsgl_sound* sound = global_sounds[i];
+
+        portENTER_CRITICAL_ISR(&sound->lock);
+
+        for (size_t i = 0; i < sound->outputsCount; i++) {
+            tsgl_sound_output* output = sound->outputs[i];
+            if (output->processed) {
+                if (output->count > 0) {
+                    tsgl_sound_flushOutput(output);
+                } else {
+                    tsgl_sound_rawSetOutput(output, 0);
+                }
+                output->processed = false;
             }
         }
 

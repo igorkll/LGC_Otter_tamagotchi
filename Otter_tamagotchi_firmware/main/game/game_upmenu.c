@@ -53,7 +53,7 @@ int game_upmenu_process() {
         current_selected = -1;
     }
 
-    if (true || tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
         return current_selected;
     }
 
