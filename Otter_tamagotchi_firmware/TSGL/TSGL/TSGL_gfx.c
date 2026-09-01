@@ -193,13 +193,13 @@ static tsgl_pos _getY(tsgl_print_settings sets, tsgl_pos y, tsgl_pos iy, tsgl_po
     return riy;
 }
 
-static void _text_stroke_set(void* arg, TSGL_SET_REFERENCE(set)) {
-
+static void _text_stroke_set(void* arg, TSGL_SET_REFERENCE(set), tsgl_pos px, tsgl_pos py, tsgl_rawcolor color) {
+    set(arg, px, py, color);
 }
 
-static void _text_rastezise_main(bool drawStroke, void* arg, TSGL_SET_REFERENCE(set),
+static void _text_rastezise_main(bool drawStroke, void* arg, TSGL_SET_REFERENCE(set), const char* text,
     size_t strsize, tsgl_pos maxScaleCharHeight, tsgl_pos spacing,
-    tsgl_pos standartWidth, tsgl_pos y, tsgl_print_settings sets, tsgl_print_textArea* textArea,
+    tsgl_pos standartWidth, tsgl_pos x, tsgl_pos y, tsgl_print_settings sets, tsgl_print_textArea* textArea,
     tsgl_pos minX, tsgl_pos minY, tsgl_pos maxX, tsgl_pos maxY) {
     
     tsgl_pos offset = 0;
@@ -482,8 +482,8 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
         }
     }
 
-    if (!sets.stroke.invalid && sets.stroke_thickness > 0) _text_rastezise_main(true, arg, set, strsize, maxScaleCharHeight, spacing, standartWidth, y, sets, &textArea, minX, minY, maxX, maxY);
-    _text_rastezise_main(false, arg, set, strsize, maxScaleCharHeight, spacing, standartWidth, y, sets, &textArea, minX, minY, maxX, maxY);
+    if (!sets.stroke.invalid && sets.stroke_thickness > 0) _text_rastezise_main(true, arg, set, text, strsize, maxScaleCharHeight, spacing, standartWidth, x, y, sets, &textArea, minX, minY, maxX, maxY);
+    _text_rastezise_main(false, arg, set, text, strsize, maxScaleCharHeight, spacing, standartWidth, x, y, sets, &textArea, minX, minY, maxX, maxY);
     
     textArea.width = (textArea.right - textArea.left) + 1;
     textArea.height = (textArea.bottom - textArea.top) + 1;
