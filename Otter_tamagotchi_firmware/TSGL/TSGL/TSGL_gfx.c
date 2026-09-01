@@ -401,11 +401,6 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             .stroke_no_clamp = sets.stroke_no_clamp
         };
 
-        tsgl_print_settings newSetsCheck;
-        memcpy(&newSetsCheck, &newSets, sizeof(tsgl_print_settings));
-        newSetsCheck.stroke = TSGL_INVALID_RAWCOLOR;
-        newSetsCheck.stroke_thickness = 0;
-
         switch (sets.locationMode) {
             case tsgl_print_start_bottom:
                 newSets._minHeight = (oldY - sets.height) + 1;
@@ -417,6 +412,11 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                 newSets._maxHeight = (oldY + sets.height) - 1;
                 break;
         }
+
+        tsgl_print_settings newSetsCheck;
+        memcpy(&newSetsCheck, &newSets, sizeof(tsgl_print_settings));
+        newSetsCheck.stroke = TSGL_INVALID_RAWCOLOR;
+        newSetsCheck.stroke_thickness = 0;
 
         textArea.top = TSGL_POS_MAX;
         textArea.bottom = TSGL_POS_MIN;
@@ -501,6 +501,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
     
     textArea.width = (textArea.right - textArea.left) + 1;
     textArea.height = (textArea.bottom - textArea.top) + 1;
+    //printf("%i %i %i %i - %i %i\n", textArea.top, textArea.left, textArea.left, textArea.right, textArea.width, textArea.height);
     return textArea;
 }
 
