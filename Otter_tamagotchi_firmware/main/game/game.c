@@ -73,6 +73,10 @@ const Room* game_getCurrentRoom() {
     return &rooms[current_state.room];
 }
 
+bool game_isLockedInRoom() {
+    return current_state.room > ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT;
+}
+
 const char* game_getCurrentPerson() {
     return game_persons_images[current_state.person];
 }
@@ -84,7 +88,7 @@ static void loadSprites() {
         if (room_sprite != NULL) tsgl_bmp_free(room_sprite);
 
         char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/storage/rooms/%s.bmp", game_getCurrentRoom());
+        slnprintf(path, MAX_PATH_LEN, "/storage/rooms/%s.bmp", game_getCurrentRoom()->background);
         room_sprite = gfx_loadSprite(path);
     }
 
@@ -202,8 +206,8 @@ static void process() {
 }
 
 static void drawPerson() {
-    Room room = rooms[current_state.room];
-    gfx_drawCenteredImageSpriteWithTransparentSupport(room.x, room.y, person_sprite);
+    Room* room = game_getCurrentRoom();
+    gfx_drawCenteredImageSpriteWithTransparentSupport(room->person_x, room->person_y, person_sprite);
 }
 
 void game_start() {

@@ -27,5 +27,6 @@ typedef struct {
 extern Game_state current_state;
 
 const Room* game_getCurrentRoom();
+bool game_isLockedInRoom();
 const char* game_getCurrentPerson();
 void game_start();
