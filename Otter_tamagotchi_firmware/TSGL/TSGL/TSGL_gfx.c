@@ -244,6 +244,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             lSets.globalCentering = false;
             lSets.globalAlignmentX = tsgl_print_alignment_left;
             lSets.globalAlignmentY = tsgl_print_alignment_left;
+            lSets.alignment = tsgl_print_alignment_left;
             lSets._minWidth = oldX;
             lSets._maxWidth = (oldX + sets.width) - 1;
             lSets._clamp = true;
@@ -260,7 +261,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                     break;
             }
 
-            tsgl_print_textArea textArea = tsgl_font_getTextArea(0, 0, lSets, text);
+            tsgl_print_textArea textArea = tsgl_font_getTextArea(x, y, lSets, text);
             if (sets.width > 0) {
                 if (sets.globalCentering || sets.globalAlignmentX == tsgl_print_alignment_center) {
                     x += (sets.width / 2) - (textArea.width / 2);
@@ -316,7 +317,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
         tsgl_pos high_size = 0;
         if (sets.alignment != tsgl_print_alignment_left) {
             for (size_t i = 0; i < realsize;) {
-                tsgl_print_textArea lTextArea = tsgl_font_getTextArea(0, 0, newSets, text + i);
+                tsgl_print_textArea lTextArea = tsgl_font_getTextArea(x, y, newSets, text + i);
                 if (lTextArea.width > high_size) high_size = lTextArea.width;
                 i += lTextArea.strlen + 1;
                 if (*((const char*)(text + i)) == '\0') break;
@@ -330,7 +331,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             tsgl_pos offsetX = 0;
 
             if (sets.alignment != tsgl_print_alignment_left) {
-                tsgl_print_textArea llTextArea = tsgl_font_getTextArea(0, 0, newSets, text + i);
+                tsgl_print_textArea llTextArea = tsgl_font_getTextArea(x, y, newSets, text + i);
                 if (sets.alignment == tsgl_print_alignment_center) offsetX += (high_size / 2) - (llTextArea.width / 2);
                 else if (sets.alignment == tsgl_print_alignment_right) offsetX += high_size - llTextArea.width;
             }

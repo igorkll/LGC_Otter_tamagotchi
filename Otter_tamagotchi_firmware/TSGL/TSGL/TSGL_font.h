@@ -47,7 +47,7 @@ typedef struct {
 
     // the following options only work if multiline is enabled
     bool multiline;
-    bool linesRevers;
+    bool linesRevers; // CURRENTLY NOT IMPLEMENTED
     tsgl_pos width; //the width and height can be specified so that the text does not bulge out of the frame
     tsgl_pos height;
     bool globalCentering; //place the content in the middle of the box. similar to installing globalAlignmentX and globalAlignmentY on tsgl_print_alignment_center
