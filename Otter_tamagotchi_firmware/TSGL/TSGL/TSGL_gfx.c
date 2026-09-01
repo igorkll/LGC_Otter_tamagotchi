@@ -263,7 +263,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             tsgl_print_textArea textArea = tsgl_font_getTextArea(x, y, lSets, text);
             if (sets.width > 0) {
                 if (sets.globalCentering || sets.globalAlignmentX == tsgl_print_alignment_center) {
-                    x += (sets.width / 2) - (textArea.width / 2);
+                    x += (sets.width / 2) - (textArea.width / 2) - 1;
                 } else if (sets.globalAlignmentX == tsgl_print_alignment_right) {
                     x += sets.width - textArea.width;
                 }
@@ -271,9 +271,9 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
 
             if (sets.height > 0) {
                 if (sets.globalCentering || sets.globalAlignmentY == tsgl_print_alignment_center) {
-                    y += (sets.height / 2) - (textArea.height / 2);
+                    y += (sets.height / 2) - (textArea.height / 2) - 1;
                 } else if (sets.globalAlignmentY == tsgl_print_alignment_right) {
-                    y += sets.width - textArea.width;
+                    y += sets.height - textArea.height;
                 }
             }
         }

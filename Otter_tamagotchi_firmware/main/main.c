@@ -31,11 +31,12 @@ tsgl_print_settings printsettings_title = {
     .width = WIDTH,
     .height = HEIGHT,
     .globalAlignmentX = tsgl_print_alignment_center,
+    .globalAlignmentY = tsgl_print_alignment_right,
     .alignment = tsgl_print_alignment_center,
 
     // start from bottom
-    .locationMode = tsgl_print_start_bottom,
-    .linesRevers = true,
+    .locationMode = tsgl_print_start_top,
+    .linesRevers = false,
     
     // font
     .font = DejaVuSerif,
@@ -58,17 +59,10 @@ static void bootlogo(int index, const char* title) {
         printsettings_title.fg = green;
         printsettings_title.bg = blue;
 
-        tsgl_print_locationMode _old = printsettings_title.locationMode;
-
-        printsettings_title.locationMode = tsgl_print_start_top;
-        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, TITLE_MARGIN, printsettings_title, title);
-        printf("tsgl_framebuffer_text 1 %i %i %i %i (%i %i)\n", textArea.top, textArea.bottom, textArea.left, textArea.right, textArea.width, textArea.height);
-
-        printsettings_title.locationMode = _old;
-        textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_MARGIN, printsettings_title, title);
+        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, 0, printsettings_title, title);
         printf("tsgl_framebuffer_text 2 %i %i %i %i (%i %i)\n", textArea.top, textArea.bottom, textArea.left, textArea.right, textArea.width, textArea.height);
     } else {
-        tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_MARGIN, printsettings_title, title);
+        tsgl_framebuffer_text(&framebuffer, 0, 0, printsettings_title, title);
     }
 }
 
