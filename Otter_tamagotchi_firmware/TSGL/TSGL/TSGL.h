@@ -20,6 +20,8 @@ typedef float tsgl_colormode_raw;
 #define TSGL_SPIRAM   (MALLOC_CAP_SPIRAM | MALLOC_CAP_32BIT)
 #define TSGL_RAM      0
 
+#define TSGL_CALC_ARRSIZE(arr) (sizeof(arr) / sizeof(&arr))
+
 extern const float tsgl_colormodeSizes[];
 
 typedef enum {
