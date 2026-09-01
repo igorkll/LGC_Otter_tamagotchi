@@ -22,6 +22,7 @@ typedef struct {
 typedef struct {
     const char* background;
     const char* music;
+    float musicVolume;
     tsgl_pos person_x;
     tsgl_pos person_y;
 } Room;

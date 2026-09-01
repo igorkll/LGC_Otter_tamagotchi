@@ -42,6 +42,7 @@ const Room rooms[] = {{
 {
     .background = "car",
     .music = "car",
+    .musicVolume = 3,
     .person_x = (WIDTH / 4) * 3,
     .person_y = (HEIGHT / 4) * 3,
 }};
@@ -132,17 +133,18 @@ void game_selectRoom(int index) {
         game_upmenu_setActivate(i, index == i);
     }
 
-    const char* room_music_name = rooms[current_state.room].music;
-    if (room_music_name == NULL) {
+    const Room* room = game_getCurrentRoom();
+    if (room->music == NULL) {
         if (room_music) {
             tsgl_sound_free(room_music);
             room_music = NULL;
         }
     } else {
         char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/storage/music/%s.pcm", room_music_name);
+        slnprintf(path, MAX_PATH_LEN, "/storage/music/%s.pcm", room->music);
 
         room_music = pushsound_play(path, 4000);
+        tsgl_sound_setVolume(room_music, room->musicVolume);
         tsgl_sound_setLoop(room_music, true);
     }
 }
@@ -166,14 +168,16 @@ static void run_myaaaa() {
     bool running = true;
 
     tsgl_sound* sound = pushsound_play("/storage/myaaaa/myaaaa.pcm", 8000);
-    tsgl_sound_setVolume(sound, 5);
+    tsgl_sound_setVolume(sound, MYAAAA_SOUND_VOLUME);
     sound->userData = (void*)&running;
     tsgl_sound_attachCallback_end(sound, exit_myaaaa);
 
     while (running) {
         tsgl_keyboard_readAll(&keyboard);
 
-        if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) break;
+        if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
+            tsgl_sound_stop(sound);
+        }
     }
     
     tsgl_benchmark_reset(&benchmark);

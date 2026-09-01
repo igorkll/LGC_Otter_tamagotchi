@@ -30,5 +30,7 @@
 
 #define STARTUP_IMAGE_CHANGE_DELAY 3000
 
+#define MYAAAA_SOUND_VOLUME 4
+
 //#define DEBUG_FPS
 //#define DEBUG_TITLE
