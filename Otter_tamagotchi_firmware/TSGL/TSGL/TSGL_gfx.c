@@ -260,7 +260,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
                     break;
             }
 
-            tsgl_print_textArea textArea = tsgl_font_getTextArea(x, y, lSets, text);
+            tsgl_print_textArea textArea = tsgl_font_getTextArea(0, 0, lSets, text);
             if (sets.width > 0) {
                 if (sets.globalCentering || sets.globalAlignmentX == tsgl_print_alignment_center) {
                     x += (sets.width / 2) - (textArea.width / 2) - 1;
@@ -317,7 +317,15 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
         tsgl_pos currentY = y;
         for (size_t i = 0; i < realsize;) {
             //if (set != NULL) printf("--- %i %i\n", x, currentY);
-            tsgl_print_textArea lTextArea = tsgl_gfx_text(arg, set, fill, x, currentY, newSets, text + i, minX, minY, maxX, maxY);
+            tsgl_pos offsetX = 0;
+
+            if (sets.globalAlignmentY != tsgl_print_alignment_left) {
+                tsgl_print_textArea llTextArea = tsgl_font_getTextArea(0, 0, newSets, text + i);
+                if (sets.globalAlignmentY == tsgl_print_alignment_center) offsetX += (sets.width / 2) - (llTextArea.width / 2);
+                else if (sets.globalAlignmentY == tsgl_print_alignment_right) offsetX += sets.width - llTextArea.width;
+            }
+
+            tsgl_print_textArea lTextArea = tsgl_gfx_text(arg, set, fill, x + offsetX, currentY, newSets, text + i, minX, minY, maxX, maxY);
             if (lTextArea.top < textArea.top) textArea.top = lTextArea.top;
             if (lTextArea.bottom > textArea.bottom) textArea.bottom = lTextArea.bottom;
             if (lTextArea.left < textArea.left) textArea.left = lTextArea.left;

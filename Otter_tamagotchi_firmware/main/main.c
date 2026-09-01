@@ -62,7 +62,7 @@ static void bootlogo(int index, const char* title) {
 
         tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, TITLE_MARGIN, TITLE_MARGIN, printsettings_title, title);
         printf("tsgl_framebuffer_text %i %i %i %i (%i %i)\n", textArea.top, textArea.bottom, textArea.left, textArea.right, textArea.width, textArea.height);
-    #elif
+    #else
         tsgl_framebuffer_text(&framebuffer, TITLE_MARGIN, TITLE_MARGIN, printsettings_title, title);
     #endif
 }
