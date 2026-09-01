@@ -1,4 +1,5 @@
 #include "TSGL_bmp.h"
+#include <TSGL_filesystem.h>
 #include <esp_log.h>
 
 #define BMP_BUFFER_SIZE (8 * 1024)
@@ -104,7 +105,7 @@ typedef struct {
 static tsgl_imageInfo _parse(const char* path, tsgl_framebuffer* sprite_fb, tsgl_rawcolor transparentColor) {
     tsgl_imageInfo info = {0};
 
-    FILE* file = fopen(path, "rb");
+    FILE* file = tsgl_filesystem_open(path, "rb");
     if (file == NULL) return info;
 
     // check & read header

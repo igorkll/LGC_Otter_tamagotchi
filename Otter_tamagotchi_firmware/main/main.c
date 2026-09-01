@@ -135,7 +135,5 @@ void app_main() {
     tsgl_delay(STARTUP_IMAGE_CHANGE_DELAY);
 
     hctl_setBacklightAndWait(BACKLIGHT_OFF);
-    tsgl_delay(STARTUP_IMAGE_CHANGE_DELAY);
-
     game_start();
 }

@@ -57,7 +57,7 @@ bool tsgl_filesystem_isDirectory(const char *path) {
 }
 
 size_t tsgl_filesystem_size(const char* path) {
-    FILE* file = fopen(path, "r");
+    FILE* file = tsgl_filesystem_open(path, "rb");
     if (file == NULL) return 0;
 
     if (fseek(file, 0, SEEK_END) < 0) {

@@ -7,7 +7,7 @@
 
 // ------------------------------------ consts
 
-static const char* game_state_path = "/storage/game_state";
+static const char* game_state_path = "/storage/gamestat";
 
 static const char* game_rooms_images[] = {
     "bedroom",
@@ -103,6 +103,7 @@ static void game_load() {
     } else {
         ESP_LOGI(TAG, "game default loaded");
     }
+    memcpy(&old_state, &current_state, sizeof(Game_state));
 }
 
 // ------------------------------------ process

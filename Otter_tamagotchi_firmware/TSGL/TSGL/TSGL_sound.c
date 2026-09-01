@@ -379,7 +379,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
     memset(sound, 0, sizeof(tsgl_sound));
     sound->lock = (portMUX_TYPE)portMUX_INITIALIZER_UNLOCKED;
 
-    sound->file = fopen(path, "rb");
+    sound->file = tsgl_filesystem_open(path, "rb");
     if (sound->file == NULL) return ESP_FAIL;
     fseek(sound->file, offset, SEEK_SET);
 
