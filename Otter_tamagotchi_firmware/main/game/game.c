@@ -9,13 +9,6 @@
 
 static const char* game_state_path = "/storage/gamestat";
 
-typedef struct {
-    const char* background;
-    const char* music;
-    tsgl_pos person_x;
-    tsgl_pos person_y;
-} Room;
-
 const Room rooms[] = {{
     .background = "bedroom",
     .music = NULL,
@@ -76,11 +69,11 @@ static tsgl_sound* room_music;
 
 // ------------------------------------ functions
 
-const char* game_getCurrentRoom() {
-    return game_rooms_images[current_state.room];
+const Room* game_getCurrentRoom() {
+    return &rooms[current_state.room];
 }
 
-const char* game_getPersonRoom() {
+const char* game_getCurrentPerson() {
     return game_persons_images[current_state.person];
 }
 
@@ -101,7 +94,7 @@ static void loadSprites() {
         if (person_sprite != NULL) tsgl_bmp_free(person_sprite);
 
         char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/storage/persons/%s.bmp", game_getPersonRoom());
+        slnprintf(path, MAX_PATH_LEN, "/storage/persons/%s.bmp", game_getCurrentPerson());
         person_sprite = gfx_loadSprite(path);
     }
 }
@@ -136,7 +129,7 @@ static void selectRoom(int index) {
         game_upmenu_setActivate(i, index == i);
     }
 
-    const char* room_music_name = game_rooms_music[index];
+    const char* room_music_name = rooms[current_state.room].music;
     if (room_music_name == NULL) {
         if (room_music) {
             tsgl_sound_free(room_music);
@@ -209,7 +202,8 @@ static void process() {
 }
 
 static void drawPerson() {
-    gfx_drawCenteredImageSpriteWithTransparentSupport(game_rooms_person_pos_x[current_state.room], game_rooms_person_pos_y[current_state.room], person_sprite);
+    Room room = rooms[current_state.room];
+    gfx_drawCenteredImageSpriteWithTransparentSupport(room.x, room.y, person_sprite);
 }
 
 void game_start() {

@@ -17,8 +17,15 @@ typedef struct {
     game_person person;
 } Game_state;
 
+typedef struct {
+    const char* background;
+    const char* music;
+    tsgl_pos person_x;
+    tsgl_pos person_y;
+} Room;
+
 extern Game_state current_state;
 
-const char* game_getCurrentRoom();
-const char* game_getPersonRoom();
+const Room* game_getCurrentRoom();
+const char* game_getCurrentPerson();
 void game_start();
