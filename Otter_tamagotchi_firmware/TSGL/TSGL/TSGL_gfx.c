@@ -193,7 +193,12 @@ static tsgl_pos _getY(tsgl_print_settings sets, tsgl_pos y, tsgl_pos iy, tsgl_po
     return riy;
 }
 
-static void _text_stroke_set(void* arg, TSGL_SET_REFERENCE(set), tsgl_pos px, tsgl_pos py, tsgl_rawcolor color) {
+static void _text_stroke_set(void* arg, TSGL_SET_REFERENCE(set), tsgl_pos px, tsgl_pos py, tsgl_rawcolor color,
+    tsgl_pos minX, tsgl_pos minY, tsgl_pos maxX, tsgl_pos maxY,
+    tsgl_print_settings sets) {
+    
+    if (px < minX || px >= maxX || py < minY || py >= maxY) printf("FUCK 1");
+    if (sets._clamp && (px < sets._minWidth || px > sets._maxWidth || py < sets._minHeight || py > sets._maxHeight)) printf("FUCK 2: %i %i - %i %i %i %i\n", px, py, sets._minWidth, sets._maxWidth, sets._minHeight, sets._maxHeight);
     set(arg, px, py, color);
 }
 
@@ -258,7 +263,7 @@ static void _text_rastezise_main(bool drawStroke, void* arg, TSGL_SET_REFERENCE(
                                 if (drawStroke) {
                                     for (tsgl_pos ox = -sets.stroke_thickness; ox <= sets.stroke_thickness; ox++) {
                                         for (tsgl_pos oy = -sets.stroke_thickness; oy <= sets.stroke_thickness; oy++) {
-                                            if (ox != 0 || oy != 0) _text_stroke_set(arg, set, px + ox, py + oy, sets.stroke);
+                                            if (ox != 0 || oy != 0) _text_stroke_set(arg, set, px + ox, py + oy, sets.stroke, minX, minY, maxX, maxY, sets);
                                         }
                                     }
                                 }
@@ -330,6 +335,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
 
     if (sets.multiline) {
         tsgl_pos oldX = x;
+        tsgl_pos oldY = y;
 
         if (sets.globalCentering || sets.globalAlignmentX != tsgl_print_alignment_left || sets.globalAlignmentY != tsgl_print_alignment_left) {
             tsgl_print_settings lSets;
@@ -341,6 +347,8 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             lSets._minWidth = oldX;
             lSets._maxWidth = (oldX + sets.width) - 1;
             lSets._clamp = true;
+            lSets.stroke_thickness = 0;
+            lSets.stroke = TSGL_INVALID_RAWCOLOR;
 
             switch (sets.locationMode) {
                 case tsgl_print_start_bottom:
@@ -392,15 +400,20 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             .stroke_thickness = sets.stroke_thickness
         };
 
+        tsgl_print_settings newSetsCheck;
+        memcpy(&newSetsCheck, &newSets, sizeof(tsgl_print_settings));
+        newSetsCheck.stroke = TSGL_INVALID_RAWCOLOR;
+        newSetsCheck.stroke_thickness = 0;
+
         switch (sets.locationMode) {
             case tsgl_print_start_bottom:
-                newSets._minHeight = (y - sets.height) + 1;
-                newSets._maxHeight = y;
+                newSets._minHeight = (oldY - sets.height) + 1;
+                newSets._maxHeight = oldY;
                 break;
 
             case tsgl_print_start_top:
-                newSets._minHeight = y;
-                newSets._maxHeight = (y + sets.height) - 1;
+                newSets._minHeight = oldY;
+                newSets._maxHeight = (oldY + sets.height) - 1;
                 break;
         }
 
@@ -412,7 +425,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
         tsgl_pos high_size = 0;
         if (sets.alignment != tsgl_print_alignment_left) {
             for (size_t i = 0; i < realsize;) {
-                tsgl_print_textArea lTextArea = tsgl_font_getTextArea(x, y, newSets, text + i);
+                tsgl_print_textArea lTextArea = tsgl_font_getTextArea(x, y, newSetsCheck, text + i);
                 if (lTextArea.width > high_size) high_size = lTextArea.width;
                 i += lTextArea.strlen + 1;
                 if (*((const char*)(text + i)) == '\0') break;
@@ -426,7 +439,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             tsgl_pos offsetX = 0;
 
             if (sets.alignment != tsgl_print_alignment_left) {
-                tsgl_print_textArea llTextArea = tsgl_font_getTextArea(x, y, newSets, text + i);
+                tsgl_print_textArea llTextArea = tsgl_font_getTextArea(x, y, newSetsCheck, text + i);
                 if (sets.alignment == tsgl_print_alignment_center) offsetX += (high_size / 2) - (llTextArea.width / 2);
                 else if (sets.alignment == tsgl_print_alignment_right) offsetX += high_size - llTextArea.width;
             }
