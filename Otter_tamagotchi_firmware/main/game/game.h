@@ -33,4 +33,5 @@ void game_selectRoom(int index);
 const Room* game_getCurrentRoom();
 bool game_isLockedInRoom();
 const char* game_getCurrentPerson();
+void game_save();
 void game_start();

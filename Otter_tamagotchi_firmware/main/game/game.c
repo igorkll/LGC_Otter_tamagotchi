@@ -74,36 +74,14 @@ const Room* game_getCurrentRoom() {
 }
 
 bool game_isLockedInRoom() {
-    return current_state.room > ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT;
+    return current_state.room >= ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT;
 }
 
 const char* game_getCurrentPerson() {
     return game_persons_images[current_state.person];
 }
 
-static void loadSprites() {
-    static int room_sprite_old_index = 0;
-    if (room_sprite == NULL || current_state.room != room_sprite_old_index) {
-        room_sprite_old_index = current_state.room;
-        if (room_sprite != NULL) tsgl_bmp_free(room_sprite);
-
-        char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/storage/rooms/%s.bmp", game_getCurrentRoom()->background);
-        room_sprite = gfx_loadSprite(path);
-    }
-
-    static int room_person_old_index = 0;
-    if (person_sprite == NULL || current_state.person != room_person_old_index) {
-        room_person_old_index = current_state.person;
-        if (person_sprite != NULL) tsgl_bmp_free(person_sprite);
-
-        char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/storage/persons/%s.bmp", game_getCurrentPerson());
-        person_sprite = gfx_loadSprite(path);
-    }
-}
-
-static void game_save() {
+void game_save() {
     if (tsgl_filesystem_writeFile(game_state_path, &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
         ESP_LOGI(TAG, "game saved");
     } else {
@@ -125,8 +103,6 @@ static void game_load() {
     memcpy(&old_state, &current_state, sizeof(Game_state));
 }
 
-// ------------------------------------ process
-
 void game_selectRoom(int index) {
     current_state.room = index;
     for (size_t i = 0; i < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT; i++) {
@@ -146,6 +122,30 @@ void game_selectRoom(int index) {
         room_music = pushsound_play(path, 4000);
         tsgl_sound_setVolume(room_music, room->musicVolume);
         tsgl_sound_setLoop(room_music, true);
+    }
+}
+
+// ------------------------------------ process
+
+static void loadSprites() {
+    static int room_sprite_old_index = 0;
+    if (room_sprite == NULL || current_state.room != room_sprite_old_index) {
+        room_sprite_old_index = current_state.room;
+        if (room_sprite != NULL) tsgl_bmp_free(room_sprite);
+
+        char path[MAX_PATH_LEN];
+        slnprintf(path, MAX_PATH_LEN, "/storage/rooms/%s.bmp", game_getCurrentRoom()->background);
+        room_sprite = gfx_loadSprite(path);
+    }
+
+    static int room_person_old_index = 0;
+    if (person_sprite == NULL || current_state.person != room_person_old_index) {
+        room_person_old_index = current_state.person;
+        if (person_sprite != NULL) tsgl_bmp_free(person_sprite);
+
+        char path[MAX_PATH_LEN];
+        slnprintf(path, MAX_PATH_LEN, "/storage/persons/%s.bmp", game_getCurrentPerson());
+        person_sprite = gfx_loadSprite(path);
     }
 }
 
@@ -177,6 +177,7 @@ static void run_myaaaa() {
 
         if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
             tsgl_sound_stop(sound);
+            running = false;
         }
     }
     
