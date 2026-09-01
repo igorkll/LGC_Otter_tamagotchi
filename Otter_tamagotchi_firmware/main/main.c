@@ -27,18 +27,21 @@ tsgl_rawcolor transparent;
 tsgl_rawcolor black;
 
 tsgl_print_settings printsettings_title = {
-    .alignment = tsgl_print_alignment_center,
-    .locationMode = tsgl_print_start_bottom,
-    .localLocationMode = tsgl_print_localLocationMode_center,
     .multiline = true,
-    .globalAlignmentX = tsgl_print_alignment_right,
-
-    .font = DejaVuSerif,
-    .targetWidth = TITLE_WIDTH,
-    .targetHeight = TITLE_HEIGHT,
-
     .width = WIDTH,
     .height = HEIGHT,
+    .globalAlignmentX = tsgl_print_alignment_center,
+    .alignment = tsgl_print_alignment_center,
+
+    // start from bottom
+    .locationMode = tsgl_print_start_bottom,
+    .linesRevers = true,
+    
+    // font
+    .font = DejaVuSerif,
+    .localLocationMode = tsgl_print_localLocationMode_center,
+    .targetWidth = TITLE_WIDTH,
+    .targetHeight = TITLE_HEIGHT,
 
     .fill = TSGL_INVALID_RAWCOLOR,
     .bg = TSGL_INVALID_RAWCOLOR
@@ -57,12 +60,12 @@ static void bootlogo(int index, const char* title) {
 
         tsgl_print_locationMode _old = printsettings_title.locationMode;
 
-        printsettings_title.locationMode = tsgl_print_start_bottom;
-        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN - 60, printsettings_title, title);
+        printsettings_title.locationMode = tsgl_print_start_top;
+        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, TITLE_MARGIN, printsettings_title, title);
         printf("tsgl_framebuffer_text 1 %i %i %i %i (%i %i)\n", textArea.top, textArea.bottom, textArea.left, textArea.right, textArea.width, textArea.height);
 
         printsettings_title.locationMode = _old;
-        textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_HEIGHT - TITLE_MARGIN, printsettings_title, title);
+        textArea = tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_MARGIN, printsettings_title, title);
         printf("tsgl_framebuffer_text 2 %i %i %i %i (%i %i)\n", textArea.top, textArea.bottom, textArea.left, textArea.right, textArea.width, textArea.height);
     } else {
         tsgl_framebuffer_text(&framebuffer, 0, height - TITLE_MARGIN, printsettings_title, title);
