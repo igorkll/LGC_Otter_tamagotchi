@@ -193,6 +193,99 @@ static tsgl_pos _getY(tsgl_print_settings sets, tsgl_pos y, tsgl_pos iy, tsgl_po
     return riy;
 }
 
+static void _text_stroke_set(void* arg, TSGL_SET_REFERENCE(set)) {
+
+}
+
+static void _text_rastezise_main(bool drawStroke, void* arg, TSGL_SET_REFERENCE(set),
+    size_t strsize, tsgl_pos maxScaleCharHeight, tsgl_pos spacing,
+    tsgl_pos standartWidth, tsgl_pos y, tsgl_print_settings sets, tsgl_print_textArea* textArea,
+    tsgl_pos minX, tsgl_pos minY, tsgl_pos maxX, tsgl_pos maxY) {
+    
+    tsgl_pos offset = 0;
+    for (size_t i = 0; i < strsize; i++) {
+        char chr = text[i];
+        if (chr != ' ') {
+            size_t charPosition = tsgl_font_find(sets.font, chr);
+            if (charPosition > 0) {
+                uint16_t charWidth = tsgl_font_width(sets.font, chr);
+                uint16_t charHeight = tsgl_font_height(sets.font, chr);
+                uint16_t scaleCharWidth = ((float)charWidth * sets._scaleX * sets.scaleX) + 0.5;
+                uint16_t scaleCharHeight = ((float)charHeight * sets._scaleY * sets.scaleY) + 0.5;
+                uint16_t blockCheckX = charWidth / scaleCharWidth;
+                if (blockCheckX < 1 || set == NULL) blockCheckX = 0;
+                uint16_t blockCheckY = charHeight / scaleCharHeight;
+                if (blockCheckY < 1 || set == NULL) blockCheckY = 0;
+                for (tsgl_pos iy = 0; iy < scaleCharHeight; iy++) {
+                    tsgl_pos py = _getY(sets, y, iy, scaleCharHeight, maxScaleCharHeight);
+                    if (py < minY) continue;
+                    if (py >= maxY) break;
+                    if (sets._clamp) {
+                        if (py < sets._minHeight) continue;
+                        if (py > sets._maxHeight) break;
+                    }
+                    if (py < textArea->top) textArea->top = py;
+                    if (py > textArea->bottom) textArea->bottom = py;
+
+                    for (tsgl_pos ix = 0; ix < scaleCharWidth; ix++) {
+                        tsgl_pos px = x + ix + offset;
+                        if (px < minX) continue;
+                        if (px >= maxX) break;
+                        if (sets._clamp) {
+                            if (px < sets._minWidth) continue;
+                            if (px > sets._maxWidth) break;
+                        }
+                        if (px > textArea->right) textArea->right = px;
+
+                        float findedCount = 0;
+                        float allCount = 0;
+                        for (tsgl_pos lix = 0; lix < blockCheckX; lix++) {
+                            tsgl_pos oix = (((float)ix) / sets._scaleX / sets.scaleX) + lix;
+                            if (oix >= charWidth) break;
+                            for (tsgl_pos liy = 0; liy < blockCheckY; liy++) {
+                                tsgl_pos oiy = (((float)iy) / sets._scaleY / sets.scaleY) + liy;
+                                if (oiy >= charHeight) break;
+
+                                if (tsgl_font_parse(sets.font, charPosition, oix + (oiy * charWidth)))
+                                    findedCount++;
+                                allCount++;
+                            }
+                        }
+
+                        if (set != NULL) {
+                            tsgl_rawcolor color = TSGL_INVALID_RAWCOLOR;
+                            if (findedCount / allCount > 0.5) {
+                                if (drawStroke) {
+                                    for (tsgl_pos ox = -sets.stroke_thickness; ox <= sets.stroke_thickness; ox++) {
+                                        for (tsgl_pos oy = -sets.stroke_thickness; oy <= sets.stroke_thickness; oy++) {
+                                            if (ox != 0 || oy != 0) _text_stroke_set(arg, set, px + ox, py + oy, sets.stroke);
+                                        }
+                                    }
+                                }
+                                color = sets.fg;
+                            } else {
+                                color = sets.bg;
+                            }
+                            if (!drawStroke && !color.invalid) set(arg, px, py, color);
+                        }
+                    }
+                }
+                offset += scaleCharWidth + spacing;
+            }
+        } else {
+            tsgl_pos spaceSize;
+            if (sets.spaceSize == 0) {
+                spaceSize = standartWidth * 0.7;
+            } else {
+                spaceSize = sets.spaceSize;
+            }
+            tsgl_pos staceEndPos = x + spaceSize + offset;
+            if (staceEndPos > textArea->right) textArea->right = staceEndPos;
+            offset += spaceSize + spacing;
+        }
+    }
+}
+
 tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_REFERENCE(fill), tsgl_pos x, tsgl_pos y, tsgl_print_settings sets, const char* text, tsgl_pos minX, tsgl_pos minY, tsgl_pos maxX, tsgl_pos maxY) {
     size_t realsize = strlen(text);
     tsgl_print_textArea textArea = {
@@ -375,7 +468,6 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
     }
     size_t strsize = _len(text);
     textArea.strlen = strsize;
-    tsgl_pos offset = 0;
 
     uint16_t maxScaleCharHeight = 0;
     for (size_t i = 0; i < strsize; i++) {
@@ -390,87 +482,9 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
         }
     }
 
-    for (size_t i = 0; i < strsize; i++) {
-        char chr = text[i];
-        if (chr != ' ') {
-            size_t charPosition = tsgl_font_find(sets.font, chr);
-            if (charPosition > 0) {
-                uint16_t charWidth = tsgl_font_width(sets.font, chr);
-                uint16_t charHeight = tsgl_font_height(sets.font, chr);
-                uint16_t scaleCharWidth = ((float)charWidth * sets._scaleX * sets.scaleX) + 0.5;
-                uint16_t scaleCharHeight = ((float)charHeight * sets._scaleY * sets.scaleY) + 0.5;
-                uint16_t blockCheckX = charWidth / scaleCharWidth;
-                if (blockCheckX < 1 || set == NULL) blockCheckX = 0;
-                uint16_t blockCheckY = charHeight / scaleCharHeight;
-                if (blockCheckY < 1 || set == NULL) blockCheckY = 0;
-                for (tsgl_pos iy = 0; iy < scaleCharHeight; iy++) {
-                    tsgl_pos py = _getY(sets, y, iy, scaleCharHeight, maxScaleCharHeight);
-                    if (py < minY) continue;
-                    if (py >= maxY) break;
-                    if (sets._clamp) {
-                        if (py < sets._minHeight) continue;
-                        if (py > sets._maxHeight) break;
-                    }
-                    if (py < textArea.top) textArea.top = py;
-                    if (py > textArea.bottom) textArea.bottom = py;
-
-                    for (tsgl_pos ix = 0; ix < scaleCharWidth; ix++) {
-                        tsgl_pos px = x + ix + offset;
-                        if (px < minX) continue;
-                        if (px >= maxX) break;
-                        if (sets._clamp) {
-                            if (px < sets._minWidth) continue;
-                            if (px > sets._maxWidth) break;
-                        }
-                        if (px > textArea.right) textArea.right = px;
-
-                        float findedCount = 0;
-                        float allCount = 0;
-                        for (tsgl_pos lix = 0; lix < blockCheckX; lix++) {
-                            tsgl_pos oix = (((float)ix) / sets._scaleX / sets.scaleX) + lix;
-                            if (oix >= charWidth) break;
-                            for (tsgl_pos liy = 0; liy < blockCheckY; liy++) {
-                                tsgl_pos oiy = (((float)iy) / sets._scaleY / sets.scaleY) + liy;
-                                if (oiy >= charHeight) break;
-
-                                if (tsgl_font_parse(sets.font, charPosition, oix + (oiy * charWidth)))
-                                    findedCount++;
-                                allCount++;
-                            }
-                        }
-
-                        if (set != NULL) {
-                            tsgl_rawcolor color = TSGL_INVALID_RAWCOLOR;
-                            if (findedCount / allCount > 0.5) {
-                                if (!sets.stroke.invalid && sets.stroke_thickness > 0) {
-                                    for (tsgl_pos ox = -sets.stroke_thickness; ox <= sets.stroke_thickness; ox++) {
-                                        for (tsgl_pos oy = -sets.stroke_thickness; oy <= sets.stroke_thickness; oy++) {
-                                            if (ox != 0 || oy != 0) set(arg, px + ox, py + oy, sets.stroke);
-                                        }
-                                    }
-                                }
-                                color = sets.fg;
-                            } else {
-                                color = sets.bg;
-                            }
-                            if (!color.invalid) set(arg, px, py, color);
-                        }
-                    }
-                }
-                offset += scaleCharWidth + spacing;
-            }
-        } else {
-            tsgl_pos spaceSize;
-            if (sets.spaceSize == 0) {
-                spaceSize = standartWidth * 0.7;
-            } else {
-                spaceSize = sets.spaceSize;
-            }
-            tsgl_pos staceEndPos = x + spaceSize + offset;
-            if (staceEndPos > textArea.right) textArea.right = staceEndPos;
-            offset += spaceSize + spacing;
-        }
-    }
+    if (!sets.stroke.invalid && sets.stroke_thickness > 0) _text_rastezise_main(true, arg, set, strsize, maxScaleCharHeight, spacing, standartWidth, y, sets, &textArea, minX, minY, maxX, maxY);
+    _text_rastezise_main(false, arg, set, strsize, maxScaleCharHeight, spacing, standartWidth, y, sets, &textArea, minX, minY, maxX, maxY);
+    
     textArea.width = (textArea.right - textArea.left) + 1;
     textArea.height = (textArea.bottom - textArea.top) + 1;
     return textArea;
