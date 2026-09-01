@@ -48,7 +48,3 @@ extern tsgl_rawcolor yellow;
 extern tsgl_rawcolor blue;
 extern tsgl_rawcolor transparent;
 extern tsgl_rawcolor black;
-
-#define TITLE_WIDTH 8
-#define TITLE_HEIGHT 16
-#define TITLE_MARGIN 8

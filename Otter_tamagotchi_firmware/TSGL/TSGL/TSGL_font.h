@@ -38,7 +38,7 @@ typedef struct {
     // note that if you set the "tsgl_print_start_bottom" mode, the text will be drawn above the call point,
     // which also means that the lines will be inverted during multiline output and the "linesRevers" flag must be set so that they go in the correct order
     // By default, it also affects where each individual letter will be drawn from. to unlink this parameter, set "localLocationMode"
-    // 
+    // often the best solution is to set "locationMode" to "tsgl_print_start_top" and if you need the text to be at the bottom of the block, then set "globalAlignmentY" to "tsgl_print_alignment_right"
     tsgl_print_locationMode locationMode;
 
     // default: tsgl_print_localLocationMode_from_localtionMode which means binding to the "locationMode" parameter
@@ -50,7 +50,7 @@ typedef struct {
     bool linesRevers;
     tsgl_pos width; //the width and height can be specified so that the text does not bulge out of the frame
     tsgl_pos height;
-    bool globalCentering; //place the content in the middle of the box
+    bool globalCentering; //place the content in the middle of the box. similar to installing globalAlignmentX and globalAlignmentY on tsgl_print_alignment_center
     tsgl_print_alignment globalAlignmentX;
     tsgl_print_alignment globalAlignmentY;
     tsgl_print_alignment alignment;

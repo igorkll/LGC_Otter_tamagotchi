@@ -5,8 +5,9 @@
 #include "funcs.h"
 #include "pushsound.h"
 
-#define TARGET_FPS 20
-#define DEBUG_TEXT true
+#define TITLE_WIDTH 8
+#define TITLE_HEIGHT 16
+#define TITLE_MARGIN 8
 
 const char* TAG = "otter_tamagotchi";
 
@@ -41,7 +42,7 @@ tsgl_print_settings printsettings_title = {
     // font
     .font = DejaVuSerif,
     .localLocationMode = tsgl_print_localLocationMode_center,
-    .targetWidth = TITLE_WIDTH,
+    .targetWidth = TITLE_WIDTH - (TITLE_MARGIN * 2),
     .targetHeight = TITLE_HEIGHT,
 
     .fill = TSGL_INVALID_RAWCOLOR,
@@ -54,16 +55,16 @@ static void bootlogo(int index, const char* title) {
     slnprintf(path, MAX_PATH_LEN, "/storage/bootlogo/bgrt%i.bmp", index);
     gfx_drawCenteredScreenImage(path);
 
-    if (DEBUG_TEXT) {
+    #ifdef DEBUG_TITLE
         printsettings_title.fill = yellow;
         printsettings_title.fg = green;
         printsettings_title.bg = blue;
 
         tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, 0, printsettings_title, title);
-        printf("tsgl_framebuffer_text 2 %i %i %i %i (%i %i)\n", textArea.top, textArea.bottom, textArea.left, textArea.right, textArea.width, textArea.height);
-    } else {
+        printf("tsgl_framebuffer_text %i %i %i %i (%i %i)\n", textArea.top, textArea.bottom, textArea.left, textArea.right, textArea.width, textArea.height);
+    #elif
         tsgl_framebuffer_text(&framebuffer, 0, 0, printsettings_title, title);
-    }
+    #endif
 }
 
 static void setBacklightAndWait(uint8_t value) {

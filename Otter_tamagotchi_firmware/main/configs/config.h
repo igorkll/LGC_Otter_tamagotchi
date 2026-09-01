@@ -1,5 +1,6 @@
 #pragma once
 
+#define TARGET_FPS 15
 #define USE_HARDWARE_ROTATE false
 #define ROTATE 0
 
@@ -26,3 +27,6 @@
 #define SOUND_BUFFER_SIZE (4 * 1024)
 #define MAX_SOUNDS_COUNT 16
 #define VOLUME_MUL 1
+
+#define DEBUG_FPS
+#define DEBUG_TITLE

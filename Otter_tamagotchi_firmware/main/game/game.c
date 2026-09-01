@@ -191,7 +191,9 @@ void game_start() {
         tsgl_display_send(&display, &framebuffer);
         tsgl_benchmark_endSend(&benchmark);
 
-        tsgl_benchmark_print(&benchmark);
-        tsgl_benchmark_wait(&benchmark, 15);
+        #ifdef DEBUG_FPS
+            tsgl_benchmark_print(&benchmark);
+        #endif
+        tsgl_benchmark_wait(&benchmark, TARGET_FPS);
     }
 }
