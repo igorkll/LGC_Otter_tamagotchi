@@ -238,7 +238,7 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
     if (sets.multiline) {
         tsgl_pos oldX = x;
 
-        if (sets.globalCentering || sets.globalCenteringX || sets.globalCenteringY) {
+        if (sets.globalCentering || sets.globalAlignmentX != tsgl_print_alignment_left || sets.globalAlignmentY != tsgl_print_alignment_left) {
             tsgl_print_settings lSets;
             memcpy(&lSets, &sets, sizeof(tsgl_print_settings));
             lSets.globalCentering = false;
@@ -261,8 +261,21 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             }
 
             tsgl_print_textArea textArea = tsgl_font_getTextArea(x, y, lSets, text);
-            if (sets.width > 0 && (sets.globalCentering || sets.globalCenteringX)) x = (x + (sets.width / 2)) - (textArea.width / 2);
-            if (sets.height > 0 && (sets.globalCentering || sets.globalCenteringY)) y = (y + (sets.height / 2)) - (textArea.height / 2);
+            if (sets.width > 0) {
+                if (sets.globalCentering || sets.globalAlignmentX == tsgl_print_alignment_center) {
+                    x += (sets.width / 2) - (textArea.width / 2);
+                } else if (sets.globalAlignmentX == tsgl_print_alignment_right) {
+                    x += sets.width - textArea.width;
+                }
+            }
+
+            if (sets.height > 0) {
+                if (sets.globalCentering || sets.globalAlignmentY == tsgl_print_alignment_center) {
+                    y += (sets.height / 2) - (textArea.height / 2);
+                } else if (sets.globalAlignmentY == tsgl_print_alignment_right) {
+                    y += (sets.width / 2) - (textArea.width / 2);
+                }
+            }
         }
 
         tsgl_print_settings newSets = {
