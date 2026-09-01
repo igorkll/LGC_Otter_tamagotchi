@@ -47,7 +47,8 @@ tsgl_print_settings printsettings_title = {
 
     .fill = TSGL_INVALID_RAWCOLOR,
     .bg = TSGL_INVALID_RAWCOLOR,
-    .stroke_thickness = 1
+    .stroke_thickness = 1,
+    .stroke_no_clamp = true
 };
 
 static void bootlogo(int index, const char* title) {

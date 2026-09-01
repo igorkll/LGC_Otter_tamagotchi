@@ -197,8 +197,8 @@ static void _text_stroke_set(void* arg, TSGL_SET_REFERENCE(set), tsgl_pos px, ts
     tsgl_pos minX, tsgl_pos minY, tsgl_pos maxX, tsgl_pos maxY,
     tsgl_print_settings sets) {
     
-    if (px < minX || px >= maxX || py < minY || py >= maxY) printf("FUCK 1");
-    if (sets._clamp && (px < sets._minWidth || px > sets._maxWidth || py < sets._minHeight || py > sets._maxHeight)) printf("FUCK 2: %i %i - %i %i %i %i\n", px, py, sets._minWidth, sets._maxWidth, sets._minHeight, sets._maxHeight);
+    if (px < minX || px >= maxX || py < minY || py >= maxY) return;
+    if (sets._clamp && !sets.stroke_no_clamp && (px < sets._minWidth || px > sets._maxWidth || py < sets._minHeight || py > sets._maxHeight)) return;
     set(arg, px, py, color);
 }
 
@@ -397,7 +397,8 @@ tsgl_print_textArea tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(set), TSGL_FILL_
             .locationMode = sets.locationMode,
             .localLocationMode = sets.localLocationMode,
             .stroke = sets.stroke,
-            .stroke_thickness = sets.stroke_thickness
+            .stroke_thickness = sets.stroke_thickness,
+            .stroke_no_clamp = sets.stroke_no_clamp
         };
 
         tsgl_print_settings newSetsCheck;

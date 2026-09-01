@@ -29,6 +29,7 @@ typedef struct {
 
     tsgl_pos stroke_thickness;
     tsgl_rawcolor stroke;
+    bool stroke_no_clamp;
 
     float scaleX; //if 0, scaling is disabled
     float scaleY;
