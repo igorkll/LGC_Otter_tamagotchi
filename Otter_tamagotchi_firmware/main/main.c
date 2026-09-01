@@ -29,8 +29,8 @@ tsgl_rawcolor black;
 
 tsgl_print_settings printsettings_title = {
     .multiline = true,
-    .width = WIDTH,
-    .height = HEIGHT,
+    .width = WIDTH - (TITLE_MARGIN * 2),
+    .height = HEIGHT - (TITLE_MARGIN * 2),
     .globalAlignmentX = tsgl_print_alignment_center,
     .globalAlignmentY = tsgl_print_alignment_right,
     .alignment = tsgl_print_alignment_center,
@@ -42,7 +42,7 @@ tsgl_print_settings printsettings_title = {
     // font
     .font = DejaVuSerif,
     .localLocationMode = tsgl_print_localLocationMode_center,
-    .targetWidth = TITLE_WIDTH - (TITLE_MARGIN * 2),
+    .targetWidth = TITLE_WIDTH,
     .targetHeight = TITLE_HEIGHT,
 
     .fill = TSGL_INVALID_RAWCOLOR,
@@ -60,10 +60,10 @@ static void bootlogo(int index, const char* title) {
         printsettings_title.fg = green;
         printsettings_title.bg = blue;
 
-        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, 0, 0, printsettings_title, title);
+        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, TITLE_MARGIN, TITLE_MARGIN, printsettings_title, title);
         printf("tsgl_framebuffer_text %i %i %i %i (%i %i)\n", textArea.top, textArea.bottom, textArea.left, textArea.right, textArea.width, textArea.height);
     #elif
-        tsgl_framebuffer_text(&framebuffer, 0, 0, printsettings_title, title);
+        tsgl_framebuffer_text(&framebuffer, TITLE_MARGIN, TITLE_MARGIN, printsettings_title, title);
     #endif
 }
 
