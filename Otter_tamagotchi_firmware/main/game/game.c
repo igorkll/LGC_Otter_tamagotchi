@@ -212,7 +212,7 @@ static void process() {
 }
 
 static void drawPerson() {
-    Room* room = game_getCurrentRoom();
+    const Room* room = game_getCurrentRoom();
     gfx_drawCenteredImageSpriteWithTransparentSupport(room->person_x, room->person_y, person_sprite);
 }
 
