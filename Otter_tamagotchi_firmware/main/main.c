@@ -128,8 +128,6 @@ void app_main() {
     tsgl_delay(100);
 
     pushsound_play("/storage/bootlogo/startup.pcm", 8000);
-    tsgl_delay(100);
-    pushsound_play("/storage/bootlogo/startup.pcm", 8000);
 
     setBacklightAndWait(BACKLIGHT_MAX);
     tsgl_delay(3000);

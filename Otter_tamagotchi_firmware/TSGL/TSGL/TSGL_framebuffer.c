@@ -205,6 +205,7 @@ esp_err_t tsgl_framebuffer_staticInit(tsgl_framebuffer* framebuffer, void* ptr, 
     memset(framebuffer, 0, sizeof(tsgl_framebuffer));
     framebuffer->black = tsgl_color_raw(TSGL_BLACK, colormode);
     framebuffer->colorsize = tsgl_colormodeSizes[colormode];
+    framebuffer->colorsizeInt = (uint8_t)framebuffer->colorsize;
     framebuffer->width = width;
     framebuffer->height = height;
     framebuffer->defaultWidth = width;
@@ -356,7 +357,7 @@ void tsgl_framebuffer_pushFastWithTransparentSupport(tsgl_framebuffer* framebuff
         for (tsgl_pos posY = 0; posY < spriteHeight; posY++) {
             tsgl_pos setPosY = posY + y;
             tsgl_rawcolor color = tsgl_framebuffer_getWithoutCheckFast(sprite->sprite, posX, posY);
-            if (sprite->transparentColor.invalid || memcmp(color.arr, sprite->transparentColor.arr, 3) != 0) {
+            if (sprite->transparentColor.invalid || memcmp(color.arr, sprite->transparentColor.arr, framebuffer->colorsizeInt) != 0) {
                 tsgl_framebuffer_setWithoutCheckFast(framebuffer, setPosX, setPosY, color);
             }
         }
@@ -423,9 +424,9 @@ void tsgl_framebuffer_setWithoutCheck(tsgl_framebuffer* framebuffer, tsgl_pos x,
 }
 
 void tsgl_framebuffer_setWithoutCheckFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_rawcolor color) {
-    size_t index = (x + (y * framebuffer->width)) * 3;
+    size_t index = (x + (y * framebuffer->width)) * framebuffer->colorsizeInt;
     _doubleSet(framebuffer, index, color);
-    framebuffer->buffer[index + 2] = color.arr[2];
+    if (framebuffer->colorsizeInt == 3) framebuffer->buffer[index + 2] = color.arr[2];
 }
 
 void tsgl_framebuffer_fill(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_pos width, tsgl_pos height, tsgl_rawcolor color) {
@@ -598,7 +599,7 @@ tsgl_rawcolor tsgl_framebuffer_getWithoutCheck(tsgl_framebuffer* framebuffer, ts
 }
 
 tsgl_rawcolor tsgl_framebuffer_getWithoutCheckFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y) {
-    size_t index = (x + (y * framebuffer->width)) * 3;
+    size_t index = (x + (y * framebuffer->width)) * framebuffer->colorsizeInt;
     return (tsgl_rawcolor) {
         .invalid = false,
         .arr = {framebuffer->buffer[index + 0], framebuffer->buffer[index + 1], framebuffer->buffer[index + 2]}
