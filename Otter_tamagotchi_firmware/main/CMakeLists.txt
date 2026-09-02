@@ -19,4 +19,4 @@ target_compile_options(${COMPONENT_LIB} PRIVATE
     -fomit-frame-pointer
 )
 
-fatfs_create_spiflash_image(storage ../storage FLASH_IN_PROJECT)
+fatfs_create_spiflash_image(firmware ../firmware FLASH_IN_PROJECT)

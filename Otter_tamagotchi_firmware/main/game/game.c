@@ -135,7 +135,7 @@ void game_selectRoom(int index) {
     const Room* room = game_getCurrentRoom();
     if (room->music != NULL) {
         char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/storage/music/%s.pcm", room->music);
+        slnprintf(path, MAX_PATH_LEN, "/firmware/music/%s.pcm", room->music);
 
         room_music = pushsound_loop(path, 4000, room->musicVolume);
         tsgl_sound_setLoop(room_music, true);
@@ -153,7 +153,7 @@ static void loadSprites() {
         if (room_sprite != NULL) tsgl_bmp_free(room_sprite);
 
         char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/storage/rooms/%s.bmp", game_getCurrentRoom()->background);
+        slnprintf(path, MAX_PATH_LEN, "/firmware/rooms/%s.bmp", game_getCurrentRoom()->background);
         room_sprite = gfx_loadSprite(path);
     }
 
@@ -163,7 +163,7 @@ static void loadSprites() {
         if (person_sprite != NULL) tsgl_bmp_free(person_sprite);
 
         char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/storage/persons/%s.bmp", game_getCurrentPerson());
+        slnprintf(path, MAX_PATH_LEN, "/firmware/persons/%s.bmp", game_getCurrentPerson());
         person_sprite = gfx_loadSprite(path);
     }
 }
@@ -182,12 +182,12 @@ static void run_myaaaa() {
     hctl_resetIdleTimer();
     hctl_setBacklight(BACKLIGHT_MAX);
 
-    gfx_drawCenteredScreenImage("/storage/myaaaa/myaaaa.bmp");
+    gfx_drawCenteredScreenImage("/firmware/myaaaa/myaaaa.bmp");
     tsgl_display_send(&display, &framebuffer);
 
     bool running = true;
 
-    tsgl_sound* sound = pushsound_play("/storage/myaaaa/myaaaa.pcm", 8000, MYAAAA_SOUND_VOLUME);
+    tsgl_sound* sound = pushsound_play("/firmware/myaaaa/myaaaa.pcm", 8000, MYAAAA_SOUND_VOLUME);
     sound->userData = (void*)&running;
     tsgl_sound_attachCallback_end(sound, exit_myaaaa);
 

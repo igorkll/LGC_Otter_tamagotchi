@@ -17,9 +17,9 @@ void game_upmenu_reloadIcons() {
         char path[MAX_PATH_LEN];
         path[0] = '\0';
 
-        slnprintf(path, MAX_PATH_LEN, "/storage/icons/%s/%i.bmp", game_getCurrentRoom()->background, i);
+        slnprintf(path, MAX_PATH_LEN, "/firmware/icons/%s/%i.bmp", game_getCurrentRoom()->background, i);
         if (!game_isLockedInRoom() && !tsgl_filesystem_exists(path))
-            slnprintf(path, MAX_PATH_LEN, "/storage/icons/%i.bmp", i);
+            slnprintf(path, MAX_PATH_LEN, "/firmware/icons/%i.bmp", i);
 
         if (sprites[i] != NULL)
             tsgl_bmp_free(sprites[i]);
@@ -33,7 +33,7 @@ void game_upmenu_reloadIcons() {
 }
 
 void game_upmenu_init() {
-    sprite_iconline = gfx_loadSprite("/storage/images/iconline.bmp");
+    sprite_iconline = gfx_loadSprite("/firmware/images/iconline.bmp");
     game_upmenu_reloadIcons();
 }
 

@@ -54,7 +54,7 @@ tsgl_print_settings printsettings_title = {
 static void bootlogo(int index, const char* title) {
     tsgl_framebuffer_clear(&framebuffer, black);
     char path[MAX_PATH_LEN];
-    slnprintf(path, MAX_PATH_LEN, "/storage/bootlogo/bgrt%i.bmp", index);
+    slnprintf(path, MAX_PATH_LEN, "/firmware/bootlogo/bgrt%i.bmp", index);
     gfx_drawCenteredScreenImage(path);
 
     #ifdef DEBUG_TITLE
@@ -91,6 +91,7 @@ void app_main() {
     settings.backlight_pin = BL;
     settings.backlight_value = 0;
 
+    ESP_ERROR_CHECK(tsgl_filesystem_mount_fatfs("/firmware", "firmware"));
     ESP_ERROR_CHECK(tsgl_filesystem_mount_fatfs("/storage", "storage"));
 
     ESP_ERROR_CHECK(tsgl_framebuffer_init(&framebuffer, colormode, settings.width, settings.height, BUFFER));
@@ -121,7 +122,7 @@ void app_main() {
     hctl_init();
     tsgl_delay(100);
 
-    pushsound_play("/storage/bootlogo/startup.pcm", 8000, STARTUP_SOUND_VOLUME);
+    pushsound_play("/firmware/bootlogo/startup.pcm", 8000, STARTUP_SOUND_VOLUME);
 
     hctl_setBacklightAndWait(BACKLIGHT_MAX);
     tsgl_delay(STARTUP_IMAGE_CHANGE_DELAY);
