@@ -127,7 +127,7 @@ void app_main() {
     tsgl_delay(STARTUP_IMAGE_CHANGE_DELAY);
 
     hctl_setBacklightAndWait(BACKLIGHT_OFF);
-    bootlogo(1, "\xCF\xF0\xEE\xE3\xF0\xE0\xEC\xEC\xE8\xF1\xF2\xF1\xEA\xE8\xE5\n\xCB\xE0\xEF\xEA\xE8\n\x55\x77\x55"); // Программистские Лапки UwU
+    bootlogo(1, "\xD0\xE0\xE7\xF0\xE0\xE1\xEE\xF2\xF7\xE8\xEA\n\x55\x77\x55"); // Разработчик\nUwU
     tsgl_display_send(&display, &framebuffer);
     tsgl_delay(100);
 
