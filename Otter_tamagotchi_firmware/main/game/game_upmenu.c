@@ -9,7 +9,6 @@ static bool sprites_active[GAME_UPMENU_COUNTS_COUNT];
 static tsgl_sprite* sprite_iconline;
 static int current_selected = -1;
 
-#define ICON_FAILBACK "/storage/icons/failback.bmp"
 #define FRAME2_LINE_LEN 5
 #define FRAME2_LINE_OFFSET (FRAME2_LINE_LEN - 1)
 
@@ -18,18 +17,15 @@ void game_upmenu_reloadIcons() {
         char path[MAX_PATH_LEN];
         path[0] = '\0';
 
-        if (!game_isLockedInRoom() || i >= ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT) {
-            slnprintf(path, MAX_PATH_LEN, "/storage/icons/%s/%i.bmp", game_getCurrentRoom()->background, i);
-            if (!tsgl_filesystem_exists(path)) slnprintf(path, MAX_PATH_LEN, "/storage/icons/%i.bmp", i);
-        }
+        slnprintf(path, MAX_PATH_LEN, "/storage/icons/%s/%i.bmp", game_getCurrentRoom()->background, i);
+        if (!game_isLockedInRoom() && !tsgl_filesystem_exists(path))
+            slnprintf(path, MAX_PATH_LEN, "/storage/icons/%i.bmp", i);
 
         if (sprites[i] != NULL)
             tsgl_bmp_free(sprites[i]);
 
-        if (tsgl_filesystem_exists(path)) {
-            tsgl_sprite* sprite = gfx_loadSprite(path);
-            if (sprite == NULL) sprite = gfx_loadSprite(ICON_FAILBACK);
-            sprites[i] = sprite;
+        if (path[0] != '\0' && tsgl_filesystem_exists(path)) {
+            sprites[i] = gfx_loadSprite(path);
         } else {
             sprites[i] = NULL;
         }
