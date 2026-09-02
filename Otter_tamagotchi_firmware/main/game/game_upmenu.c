@@ -73,14 +73,16 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
     int iconWidth = 20;
     int iconHeight = 20;
 
+    time_t uptime = tsgl_time();
     for (size_t i = 0; i < GAME_UPMENU_LINE_COUNTS_COUNT; i++) {
         size_t i2 = i + offsetIndex;
 
         int x = ((width / 2) - (iconWidth / 2)) + ((i - (GAME_UPMENU_LINE_COUNTS_COUNT / 2)) * (width / 5));
         int y = offsetHeight + ((lineHeight / 2) - (iconHeight / 2));
 
-        tsgl_rawcolor fillColor = sprites_active[i2] ? red : transparent;
-        tsgl_rawcolor fillColor2 = i2 == selected ? yellow : fillColor;
+        tsgl_rawcolor borderColor = sprites_active[i2] ? red : transparent;
+        tsgl_rawcolor cornersColor = uptime % 1000 >= 500 ? blue : yellow;
+        tsgl_rawcolor currentCordersColor = i2 == selected ? cornersColor : borderColor;
 
         tsgl_pos posX = x - 1;
         tsgl_pos posY = y - 1;
@@ -90,24 +92,24 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         tsgl_pos pos2Y = posY + (fillSizeY - 1);
 
         // main border
-        tsgl_framebuffer_fill(&framebuffer, posX, posY, fillSizeX, fillSizeY, fillColor);
+        tsgl_framebuffer_fill(&framebuffer, posX, posY, fillSizeX, fillSizeY, borderColor);
 
         // corner border
         // left & top
-        tsgl_framebuffer_fill(&framebuffer, posX, posY,                             FRAME2_LINE_LEN, 1, fillColor2);
-        tsgl_framebuffer_fill(&framebuffer, posX, posY,                             1, FRAME2_LINE_LEN, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, posX, posY,                             FRAME2_LINE_LEN, 1, currentCordersColor);
+        tsgl_framebuffer_fill(&framebuffer, posX, posY,                             1, FRAME2_LINE_LEN, currentCordersColor);
 
         // right & bottom
-        tsgl_framebuffer_fill(&framebuffer, pos2X - FRAME2_LINE_OFFSET, pos2Y,      FRAME2_LINE_LEN, 1, fillColor2);
-        tsgl_framebuffer_fill(&framebuffer, pos2X, pos2Y - FRAME2_LINE_OFFSET,      1, FRAME2_LINE_LEN, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, pos2X - FRAME2_LINE_OFFSET, pos2Y,      FRAME2_LINE_LEN, 1, currentCordersColor);
+        tsgl_framebuffer_fill(&framebuffer, pos2X, pos2Y - FRAME2_LINE_OFFSET,      1, FRAME2_LINE_LEN, currentCordersColor);
 
         // left & bottom
-        tsgl_framebuffer_fill(&framebuffer, posX, pos2Y,                            FRAME2_LINE_LEN, 1, fillColor2);
-        tsgl_framebuffer_fill(&framebuffer, posX, pos2Y - FRAME2_LINE_OFFSET,       1, FRAME2_LINE_LEN, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, posX, pos2Y,                            FRAME2_LINE_LEN, 1, currentCordersColor);
+        tsgl_framebuffer_fill(&framebuffer, posX, pos2Y - FRAME2_LINE_OFFSET,       1, FRAME2_LINE_LEN, currentCordersColor);
 
         // right & top
-        tsgl_framebuffer_fill(&framebuffer, pos2X, posY,                            1, FRAME2_LINE_LEN, fillColor2);
-        tsgl_framebuffer_fill(&framebuffer, pos2X - FRAME2_LINE_OFFSET, posY,       FRAME2_LINE_LEN, 1, fillColor2);
+        tsgl_framebuffer_fill(&framebuffer, pos2X, posY,                            1, FRAME2_LINE_LEN, currentCordersColor);
+        tsgl_framebuffer_fill(&framebuffer, pos2X - FRAME2_LINE_OFFSET, posY,       FRAME2_LINE_LEN, 1, currentCordersColor);
 
         // icon
         tsgl_sprite* sprite = sprites[i2];

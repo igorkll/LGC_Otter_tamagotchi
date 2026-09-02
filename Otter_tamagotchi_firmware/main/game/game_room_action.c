@@ -30,7 +30,7 @@ void game_car_roomAction(int action) {
 
 void game_shop_roomAction(int action) {
     switch (action) {
-        case 0:
+        case L2:
             game_selectRoom(ID_CAR);
             break;
     }
