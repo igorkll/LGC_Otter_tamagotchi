@@ -207,7 +207,7 @@ static void process() {
     int used = game_upmenu_process();
     if (used >= 0) {
         if (used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT) {
-            game_selectRoom(used);
+            if (!game_isLockedInRoom()) game_selectRoom(used);
         } else {
             game_roomAction(used - ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT);
         }
