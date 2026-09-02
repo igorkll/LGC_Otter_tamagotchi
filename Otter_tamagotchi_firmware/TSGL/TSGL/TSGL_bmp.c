@@ -1,6 +1,7 @@
 #include "TSGL_bmp.h"
 #include <TSGL_filesystem.h>
 #include <esp_log.h>
+#include <string.h>
 
 #define BMP_BUFFER_SIZE (8 * 1024)
 static const char* TAG = "TSGL_bmp";
@@ -194,11 +195,48 @@ static tsgl_imageInfo _parse(const char* path, tsgl_framebuffer* sprite_fb, tsgl
         }
     }
 
+    palette_entry_t palette[256];
+    memset(palette, 0, sizeof(palette));
+
+    // Если битность <= 8, читаем палитру
+    if (info.bits <= 8) {
+        // Определяем размер одной записи в палитре
+        size_t entry_size = (bcSize == 12) ? 3 : 4; // для старого формата – 3 байта (RGB), иначе 4 (BGRA)
+        for (uint32_t i = 0; i < palette_entries; i++) {
+            if (entry_size == 4) {
+                uint8_t b, g, r, reserved;
+                fread(&b, 1, 1, file);
+                fread(&g, 1, 1, file);
+                fread(&r, 1, 1, file);
+                fread(&reserved, 1, 1, file);
+                palette[i].blue  = b;
+                palette[i].green = g;
+                palette[i].red   = r;
+                palette[i].reserved = reserved;
+            } else { // 3 байта
+                uint8_t r, g, b;
+                fread(&r, 1, 1, file);
+                fread(&g, 1, 1, file);
+                fread(&b, 1, 1, file);
+                palette[i].red   = r;
+                palette[i].green = g;
+                palette[i].blue  = b;
+                palette[i].reserved = 0;
+            }
+        }
+    }
+
     info.reverseLines = info.height > 0;
     info.height = abs(info.height);
 
     if (sprite_fb) {
+        if (info.bits != 8 && info.bits != 24 && info.bits != 32) {
+            ESP_LOGE(TAG, "BMP ERROR: unsupported bit depth %d", info.bits);
+        }
+
         fseek(file, BITMAPFILEHEADER.bfOffBits, SEEK_SET);
+
+        uint32_t rowSize = ((info.bits * info.width + 31) / 32) * 4;
 
         uint8_t* bmpBuffer = malloc(BMP_BUFFER_SIZE);
         size_t bmpBufferPos = BMP_BUFFER_SIZE;
@@ -213,21 +251,29 @@ static tsgl_imageInfo _parse(const char* path, tsgl_framebuffer* sprite_fb, tsgl
 
         for (tsgl_pos iy = 0; iy < info.height; iy++) {
             for (tsgl_pos ix = 0; ix < info.width; ix++) {
-                uint8_t blue = bmpRead();
-                uint8_t green = bmpRead();
-                uint8_t red = bmpRead();
-                uint8_t alpha = 255;
-                if (info.bits == 32) {
+                uint8_t red = 0, green = 0, blue = 0, alpha = 255;
+
+                if (info.bits == 8) {
+                    uint8_t idx = bmpRead();
+                    if (idx < palette_entries) {
+                        red   = palette[idx].red;
+                        green = palette[idx].green;
+                        blue  = palette[idx].blue;
+                    } else {
+                        ESP_LOGW(TAG, "BMP: palette index %d out of range", idx);
+                    }
+                } else if (info.bits == 24) {
+                    blue  = bmpRead();
+                    green = bmpRead();
+                    red   = bmpRead();
+                } else if (info.bits == 32) {
+                    blue  = bmpRead();
+                    green = bmpRead();
+                    red   = bmpRead();
                     alpha = bmpRead();
                 }
 
-                tsgl_pos iiy;
-                if (info.reverseLines) {
-                    iiy = info.height - iy - 1;
-                } else {
-                    iiy = iy;
-                }
-
+                tsgl_pos iiy = info.reverseLines ? (info.height - iy - 1) : iy;
                 if (alpha > 0) {
                     tsgl_framebuffer_set(sprite_fb, ix, iiy, tsgl_color_raw(tsgl_color_pack(red, green, blue), sprite_fb->colormode));
                 } else {
