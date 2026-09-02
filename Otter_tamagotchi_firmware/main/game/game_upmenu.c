@@ -26,9 +26,13 @@ void game_upmenu_reloadIcons() {
         if (sprites[i] != NULL)
             tsgl_bmp_free(sprites[i]);
 
-        tsgl_sprite* sprite = gfx_loadSprite(path);
-        if (sprite == NULL) sprite = gfx_loadSprite(ICON_FAILBACK);
-        sprites[i] = sprite;
+        if (tsgl_filesystem_exists(path)) {
+            tsgl_sprite* sprite = gfx_loadSprite(path);
+            if (sprite == NULL) sprite = gfx_loadSprite(ICON_FAILBACK);
+            sprites[i] = sprite;
+        } else {
+            sprites[i] = NULL;
+        }
     }
 }
 
@@ -66,11 +70,11 @@ int game_upmenu_process() {
 static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
     int lineHeight = sprite_iconline->sprite->height;
 
+    int iconWidth = 20;
+    int iconHeight = 20;
+
     for (size_t i = 0; i < GAME_UPMENU_LINE_COUNTS_COUNT; i++) {
         size_t i2 = i + offsetIndex;
-
-        int iconWidth = sprites[0]->sprite->width;
-        int iconHeight = sprites[0]->sprite->height;
 
         int x = ((width / 2) - (iconWidth / 2)) + ((i - (GAME_UPMENU_LINE_COUNTS_COUNT / 2)) * (width / 5));
         int y = offsetHeight + ((lineHeight / 2) - (iconHeight / 2));
@@ -106,7 +110,8 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         tsgl_framebuffer_fill(&framebuffer, pos2X - FRAME2_LINE_OFFSET, posY,       FRAME2_LINE_LEN, 1, fillColor2);
 
         // icon
-        tsgl_framebuffer_pushFast(&framebuffer, x, y, sprites[i2]);
+        tsgl_sprite* sprite = sprites[i2];
+        if (sprite) tsgl_framebuffer_pushFast(&framebuffer, x, y, sprite);
     }
 }
 

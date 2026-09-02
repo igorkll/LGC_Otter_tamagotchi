@@ -43,7 +43,7 @@ const Room rooms[] = {{
 {
     .background = "car",
     .music = "car",
-    .musicVolume = 4,
+    .musicVolume = 1,
     .person_x = (WIDTH / 4) * 3,
     .person_y = (HEIGHT / 4) * 3,
 }};
@@ -124,7 +124,7 @@ void game_selectRoom(int index) {
         char path[MAX_PATH_LEN];
         slnprintf(path, MAX_PATH_LEN, "/storage/music/%s.pcm", room->music);
 
-        room_music = pushsound_loop(path, 4000);
+        room_music = pushsound_loop(path, 4000, room->musicVolume);
         tsgl_sound_setLoop(room_music, true);
     }
 
@@ -173,8 +173,7 @@ static void run_myaaaa() {
 
     bool running = true;
 
-    tsgl_sound* sound = pushsound_play("/storage/myaaaa/myaaaa.pcm", 8000);
-    tsgl_sound_setVolume(sound, MYAAAA_SOUND_VOLUME);
+    tsgl_sound* sound = pushsound_play("/storage/myaaaa/myaaaa.pcm", 8000, MYAAAA_SOUND_VOLUME);
     sound->userData = (void*)&running;
     tsgl_sound_attachCallback_end(sound, exit_myaaaa);
 

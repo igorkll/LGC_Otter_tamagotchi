@@ -121,8 +121,7 @@ void app_main() {
     hctl_init();
     tsgl_delay(100);
 
-    tsgl_sound* startup_sound = pushsound_play("/storage/bootlogo/startup.pcm", 8000);
-    tsgl_sound_setVolume(startup_sound, STARTUP_SOUND_VOLUME);
+    pushsound_play("/storage/bootlogo/startup.pcm", 8000, STARTUP_SOUND_VOLUME);
 
     hctl_setBacklightAndWait(BACKLIGHT_MAX);
     tsgl_delay(STARTUP_IMAGE_CHANGE_DELAY);
