@@ -10,43 +10,52 @@
 
 static const char* game_state_path = "/storage/gamestat";
 
-const Room rooms[] = {{
-    .background = "bedroom",
-    .music = NULL,
-    .person_x = (WIDTH / 4) * 3,
-    .person_y = (HEIGHT / 4) * 3,
-},
-{
-    .background = "kitchen",
-    .music = NULL,
-    .person_x = (WIDTH / 4) - 20,
-    .person_y = (HEIGHT / 4) * 3,
-},
-{
-    .background = "gaming",
-    .music = NULL,
-    .person_x = (WIDTH / 4) + 20,
-    .person_y = (HEIGHT / 4) * 3,
-},
-{
-    .background = "toilet",
-    .music = NULL,
-    .person_x = (WIDTH / 4) * 2,
-    .person_y = (HEIGHT / 4) * 3,
-},
-{
-    .background = "yard",
-    .music = NULL,
-    .person_x = WIDTH / 4,
-    .person_y = (HEIGHT / 4) * 2,
-},
-{
-    .background = "car",
-    .music = "car",
-    .musicVolume = 1,
-    .person_x = (WIDTH / 4) * 3,
-    .person_y = (HEIGHT / 4) * 3,
-}};
+const Room rooms[] = {
+    {
+        .background = "bedroom",
+        .music = NULL,
+        .person_x = (WIDTH / 4) * 3,
+        .person_y = (HEIGHT / 4) * 3,
+    },
+    {
+        .background = "kitchen",
+        .music = NULL,
+        .person_x = (WIDTH / 4) - 20,
+        .person_y = (HEIGHT / 4) * 3,
+    },
+    {
+        .background = "gaming",
+        .music = NULL,
+        .person_x = (WIDTH / 4) + 20,
+        .person_y = (HEIGHT / 4) * 3,
+    },
+    {
+        .background = "toilet",
+        .music = NULL,
+        .person_x = (WIDTH / 4) * 2,
+        .person_y = (HEIGHT / 4) * 3,
+    },
+    {
+        .background = "yard",
+        .music = NULL,
+        .person_x = WIDTH / 4,
+        .person_y = (HEIGHT / 4) * 2,
+    },
+    {
+        .background = "car",
+        .music = "car",
+        .musicVolume = 1,
+        .person_x = (WIDTH / 4) * 3,
+        .person_y = (HEIGHT / 4) * 3,
+    },
+    {
+        .background = "shop",
+        .music = "shop",
+        .musicVolume = 1,
+        .person_x = (WIDTH / 4) * 3,
+        .person_y = (HEIGHT / 4) * 3,
+    }
+};
 
 static const char* game_persons_images[] = {
     "otter"

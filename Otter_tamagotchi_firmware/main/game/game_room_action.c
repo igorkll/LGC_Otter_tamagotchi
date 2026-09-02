@@ -4,27 +4,50 @@
 // начало второй линии кнопок
 #define L2 5
 
+#define ID_YARD 4
+#define ID_CAR 5
+#define ID_SHOP 6
+
 void game_yard_roomAction(int action) {
-    if (action == L2) {
-        game_selectRoom(5);
+    switch (action) {
+        case L2:
+            game_selectRoom(ID_CAR);
+            break;
     }
 }
 
 void game_car_roomAction(int action) {
-    if (action == L2) {
-        game_selectRoom(4);
+    switch (action) {
+        case L2:
+            game_selectRoom(ID_YARD);
+            break;
+        
+        case L2 + 1:
+            game_selectRoom(ID_SHOP);
+            break;
     }
 }
 
+void game_shop_roomAction(int action) {
+    switch (action) {
+        case L2:
+            game_selectRoom(ID_CAR);
+            break;
+    }
+}
 
 void game_roomAction(int action) {
     switch (game_getCurrentRoomIndex()) {
-        case 4:
+        case ID_YARD:
             game_yard_roomAction(action);
             break;
 
-        case 5:
+        case ID_CAR:
             game_car_roomAction(action);
+            break;
+
+        case ID_SHOP:
+            game_shop_roomAction(action);
             break;
         
         default:
