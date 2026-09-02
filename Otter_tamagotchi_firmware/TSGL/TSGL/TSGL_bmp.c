@@ -102,6 +102,13 @@ typedef struct {
 
 #pragma pack(pop)
 
+typedef struct {
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+    uint8_t reserved;
+} palette_entry_t;
+
 static tsgl_imageInfo _parse(const char* path, tsgl_framebuffer* sprite_fb, tsgl_rawcolor transparentColor) {
     tsgl_imageInfo info = {0};
 
@@ -120,6 +127,10 @@ static tsgl_imageInfo _parse(const char* path, tsgl_framebuffer* sprite_fb, tsgl
     // read info
     uint32_t bcSize;
     fread(&bcSize, sizeof(uint32_t), 1, file);
+    
+    uint32_t palette_size = 0;
+    uint32_t palette_entries = 0;
+    uint32_t compression = 0;
     switch (bcSize) {
         case 12 : {
             BITMAPCOREHEADER_struct BITMAPINFO;
@@ -127,6 +138,8 @@ static tsgl_imageInfo _parse(const char* path, tsgl_framebuffer* sprite_fb, tsgl
             info.width = BITMAPINFO.bcWidth;
             info.height = BITMAPINFO.bcHeight;
             info.bits = BITMAPINFO.bcBitCount;
+            
+            palette_size = 0;  // для 12-байтового заголовка палитра состоит из 3-байтовых записей
             break;
         }
 
@@ -136,6 +149,13 @@ static tsgl_imageInfo _parse(const char* path, tsgl_framebuffer* sprite_fb, tsgl
             info.width = BITMAPINFO.biWidth;
             info.height = BITMAPINFO.biHeight;
             info.bits = BITMAPINFO.biBitCount;
+
+            compression = BITMAPINFO.biCompression;
+            palette_entries = BITMAPINFO.biClrUsed;
+            if (palette_entries == 0 && info.bits <= 8) {
+                palette_entries = 1 << info.bits; // если 0, то полная палитра
+            }
+            palette_size = 4;
             break;
         }
 
@@ -145,6 +165,11 @@ static tsgl_imageInfo _parse(const char* path, tsgl_framebuffer* sprite_fb, tsgl
             info.width = BITMAPINFO.biWidth;
             info.height = BITMAPINFO.biHeight;
             info.bits = BITMAPINFO.biBitCount;
+
+            compression = BITMAPINFO.biCompression;
+            palette_entries = BITMAPINFO.biClrUsed;
+            if (palette_entries == 0 && info.bits <= 8) palette_entries = 1 << info.bits;
+            palette_size = 4;
             break;
         }
 
@@ -154,6 +179,11 @@ static tsgl_imageInfo _parse(const char* path, tsgl_framebuffer* sprite_fb, tsgl
             info.width = BITMAPINFO.biWidth;
             info.height = BITMAPINFO.biHeight;
             info.bits = BITMAPINFO.biBitCount;
+
+            compression = BITMAPINFO.biCompression;
+            palette_entries = BITMAPINFO.biClrUsed;
+            if (palette_entries == 0 && info.bits <= 8) palette_entries = 1 << info.bits;
+            palette_size = 4;
             break;
         }
 
