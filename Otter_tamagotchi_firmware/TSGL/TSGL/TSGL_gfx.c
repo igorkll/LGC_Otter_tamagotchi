@@ -217,10 +217,12 @@ static void _text_rastezise_main(bool drawStroke, void* arg, TSGL_SET_REFERENCE(
                 uint16_t charHeight = tsgl_font_height(sets.font, chr);
                 uint16_t scaleCharWidth = ((float)charWidth * sets._scaleX * sets.scaleX) + 0.5;
                 uint16_t scaleCharHeight = ((float)charHeight * sets._scaleY * sets.scaleY) + 0.5;
+
                 uint16_t blockCheckX = charWidth / scaleCharWidth;
-                if (blockCheckX < 1 || set == NULL) blockCheckX = 0;
+                if (blockCheckX < 1) blockCheckX = 1;
                 uint16_t blockCheckY = charHeight / scaleCharHeight;
-                if (blockCheckY < 1 || set == NULL) blockCheckY = 0;
+                if (blockCheckY < 1) blockCheckY = 1;
+
                 for (tsgl_pos iy = 0; iy < scaleCharHeight; iy++) {
                     tsgl_pos py = _getY(sets, y, iy, scaleCharHeight, maxScaleCharHeight);
                     if (py < minY) continue;
@@ -242,24 +244,25 @@ static void _text_rastezise_main(bool drawStroke, void* arg, TSGL_SET_REFERENCE(
                         }
                         if (px > textArea->right) textArea->right = px;
 
-                        float findedCount = 0;
-                        float allCount = 0;
-                        for (tsgl_pos lix = 0; lix < blockCheckX; lix++) {
-                            tsgl_pos oix = (((float)ix) / sets._scaleX / sets.scaleX) + lix;
-                            if (oix >= charWidth) break;
-                            for (tsgl_pos liy = 0; liy < blockCheckY; liy++) {
-                                tsgl_pos oiy = (((float)iy) / sets._scaleY / sets.scaleY) + liy;
-                                if (oiy >= charHeight) break;
-
-                                if (tsgl_font_parse(sets.font, charPosition, oix + (oiy * charWidth)))
-                                    findedCount++;
-                                allCount++;
-                            }
-                        }
-
                         if (set != NULL) {
+                            float findedCount = 0;
+                            float allCount = 0;
+                            for (tsgl_pos lix = 0; lix < blockCheckX; lix++) {
+                                tsgl_pos oix = (((float)ix) / sets._scaleX / sets.scaleX) + lix;
+                                if (oix >= charWidth) break;
+                                for (tsgl_pos liy = 0; liy < blockCheckY; liy++) {
+                                    tsgl_pos oiy = (((float)iy) / sets._scaleY / sets.scaleY) + liy;
+                                    if (oiy >= charHeight) break;
+    
+                                    if (tsgl_font_parse(sets.font, charPosition, oix + (oiy * charWidth)))
+                                        findedCount++;
+                                    allCount++;
+                                }
+                            }
+
                             tsgl_rawcolor color = TSGL_INVALID_RAWCOLOR;
-                            if (findedCount / allCount > 0.5) {
+                            float contrast = sets.contrast > 0 ? sets.contrast : DEFAULT_CONTRAST;
+                            if (findedCount / allCount > (1 - contrast)) {
                                 if (drawStroke) {
                                     for (tsgl_pos ox = -sets.stroke_thickness; ox <= sets.stroke_thickness; ox++) {
                                         for (tsgl_pos oy = -sets.stroke_thickness; oy <= sets.stroke_thickness; oy++) {
