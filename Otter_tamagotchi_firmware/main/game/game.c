@@ -108,16 +108,20 @@ static void game_load() {
     memcpy(&old_state, &current_state, sizeof(Game_state));
 }
 
+static void unload_room_sound() {
+    if (room_music) {
+        tsgl_sound_free(room_music);
+        room_music = NULL;
+    }
+}
+
 void game_selectRoom(int index) {
     current_state.room = index;
     for (size_t i = 0; i < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT; i++) {
         game_upmenu_setActivate(i, index == i);
     }
 
-    if (room_music) {
-        tsgl_sound_free(room_music);
-        room_music = NULL;
-    }
+    unload_room_sound();
 
     const Room* room = game_getCurrentRoom();
     if (room->music != NULL) {
@@ -165,6 +169,7 @@ static void exit_myaaaa(tsgl_sound* sound) {
 }
 
 static void run_myaaaa() {
+    unload_room_sound();
     hctl_resetIdleTimer();
     hctl_setBacklight(BACKLIGHT_MAX);
 
@@ -187,7 +192,7 @@ static void run_myaaaa() {
     }
     
     tsgl_benchmark_reset(&benchmark);
-    game_selectRoom(5);
+    game_selectRoom(current_state.room);
 }
 
 static void process() {
