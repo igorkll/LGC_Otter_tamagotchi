@@ -51,7 +51,7 @@ const Room rooms[] = {
     {
         .background = "shop",
         .music = "shop",
-        .musicVolume = 1,
+        .musicVolume = 0.6,
         .person_x = (WIDTH / 4) * 3,
         .person_y = (HEIGHT / 4) * 3,
     }
