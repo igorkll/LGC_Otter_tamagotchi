@@ -4,6 +4,7 @@
 #include "../pushsound.h"
 #include "../funcs.h"
 #include "game_upmenu.h"
+#include "game_room_action.h"
 
 // ------------------------------------ consts
 
@@ -71,6 +72,10 @@ static tsgl_sound* room_music;
 
 const Room* game_getCurrentRoom() {
     return &rooms[current_state.room];
+}
+
+size_t game_getCurrentRoomIndex() {
+    return current_state.room;
 }
 
 bool game_isLockedInRoom() {
@@ -201,8 +206,12 @@ static void process() {
     }
     
     int used = game_upmenu_process();
-    if (used >= 0 && used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT) {
-        game_selectRoom(used);
+    if (used >= 0) {
+        if (used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT) {
+            game_selectRoom(used);
+        } else {
+            game_roomAction(used - ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT);
+        }
     }
 
     if (memcmp(&current_state, &old_state, sizeof(Game_state)) != 0) {
