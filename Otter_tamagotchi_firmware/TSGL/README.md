@@ -31,5 +31,6 @@
 ## commands examples
 * convert audio (mono, 8 bit, 8000 sample rate): ffmpeg -i input.mp3 -acodec pcm_u8 -ac 1 -ar 8000 -f u8 output.pcm
 * convert audio fragment (mono, 8 bit, 4000 sample rate): ffmpeg -i input.mp3 -ss 00:10 -to 01:42 -acodec pcm_u8 -ac 1 -ar 4000 -f u8 output.pcm
+* compress bmp: ffmpeg -i 24bits_or_32bits.bmp -pix_fmt pal8 8bit_compressed.bmp
 
 ## warnings

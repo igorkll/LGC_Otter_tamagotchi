@@ -10,7 +10,7 @@
 
 void game_yard_roomAction(int action) {
     switch (action) {
-        case L2:
+        case 0:
             game_selectRoom(ID_CAR);
             break;
     }
@@ -18,11 +18,11 @@ void game_yard_roomAction(int action) {
 
 void game_car_roomAction(int action) {
     switch (action) {
-        case L2:
+        case 0:
             game_selectRoom(ID_YARD);
             break;
         
-        case L2 + 1:
+        case 1:
             game_selectRoom(ID_SHOP);
             break;
     }
@@ -30,7 +30,7 @@ void game_car_roomAction(int action) {
 
 void game_shop_roomAction(int action) {
     switch (action) {
-        case L2:
+        case 0:
             game_selectRoom(ID_CAR);
             break;
     }
@@ -48,9 +48,6 @@ void game_roomAction(int action) {
 
         case ID_SHOP:
             game_shop_roomAction(action);
-            break;
-        
-        default:
             break;
     }
 }
