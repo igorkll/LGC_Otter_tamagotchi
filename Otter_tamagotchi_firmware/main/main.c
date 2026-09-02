@@ -92,7 +92,7 @@ void app_main() {
     settings.backlight_value = 0;
 
     ESP_ERROR_CHECK(tsgl_filesystem_mount_fatfs("/firmware", "firmware"));
-    ESP_ERROR_CHECK(tsgl_filesystem_mount_fatfs("/storage", "storage"));
+    ESP_ERROR_CHECK(tsgl_filesystem_mount_fatfs_af("/storage", "storage"));
 
     ESP_ERROR_CHECK(tsgl_framebuffer_init(&framebuffer, colormode, settings.width, settings.height, BUFFER));
     if (USE_HARDWARE_ROTATE) {
