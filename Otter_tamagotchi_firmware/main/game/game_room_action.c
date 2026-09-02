@@ -1,14 +1,17 @@
 #include "game_room_action.h"
 #include "game.h"
 
+// начало второй линии кнопок
+#define L2 5
+
 void game_yard_roomAction(int action) {
-    if (action == 0) {
+    if (action == L2) {
         game_selectRoom(5);
     }
 }
 
 void game_car_roomAction(int action) {
-    if (action == 0) {
+    if (action == L2) {
         game_selectRoom(4);
     }
 }

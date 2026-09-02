@@ -114,13 +114,13 @@ void game_selectRoom(int index) {
         game_upmenu_setActivate(i, index == i);
     }
 
+    if (room_music) {
+        tsgl_sound_free(room_music);
+        room_music = NULL;
+    }
+
     const Room* room = game_getCurrentRoom();
-    if (room->music == NULL) {
-        if (room_music) {
-            tsgl_sound_free(room_music);
-            room_music = NULL;
-        }
-    } else {
+    if (room->music != NULL) {
         char path[MAX_PATH_LEN];
         slnprintf(path, MAX_PATH_LEN, "/storage/music/%s.pcm", room->music);
 
@@ -181,7 +181,7 @@ static void run_myaaaa() {
         tsgl_keyboard_readAll(&keyboard);
 
         if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
-            tsgl_sound_stop(sound);
+            tsgl_sound_free(sound);
             running = false;
         }
     }
@@ -206,10 +206,10 @@ static void process() {
     
     int used = game_upmenu_process();
     if (used >= 0) {
-        if (used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT) {
-            if (!game_isLockedInRoom()) game_selectRoom(used);
+        if (used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT && !game_isLockedInRoom()) {
+            game_selectRoom(used);
         } else {
-            game_roomAction(used - ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT);
+            game_roomAction(used);
         }
     }
 
