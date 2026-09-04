@@ -192,3 +192,7 @@ void game_upmenu_setActivate(int index, bool state) {
 bool game_upmenu_isActivate(int index) {
     return sprites_active[index];
 }
+
+void game_upmenu_redrawTitle() {
+    old_selectingIndex = -1;
+}

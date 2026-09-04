@@ -25,6 +25,9 @@ typedef enum {
 typedef struct {
     game_room room;
     game_person person;
+    
+    // car
+    game_room old_car_room;
 
     // action timer
     int actionTimer;
@@ -51,3 +54,4 @@ const char* game_getCurrentPerson();
 void game_save();
 void game_start();
 void game_startActionTimer(int actionTimer, const char* str, game_action action, game_room nextRoom);
+void game_stopActionTimer();

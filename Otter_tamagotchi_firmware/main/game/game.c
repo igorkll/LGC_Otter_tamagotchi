@@ -126,6 +126,8 @@ static void unload_room_sound() {
 
 void game_selectRoom(int index) {
     current_state.room = index;
+    if (index != ID_CAR) current_state.old_car_room = index;
+
     for (size_t i = 0; i < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT; i++) {
         game_upmenu_setActivate(i, index == i);
     }
@@ -141,6 +143,7 @@ void game_selectRoom(int index) {
         tsgl_sound_setLoop(room_music, true);
     }
 
+    game_upmenu_redrawTitle();
     game_upmenu_reloadIcons();
 }
 
@@ -307,4 +310,8 @@ void game_startActionTimer(int actionTimer, const char* str, game_action action,
     slnprintf(current_state.actionTimer_str, MAX_ACTION_LEN, "%s", str);
     current_state.actionTimer_action = action;
     current_state.actionTimer_nextRoom = nextRoom;
+}
+
+void game_stopActionTimer() {
+    current_state.actionTimer = 0;
 }

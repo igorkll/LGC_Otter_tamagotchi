@@ -12,3 +12,4 @@ void game_upmenu_draw();
 int game_upmenu_currentSelected();
 void game_upmenu_setActivate(int index, bool state);
 bool game_upmenu_isActivate(int index);
+void game_upmenu_redrawTitle();
