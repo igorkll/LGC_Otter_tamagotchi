@@ -204,7 +204,35 @@ static void run_myaaaa() {
     game_selectRoom(current_state.room);
 }
 
+static void onTimerAction() {
+    switch (current_state.actionTimer_action) {
+        case game_action_switchRoom:
+            game_selectRoom(current_state.actionTimer_nextRoom);
+            break;
+        
+        default:
+            break;
+    }
+}
+
+static time_t oldTimerTickTime = -9999;
+static void checkActionTimer() {
+    time_t currentTime = tsgl_time();
+    if (currentTime - oldTimerTickTime > 1000) {
+        oldTimerTickTime = currentTime;
+
+        if (current_state.actionTimer > 0) {
+            current_state.actionTimer--;
+            if (current_state.actionTimer <= 0) {
+                onTimerAction();
+                current_state.actionTimer = 0;
+            }
+        }
+    }
+}
+
 static void process() {
+    checkActionTimer();
     hctl_process();
 
     bool allPressed = true;
@@ -221,12 +249,7 @@ static void process() {
     int used = game_upmenu_process();
     if (used >= 0) {
         if (used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT && !game_isLockedInRoom()) {
-            if (current_state.room == ID_CAR) {
-                // Поехали!
-                game_startActionTimer(GAMECFG_CAR_MOVE_TIME, "\xCF\xEE\xE5\xF5\xE0\xEB\xE8\x21", game_action_switchRoom, used);
-            } else {
-                game_selectRoom(used);
-            }
+            game_selectRoom(used);
         } else {
             game_roomAction(used);
         }
@@ -243,33 +266,6 @@ static void drawPerson() {
     gfx_drawCenteredImageSpriteWithTransparentSupport(room->person_x, room->person_y, person_sprite);
 }
 
-static void onTimerAction() {
-    switch (current_state.actionTimer_action) {
-        case game_action_switchRoom:
-            game_selectRoom(current_state.actionTimer_nextRoom);
-            break;
-        
-        default:
-            break;
-    }
-}
-
-static void checkActionTimer() {
-    time_t currentTime = tsgl_time();
-    if (currentTime - oldTimerTickTime > 1000) {
-        oldTimerTickTime = currentTime;
-
-        if (current_state.actionTimer > 0) {
-            current_state.actionTimer--;
-            if (current_state.actionTimer <= 0) {
-                onTimerAction();
-                current_state.actionTimer = 0;
-            }
-        }
-    }
-}
-
-static time_t oldTimerTickTime = -9999;
 void game_start() {
     ESP_LOGI(TAG, "game started!");
     tsgl_benchmark_reset(&benchmark);
@@ -303,8 +299,6 @@ void game_start() {
             hctl_setBacklightAndWait(BACKLIGHT_MAX);
             firstGameFrame = false;
         }
-
-        checkActionTimer();
     }
 }
 

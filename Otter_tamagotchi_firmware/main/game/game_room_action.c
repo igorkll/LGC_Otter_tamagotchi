@@ -4,6 +4,11 @@
 // начало второй линии кнопок
 #define L2 5
 
+static void car_selectRoom(game_room moveTo) {
+    // Поехали!
+    game_startActionTimer(GAMECFG_CAR_MOVE_TIME, "\xCF\xEE\xE5\xF5\xE0\xEB\xE8\x21", game_action_switchRoom, moveTo);
+}
+
 void game_yard_roomAction(int action) {
     switch (action) {
         case L2:
@@ -15,11 +20,11 @@ void game_yard_roomAction(int action) {
 void game_car_roomAction(int action) {
     switch (action) {
         case 0:
-            game_selectRoom(ID_YARD);
+            car_selectRoom(ID_YARD);
             break;
         
         case 1:
-            game_selectRoom(ID_SHOP);
+            car_selectRoom(ID_SHOP);
             break;
     }
 }
