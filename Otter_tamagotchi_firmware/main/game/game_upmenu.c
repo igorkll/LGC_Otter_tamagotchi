@@ -15,10 +15,10 @@ static int current_selected = -1;
 #define OPTION_DESCRIPTION_MARGIN 5
 #define OPTION_DESCRIPTION_POS 26
 #define OPTION_DESCRIPTION_POS_DOWN (HEIGHT - OPTION_DESCRIPTION_POS)
-#define OPTION_DESCRIPTION_WIDTH 60
+#define OPTION_DESCRIPTION_WIDTH (WIDTH * 0.8)
 #define OPTION_DESCRIPTION_HEIGHT 25
 #define OPTION_DESCRIPTION_TEXT_TARGET_WIDTH 10
-#define OPTION_DESCRIPTION_TEXT_TARGET_HEIGHT 20
+#define OPTION_DESCRIPTION_TEXT_TARGET_HEIGHT 16
 
 void game_upmenu_reloadIcons() {
     for (size_t i = 0; i < GAME_UPMENU_COUNT; i++) {
@@ -71,10 +71,15 @@ int game_upmenu_process() {
     return -1;
 }
 
-static void draw_option_description(int index) {
+static void draw_option_description(int selectingIndex) {
     tsgl_pos positionX = (WIDTH / 2) - (OPTION_DESCRIPTION_WIDTH / 2);
-    tsgl_pos position = index < GAME_UPMENU_LINE_COUNT ? (OPTION_DESCRIPTION_POS + OPTION_DESCRIPTION_MARGIN) : (OPTION_DESCRIPTION_POS_DOWN - OPTION_DESCRIPTION_HEIGHT - OPTION_DESCRIPTION_MARGIN);
-    const char* text = game_rooms_option_descriptions[game_getCurrentRoomIndex()].arr[index];
+    tsgl_pos position = selectingIndex < GAME_UPMENU_LINE_COUNT ? (OPTION_DESCRIPTION_POS + OPTION_DESCRIPTION_MARGIN) : (OPTION_DESCRIPTION_POS_DOWN - OPTION_DESCRIPTION_HEIGHT - OPTION_DESCRIPTION_MARGIN);
+
+    size_t currentRoom = game_getCurrentRoomIndex();
+
+    const char* text = NULL;
+    if (currentRoom < GAME_UPMENU_LINE_COUNT) text = game_rooms_option_descriptions_main_rooms[selectingIndex];
+    if (text == NULL) text = game_rooms_option_descriptions[currentRoom].arr[selectingIndex];
 
     if (text != NULL) {
         tsgl_print_settings printsettings_title = {
@@ -94,13 +99,10 @@ static void draw_option_description(int index) {
         
             .fill = TSGL_INVALID_RAWCOLOR,
             .bg = TSGL_INVALID_RAWCOLOR,
-            .fg = black,
-            .stroke_thickness = 1,
-            .stroke_no_clamp = true,
-            .stroke = white
+            .fg = white
         };
 
-        tsgl_framebuffer_fill(&framebuffer, positionX, position, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, red);
+        tsgl_framebuffer_fill(&framebuffer, positionX, position, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, black);
         tsgl_framebuffer_text(&framebuffer, positionX, position, printsettings_title, text);
     }
 }
