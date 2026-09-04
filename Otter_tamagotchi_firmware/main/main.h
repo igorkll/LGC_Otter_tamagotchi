@@ -21,6 +21,7 @@
 #include <TSGL_bmp.h>
 #include <TSGL_keyboard.h>
 #include <TSGL_sound.h>
+#include <TSGL_math.h>
 #include <TSGL_fonts/font.h>
 #include <TSGL_fonts/dejavu/DejaVuSerif.h>
 

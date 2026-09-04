@@ -269,6 +269,20 @@ static void drawPerson() {
     gfx_drawCenteredImageSpriteWithTransparentSupport(room->person_x, room->person_y, person_sprite);
 }
 
+static void drawActionTimer() {
+    if (current_state.actionTimer <= 0) return;
+
+    tsgl_pos sizeX = WIDTH * 0.8;
+    tsgl_pos sizeY = 20;
+    tsgl_pos fillSize = tsgl_math_imap(current_state.actionTimer, current_state.actionTimer_max, 0, 0, sizeX - 8);
+    
+    int positionX = (WIDTH / 2) - (sizeX / 2);
+    int positionY = (HEIGHT / 2) - (sizeY / 2);
+
+    tsgl_framebuffer_rect(&framebuffer, positionX, positionY, sizeX, sizeY, red, 2);
+    tsgl_framebuffer_fill(&framebuffer, positionX + 4, positionY + 4, fillSize, sizeY - 8, orange);
+}
+
 void game_start() {
     ESP_LOGI(TAG, "game started!");
     tsgl_benchmark_reset(&benchmark);
@@ -286,6 +300,7 @@ void game_start() {
         //tsgl_framebuffer_clear(&framebuffer, black);
         gfx_drawCenteredScreenImageSprite(room_sprite);
         drawPerson();
+        drawActionTimer();
         game_upmenu_draw();
         tsgl_benchmark_endRendering(&benchmark);
 
@@ -307,6 +322,7 @@ void game_start() {
 
 void game_startActionTimer(int actionTimer, const char* str, game_action action, game_room nextRoom) {
     current_state.actionTimer = actionTimer;
+    current_state.actionTimer_max = actionTimer;
     slnprintf(current_state.actionTimer_str, MAX_ACTION_LEN, "%s", str);
     current_state.actionTimer_action = action;
     current_state.actionTimer_nextRoom = nextRoom;

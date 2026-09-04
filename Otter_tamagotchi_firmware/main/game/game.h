@@ -31,6 +31,7 @@ typedef struct {
 
     // action timer
     int actionTimer;
+    int actionTimer_max;
     char actionTimer_str[MAX_ACTION_LEN];
     game_action actionTimer_action;
     game_room actionTimer_nextRoom;
