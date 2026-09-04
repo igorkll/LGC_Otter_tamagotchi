@@ -238,6 +238,33 @@ static void drawPerson() {
     gfx_drawCenteredImageSpriteWithTransparentSupport(room->person_x, room->person_y, person_sprite);
 }
 
+static void onTimerAction() {
+    switch (current_state.actionTimer_action) {
+        case game_action_switchRoom:
+            game_selectRoom(current_state.actionTimer_nextRoom);
+            break;
+        
+        default:
+            break;
+    }
+}
+
+static void checkActionTimer() {
+    time_t currentTime = tsgl_time();
+    if (currentTime - oldTimerTickTime > 1000) {
+        oldTimerTickTime = currentTime;
+
+        if (current_state.actionTimer > 0) {
+            current_state.actionTimer--;
+            if (current_state.actionTimer <= 0) {
+                onTimerAction();
+                current_state.actionTimer = 0;
+            }
+        }
+    }
+}
+
+static time_t oldTimerTickTime = -9999;
 void game_start() {
     ESP_LOGI(TAG, "game started!");
     tsgl_benchmark_reset(&benchmark);
@@ -271,5 +298,14 @@ void game_start() {
             hctl_setBacklightAndWait(BACKLIGHT_MAX);
             firstGameFrame = false;
         }
+
+        checkActionTimer();
     }
+}
+
+void game_startActionTimer(int actionTimer, const char* str, game_action action, game_room nextRoom) {
+    current_state.actionTimer = actionTimer;
+    slnprintf(current_state.actionTimer_str, MAX_ACTION_LEN, "%s", str);
+    current_state.actionTimer_action = action;
+    current_state.actionTimer_nextRoom = nextRoom;
 }

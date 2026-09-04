@@ -30,6 +30,7 @@
 #include "configs/display.h"
 #include "configs/consts.h"
 #include "configs/config.h"
+#include "configs/gamecfg.h"
 
 extern const char* TAG;
 

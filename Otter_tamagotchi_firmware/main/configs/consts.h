@@ -1,4 +1,5 @@
 #define MAX_PATH_LEN 64
+#define MAX_ACTION_LEN 16
 
 #define KEYS_COUNT 4
 #define KEY_INDEX_LEFT 0

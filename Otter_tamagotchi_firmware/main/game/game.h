@@ -14,9 +14,20 @@ typedef enum {
 } game_person;
 #define game_person uint8_t
 
+typedef enum {
+    game_action_switchRoom = 0
+} game_action;
+#define game_action uint8_t
+
 typedef struct {
     game_room room;
     game_person person;
+
+    // action timer
+    int actionTimer;
+    char actionTimer_str[MAX_ACTION_LEN];
+    game_action actionTimer_action;
+    game_room actionTimer_nextRoom;
 } Game_state;
 
 typedef struct {
@@ -36,3 +47,4 @@ bool game_isLockedInRoom();
 const char* game_getCurrentPerson();
 void game_save();
 void game_start();
+void game_startActionTimer(int actionTimer, const char* str, game_action action, game_room nextRoom);

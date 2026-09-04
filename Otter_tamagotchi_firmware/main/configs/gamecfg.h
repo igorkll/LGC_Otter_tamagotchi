@@ -1,0 +1,1 @@
+#define GAMECFG_CAR_MOVE_TIME 30
