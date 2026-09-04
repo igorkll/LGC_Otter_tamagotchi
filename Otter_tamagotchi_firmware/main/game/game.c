@@ -221,7 +221,12 @@ static void process() {
     int used = game_upmenu_process();
     if (used >= 0) {
         if (used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT && !game_isLockedInRoom()) {
-            game_selectRoom(used);
+            if (current_state.room == ID_CAR) {
+                // Поехали!
+                game_startActionTimer(GAMECFG_CAR_MOVE_TIME, "\xCF\xEE\xE5\xF5\xE0\xEB\xE8\x21", game_action_switchRoom, used);
+            } else {
+                game_selectRoom(used);
+            }
         } else {
             game_roomAction(used);
         }

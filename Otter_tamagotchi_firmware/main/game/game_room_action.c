@@ -4,10 +4,6 @@
 // начало второй линии кнопок
 #define L2 5
 
-#define ID_YARD 4
-#define ID_CAR 5
-#define ID_SHOP 6
-
 void game_yard_roomAction(int action) {
     switch (action) {
         case L2:

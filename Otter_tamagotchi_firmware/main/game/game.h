@@ -2,6 +2,9 @@
 #include "../main.h"
 
 #define ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT 5
+#define ID_YARD 4
+#define ID_CAR 5
+#define ID_SHOP 6
 
 typedef enum {
     game_room_bedroom = 0,
