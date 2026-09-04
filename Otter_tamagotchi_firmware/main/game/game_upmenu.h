@@ -1,8 +1,8 @@
 #pragma once
 #include "../main.h"
 
-#define GAME_UPMENU_LINE_COUNTS_COUNT 5
-#define GAME_UPMENU_COUNTS_COUNT (GAME_UPMENU_LINE_COUNTS_COUNT * 2)
+#define GAME_UPMENU_LINE_COUNT 5
+#define GAME_UPMENU_COUNT (GAME_UPMENU_LINE_COUNT * 2)
 
 void game_upmenu_init();
 void game_upmenu_reloadIcons();

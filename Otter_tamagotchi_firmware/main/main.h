@@ -46,5 +46,6 @@ extern tsgl_rawcolor orange;
 extern tsgl_rawcolor green;
 extern tsgl_rawcolor yellow;
 extern tsgl_rawcolor blue;
+extern tsgl_rawcolor magenta;
 extern tsgl_rawcolor transparent;
 extern tsgl_rawcolor black;

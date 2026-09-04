@@ -1,6 +1,7 @@
 #include "TSGL_filesystem.h"
 #include <esp_vfs.h>
 #include <esp_vfs_fat.h>
+#include <esp_spiffs.h>
 #include <dirent.h>
 #include <unistd.h>
 #include <stddef.h>
@@ -36,6 +37,17 @@ esp_err_t tsgl_filesystem_mount_fatfs_af(const char* path, const char* name) {
     };
 
     return esp_vfs_fat_spiflash_mount_rw_wl(path, name, &storage_mount_config, &s_wl_handle);
+}
+
+esp_err_t tsgl_filesystem_mount_spifs_af(const char* path, const char* name) {
+    esp_vfs_spiffs_conf_t conf = {
+        .base_path = path,
+        .partition_label = name,
+        .max_files = 4,
+        .format_if_mount_failed = true
+    };
+
+    return esp_vfs_spiffs_register(&conf);
 }
 
 

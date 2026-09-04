@@ -24,20 +24,18 @@ tsgl_rawcolor red;
 tsgl_rawcolor green;
 tsgl_rawcolor yellow;
 tsgl_rawcolor blue;
+tsgl_rawcolor magenta;
 tsgl_rawcolor transparent;
 tsgl_rawcolor black;
 
 tsgl_print_settings printsettings_title = {
     .multiline = true,
+    .locationMode = tsgl_print_start_top,
     .width = WIDTH - (TITLE_MARGIN * 2),
     .height = HEIGHT - (TITLE_MARGIN * 2),
     .globalAlignmentX = tsgl_print_alignment_center,
     .globalAlignmentY = tsgl_print_alignment_right,
     .alignment = tsgl_print_alignment_center,
-
-    // start from bottom
-    .locationMode = tsgl_print_start_top,
-    .linesRevers = false,
     
     // font
     .font = DejaVuSerif,
@@ -81,6 +79,7 @@ void app_main() {
     green = tsgl_color_raw(TSGL_GREEN, colormode);
     yellow = tsgl_color_raw(TSGL_YELLOW, colormode);
     blue = tsgl_color_raw(TSGL_BLUE, colormode);
+    magenta = tsgl_color_raw(TSGL_MAGENTA, colormode);
     transparent = tsgl_color_raw(TRANSPARENT_COLOR, colormode);
     black = tsgl_color_raw(TSGL_BLACK, colormode);
 
@@ -92,7 +91,7 @@ void app_main() {
     settings.backlight_value = 0;
 
     ESP_ERROR_CHECK(tsgl_filesystem_mount_fatfs("/firmware", "firmware"));
-    ESP_ERROR_CHECK(tsgl_filesystem_mount_fatfs_af("/storage", "storage"));
+    ESP_ERROR_CHECK(tsgl_filesystem_mount_spifs_af("/storage", "storage"));
 
     ESP_ERROR_CHECK(tsgl_framebuffer_init(&framebuffer, colormode, settings.width, settings.height, BUFFER));
     if (USE_HARDWARE_ROTATE) {

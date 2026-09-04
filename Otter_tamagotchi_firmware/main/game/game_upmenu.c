@@ -1,19 +1,27 @@
+#include "game_option_description.h"
 #include "game_upmenu.h"
 #include "game.h"
 #include "../gfx.h"
 #include "../hctl.h"
 #include "../funcs.h"
 
-static tsgl_sprite* sprites[GAME_UPMENU_COUNTS_COUNT];
-static bool sprites_active[GAME_UPMENU_COUNTS_COUNT];
+static tsgl_sprite* sprites[GAME_UPMENU_COUNT];
+static bool sprites_active[GAME_UPMENU_COUNT];
 static tsgl_sprite* sprite_iconline;
 static int current_selected = -1;
 
 #define FRAME2_LINE_LEN 5
 #define FRAME2_LINE_OFFSET (FRAME2_LINE_LEN - 1)
+#define OPTION_DESCRIPTION_MARGIN 5
+#define OPTION_DESCRIPTION_POS 26
+#define OPTION_DESCRIPTION_POS_DOWN (HEIGHT - OPTION_DESCRIPTION_POS)
+#define OPTION_DESCRIPTION_WIDTH 60
+#define OPTION_DESCRIPTION_HEIGHT 25
+#define OPTION_DESCRIPTION_TEXT_TARGET_WIDTH 10
+#define OPTION_DESCRIPTION_TEXT_TARGET_HEIGHT 20
 
 void game_upmenu_reloadIcons() {
-    for (size_t i = 0; i < GAME_UPMENU_COUNTS_COUNT; i++) {
+    for (size_t i = 0; i < GAME_UPMENU_COUNT; i++) {
         char path[MAX_PATH_LEN];
         path[0] = '\0';
 
@@ -41,13 +49,13 @@ int game_upmenu_process() {
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
         current_selected--;
         if (current_selected < 0) {
-            current_selected = GAME_UPMENU_COUNTS_COUNT - 1;
+            current_selected = GAME_UPMENU_COUNT - 1;
         }
     }
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
         current_selected++;
-        if (current_selected >= GAME_UPMENU_COUNTS_COUNT) {
+        if (current_selected >= GAME_UPMENU_COUNT) {
             current_selected = 0;
         }
     }
@@ -63,6 +71,40 @@ int game_upmenu_process() {
     return -1;
 }
 
+static void draw_option_description(int index) {
+    tsgl_pos positionX = (WIDTH / 2) - (OPTION_DESCRIPTION_WIDTH / 2);
+    tsgl_pos position = index < GAME_UPMENU_LINE_COUNT ? (OPTION_DESCRIPTION_POS + OPTION_DESCRIPTION_MARGIN) : (OPTION_DESCRIPTION_POS_DOWN - OPTION_DESCRIPTION_HEIGHT - OPTION_DESCRIPTION_MARGIN);
+    const char* text = game_rooms_option_descriptions[game_getCurrentRoomIndex()].arr[index];
+
+    if (text != NULL) {
+        tsgl_print_settings printsettings_title = {
+            .multiline = true,
+            .locationMode = tsgl_print_start_top,
+            .width = OPTION_DESCRIPTION_WIDTH,
+            .height = OPTION_DESCRIPTION_HEIGHT,
+            .globalAlignmentX = tsgl_print_alignment_center,
+            .globalAlignmentY = tsgl_print_alignment_center,
+            .alignment = tsgl_print_alignment_center,
+            
+            // font
+            .font = DejaVuSerif,
+            .localLocationMode = tsgl_print_localLocationMode_center,
+            .targetWidth = OPTION_DESCRIPTION_TEXT_TARGET_WIDTH,
+            .targetHeight = OPTION_DESCRIPTION_TEXT_TARGET_HEIGHT,
+        
+            .fill = TSGL_INVALID_RAWCOLOR,
+            .bg = TSGL_INVALID_RAWCOLOR,
+            .fg = black//,
+            //.stroke_thickness = 1,
+            //.stroke_no_clamp = true,
+            //.stroke = white
+        };
+
+        tsgl_framebuffer_fill(&framebuffer, positionX, position, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, red);
+        tsgl_framebuffer_text(&framebuffer, positionX, position, printsettings_title, text);
+    }
+}
+
 static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
     int lineHeight = sprite_iconline->sprite->height;
 
@@ -70,14 +112,14 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
     int iconHeight = 20;
 
     time_t uptime = tsgl_time();
-    for (size_t i = 0; i < GAME_UPMENU_LINE_COUNTS_COUNT; i++) {
+    for (size_t i = 0; i < GAME_UPMENU_LINE_COUNT; i++) {
         size_t i2 = i + offsetIndex;
 
-        int x = ((width / 2) - (iconWidth / 2)) + ((i - (GAME_UPMENU_LINE_COUNTS_COUNT / 2)) * (width / 5));
+        int x = ((width / 2) - (iconWidth / 2)) + ((i - (GAME_UPMENU_LINE_COUNT / 2)) * (width / 5));
         int y = offsetHeight + ((lineHeight / 2) - (iconHeight / 2));
 
         tsgl_rawcolor borderColor = sprites_active[i2] ? red : transparent;
-        tsgl_rawcolor cornersColor = uptime % 1000 >= 500 ? blue : yellow;
+        tsgl_rawcolor cornersColor = uptime % 1000 >= 500 ? magenta : yellow;
         tsgl_rawcolor currentCordersColor = i2 == selected ? cornersColor : borderColor;
 
         tsgl_pos posX = x - 1;
@@ -121,7 +163,8 @@ void game_upmenu_draw() {
     tsgl_framebuffer_pushFast(&framebuffer, 0, bottomLineY, sprite_iconline);
     
     draw_icons(0, 0, current_selected);
-    draw_icons(GAME_UPMENU_LINE_COUNTS_COUNT, bottomLineY, current_selected);
+    draw_icons(GAME_UPMENU_LINE_COUNT, bottomLineY, current_selected);
+    draw_option_description(current_selected);
 }
 
 int game_upmenu_currentSelected() {
