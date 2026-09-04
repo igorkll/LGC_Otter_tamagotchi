@@ -280,7 +280,7 @@ static void drawActionTimer() {
     int positionY = (HEIGHT / 2) - (sizeY / 2);
 
     tsgl_framebuffer_rect(&framebuffer, positionX, positionY, sizeX, sizeY, red, 2);
-    tsgl_framebuffer_fill(&framebuffer, positionX + 4, positionY + 4, fillSize, sizeY - 8, orange);
+    tsgl_framebuffer_fill(&framebuffer, positionX + 4, positionY + 4, fillSize, sizeY - 8, red);
 }
 
 void game_start() {
