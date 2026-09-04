@@ -7,9 +7,9 @@
 static void car_selectRoom(game_room moveTo) {
     if (current_state.old_car_room == moveTo) {
         game_selectRoom(moveTo);
-    } else {
+    } else if (current_state.actionTimer <= 0) {
         current_state.old_car_room = -1;
-        
+
         // Поехали!
         game_startActionTimer(GAMECFG_CAR_MOVE_TIME, "\xCF\xEE\xE5\xF5\xE0\xEB\xE8\x21", game_action_switchRoom, moveTo);
     }
