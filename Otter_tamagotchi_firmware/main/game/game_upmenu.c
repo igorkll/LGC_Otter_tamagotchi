@@ -94,10 +94,10 @@ static void draw_option_description(int index) {
         
             .fill = TSGL_INVALID_RAWCOLOR,
             .bg = TSGL_INVALID_RAWCOLOR,
-            .fg = black//,
-            //.stroke_thickness = 1,
-            //.stroke_no_clamp = true,
-            //.stroke = white
+            .fg = black,
+            .stroke_thickness = 1,
+            .stroke_no_clamp = true,
+            .stroke = white
         };
 
         tsgl_framebuffer_fill(&framebuffer, positionX, position, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, red);
