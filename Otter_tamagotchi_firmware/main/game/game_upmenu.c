@@ -113,9 +113,7 @@ static void draw_option_description(int selectingIndex) {
             .fg = white
         };
 
-        tsgl_framebuffer_fill(&framebuffer, positionX, position, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, black);
-
-        if (renderedOptionDescription == NULL) renderedOptionDescription = tsgl_gfx_renderTextToSprite(0, 0, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, printsettings_title, text, framebuffer.colormode, 0, TSGL_INVALID_RAWCOLOR);
+        if (renderedOptionDescription == NULL) renderedOptionDescription = tsgl_gfx_renderTextToSprite(0, 0, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, printsettings_title, text, framebuffer.colormode, 0, TSGL_INVALID_RAWCOLOR, black);
         tsgl_framebuffer_pushFast(&framebuffer, positionX, position, renderedOptionDescription);
     }
 }

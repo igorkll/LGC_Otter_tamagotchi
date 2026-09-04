@@ -514,7 +514,7 @@ tsgl_print_textArea TSGL_FAST_FUNC tsgl_gfx_text(void* arg, TSGL_SET_REFERENCE(s
 }
 */
 
-tsgl_sprite* tsgl_gfx_renderTextToSprite(tsgl_pos x, tsgl_pos y, tsgl_pos width, tsgl_pos height, tsgl_print_settings sets, const char* text, tsgl_colormode colormode, int64_t caps, tsgl_rawcolor transparentColor) {
+tsgl_sprite* tsgl_gfx_renderTextToSprite(tsgl_pos x, tsgl_pos y, tsgl_pos width, tsgl_pos height, tsgl_print_settings sets, const char* text, tsgl_colormode colormode, int64_t caps, tsgl_rawcolor transparentColor, tsgl_rawcolor clearcolor) {
     tsgl_sprite* sprite = calloc(1, sizeof(tsgl_sprite));
     tsgl_framebuffer* sprite_fb = malloc(sizeof(tsgl_framebuffer));
     sprite->sprite = sprite_fb;
@@ -526,6 +526,7 @@ tsgl_sprite* tsgl_gfx_renderTextToSprite(tsgl_pos x, tsgl_pos y, tsgl_pos width,
         return NULL;
     }
 
+    if (!clearcolor.invalid) tsgl_framebuffer_clear(sprite_fb, clearcolor);
     tsgl_gfx_text(sprite_fb, (TSGL_SET_REFERENCE())tsgl_framebuffer_setWithoutCheckFast, (TSGL_FILL_REFERENCE())tsgl_framebuffer_fillWithoutCheck, x, y, sets, text, sprite_fb->viewport_minX, sprite_fb->viewport_minY, sprite_fb->viewport_maxX, sprite_fb->viewport_maxY);
 
     return sprite;
