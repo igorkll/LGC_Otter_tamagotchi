@@ -7,7 +7,7 @@
 static void car_selectRoom(game_room moveTo) {
     if (current_state.old_car_room == moveTo) {
         game_selectRoom(moveTo);
-    } else if (current_state.actionTimer <= 0) {
+    } else if (current_state.actionTimer <= 0 || moveTo != current_state.actionTimer_nextRoom) {
         current_state.old_car_room = -1;
 
         // Поехали!
