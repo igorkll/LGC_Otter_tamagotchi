@@ -4,7 +4,6 @@
 //#define TRANSPARENT_COLOR tsgl_color_pack(254, 125, 33)
 //#define TRANSPARENT_COLOR tsgl_color_pack(160, 160, 160)
 #define TRANSPARENT_COLOR tsgl_color_pack(0, 0, 0)
-#define TRANSPARENT_RND_COLOR tsgl_color_pack(254, 125, 33)
 
 tsgl_sprite* gfx_loadSprite(const char* path);
 

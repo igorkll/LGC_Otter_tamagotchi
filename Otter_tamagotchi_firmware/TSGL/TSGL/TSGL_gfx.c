@@ -526,7 +526,7 @@ tsgl_sprite* tsgl_gfx_renderTextToSprite(tsgl_pos x, tsgl_pos y, tsgl_pos width,
         return NULL;
     }
 
-    tsgl_gfx_text(sprite_fb, tsgl_framebuffer_set, tsgl_framebuffer_fill, x, y, sets, text, sprite_fb->viewport_minX, sprite_fb->viewport_minY, sprite_fb->viewport_maxX, sprite_fb->viewport_maxY);
+    tsgl_gfx_text(sprite_fb, (TSGL_SET_REFERENCE())tsgl_framebuffer_setWithoutCheckFast, (TSGL_FILL_REFERENCE())tsgl_framebuffer_fillWithoutCheck, x, y, sets, text, sprite_fb->viewport_minX, sprite_fb->viewport_minY, sprite_fb->viewport_maxX, sprite_fb->viewport_maxY);
 
     return sprite;
 }

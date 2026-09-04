@@ -72,6 +72,7 @@ int game_upmenu_process() {
 }
 
 static tsgl_sprite* renderedOptionDescription;
+int old_selectingIndex = -1;
 static void draw_option_description(int selectingIndex) {
     tsgl_pos positionX = (WIDTH / 2) - (OPTION_DESCRIPTION_WIDTH / 2);
     tsgl_pos position = selectingIndex < GAME_UPMENU_LINE_COUNT ? (OPTION_DESCRIPTION_POS + OPTION_DESCRIPTION_MARGIN) : (OPTION_DESCRIPTION_POS_DOWN - OPTION_DESCRIPTION_HEIGHT - OPTION_DESCRIPTION_MARGIN);
@@ -85,7 +86,8 @@ static void draw_option_description(int selectingIndex) {
         text = game_rooms_option_descriptions[currentRoom].arr[selectingIndex];
     }
 
-    if (renderedOptionDescription) {
+    if (renderedOptionDescription && selectingIndex != old_selectingIndex) {
+        old_selectingIndex = selectingIndex;
         tsgl_bmp_free(renderedOptionDescription);
         renderedOptionDescription = NULL;
     }
@@ -113,7 +115,7 @@ static void draw_option_description(int selectingIndex) {
 
         tsgl_framebuffer_fill(&framebuffer, positionX, position, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, black);
 
-        if (renderedOptionDescription == NULL) renderedOptionDescription = tsgl_gfx_renderTextToSprite(0, 0, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, printsettings_title, text, framebuffer->colormode, 0, TRANSPARENT_RND_COLOR);
+        if (renderedOptionDescription == NULL) renderedOptionDescription = tsgl_gfx_renderTextToSprite(0, 0, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, printsettings_title, text, framebuffer.colormode, 0, TSGL_INVALID_RAWCOLOR);
         tsgl_framebuffer_pushFast(&framebuffer, positionX, position, renderedOptionDescription);
     }
 }
@@ -175,9 +177,10 @@ void game_upmenu_draw() {
     PUSH_FUNC(&framebuffer, 0, 0, sprite_iconline);
     PUSH_FUNC(&framebuffer, 0, bottomLineY, sprite_iconline);
     
+    
     draw_icons(0, 0, current_selected);
     draw_icons(GAME_UPMENU_LINE_COUNT, bottomLineY, current_selected);
-    draw_option_description(current_selected);
+    if (current_selected >= 0) draw_option_description(current_selected);
 }
 
 int game_upmenu_currentSelected() {
