@@ -78,8 +78,11 @@ static void draw_option_description(int selectingIndex) {
     size_t currentRoom = game_getCurrentRoomIndex();
 
     const char* text = NULL;
-    if (currentRoom < GAME_UPMENU_LINE_COUNT) text = game_rooms_option_descriptions_main_rooms[selectingIndex];
-    if (text == NULL) text = game_rooms_option_descriptions[currentRoom].arr[selectingIndex];
+    if (currentRoom < GAME_UPMENU_LINE_COUNT && selectingIndex < GAME_UPMENU_LINE_COUNT) {
+        text = game_rooms_option_descriptions_main_rooms[selectingIndex];
+    } else {
+        text = game_rooms_option_descriptions[currentRoom].arr[selectingIndex];
+    }
 
     if (text != NULL) {
         tsgl_print_settings printsettings_title = {
