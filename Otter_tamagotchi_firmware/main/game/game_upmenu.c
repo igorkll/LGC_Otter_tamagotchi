@@ -71,6 +71,7 @@ int game_upmenu_process() {
     return -1;
 }
 
+static tsgl_sprite* renderedOptionDescription;
 static void draw_option_description(int selectingIndex) {
     tsgl_pos positionX = (WIDTH / 2) - (OPTION_DESCRIPTION_WIDTH / 2);
     tsgl_pos position = selectingIndex < GAME_UPMENU_LINE_COUNT ? (OPTION_DESCRIPTION_POS + OPTION_DESCRIPTION_MARGIN) : (OPTION_DESCRIPTION_POS_DOWN - OPTION_DESCRIPTION_HEIGHT - OPTION_DESCRIPTION_MARGIN);
@@ -82,6 +83,11 @@ static void draw_option_description(int selectingIndex) {
         text = game_rooms_option_descriptions_main_rooms[selectingIndex];
     } else {
         text = game_rooms_option_descriptions[currentRoom].arr[selectingIndex];
+    }
+
+    if (renderedOptionDescription) {
+        tsgl_bmp_free(renderedOptionDescription);
+        renderedOptionDescription = NULL;
     }
 
     if (text != NULL) {
@@ -106,7 +112,9 @@ static void draw_option_description(int selectingIndex) {
         };
 
         tsgl_framebuffer_fill(&framebuffer, positionX, position, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, black);
-        tsgl_framebuffer_text(&framebuffer, positionX, position, printsettings_title, text);
+
+        if (renderedOptionDescription == NULL) renderedOptionDescription = tsgl_gfx_renderTextToSprite(0, 0, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, printsettings_title, text, framebuffer->colormode, 0, TRANSPARENT_RND_COLOR);
+        tsgl_framebuffer_pushFast(&framebuffer, positionX, position, renderedOptionDescription);
     }
 }
 
@@ -156,7 +164,7 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
 
         // icon
         tsgl_sprite* sprite = sprites[i2];
-        if (sprite) tsgl_framebuffer_pushFast(&framebuffer, x, y, sprite);
+        if (sprite) PUSH_FUNC(&framebuffer, x, y, sprite);
     }
 }
 
@@ -164,8 +172,8 @@ void game_upmenu_draw() {
     int lineHeight = sprite_iconline->sprite->height;
     int bottomLineY = height - lineHeight;
 
-    tsgl_framebuffer_pushFast(&framebuffer, 0, 0, sprite_iconline);
-    tsgl_framebuffer_pushFast(&framebuffer, 0, bottomLineY, sprite_iconline);
+    PUSH_FUNC(&framebuffer, 0, 0, sprite_iconline);
+    PUSH_FUNC(&framebuffer, 0, bottomLineY, sprite_iconline);
     
     draw_icons(0, 0, current_selected);
     draw_icons(GAME_UPMENU_LINE_COUNT, bottomLineY, current_selected);

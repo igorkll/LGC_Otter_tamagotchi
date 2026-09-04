@@ -4,6 +4,12 @@
 #define USE_HARDWARE_ROTATE false
 #define ROTATE 0
 
+#define PUSH_FUNC tsgl_framebuffer_pushFast
+#define PUSH_FUNC_TRANS tsgl_framebuffer_pushFastWithTransparentSupport
+
+//#define PUSH_FUNC tsgl_framebuffer_push
+//#define PUSH_FUNC_TRANS tsgl_framebuffer_push
+
 #define BACKLIGHT_MAX 255
 #define BACKLIGHT_IDLE 64
 #define BACKLIGHT_OFF 0
