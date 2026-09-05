@@ -7,7 +7,7 @@ static TimerHandle_t change_backlight_timer_handle = NULL;
 static time_t lastInteractTime = 0;
 static bool isIdle = false;
 static bool oldIsIdle = false;
-static bool autoBacklight = true;
+static bool autoBacklight = false;
 static bool forceUpdateBacklight = true;
 
 tsgl_keyboard keyboard;

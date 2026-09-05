@@ -76,6 +76,16 @@ static const Game_state default_state = {
 #define ACTION_TIMER_TEXT_TARGET_WIDTH 10
 #define ACTION_TIMER_TEXT_TARGET_HEIGHT 16
 
+#define SLEEP_Z_LETTERS_COUNT 8
+#define SLEEP_Z_LETTERS_TARGET_WIDTH 8
+#define SLEEP_Z_LETTERS_TARGET_HEIGHT 8
+#define SLEEP_ANIM_SPEED 0.1
+#define SLEEP_Z_LETTERS_OFFSET_X 0
+#define SLEEP_Z_LETTERS_OFFSET_Y 0
+#define SLEEP_SIN_INDEX_MUL 0.3
+#define SLEEP_SIN_MUL 30
+#define SLEEP_Z_LETTERS_INDEX_OFFSET -12
+
 // ------------------------------------ vars
 
 Game_state current_state;
@@ -163,8 +173,8 @@ void game_sleepIn() {
 }
 
 static void sleepOut() {
-    hctl_setBacklight(BACKLIGHT_MAX);
     hctl_enableAutoBacklight(true);
+    hctl_setBacklight(BACKLIGHT_MAX);
 }
 
 static void loadSprites() {
@@ -190,11 +200,16 @@ static void loadSprites() {
 }
 
 static void start() {
+    game_selectRoom(current_state.room);
+}
+
+static void afterFirstFrame() {
     if (current_state.sleepTimer > 0) {
         game_sleepIn();
+    } else {
+        hctl_enableAutoBacklight(true);
+        hctl_setBacklight(BACKLIGHT_MAX);
     }
-
-    game_selectRoom(current_state.room);
 }
 
 static void exit_myaaaa(tsgl_sound* sound) {
@@ -361,10 +376,34 @@ static void drawActionTimer() {
     tsgl_framebuffer_text(&framebuffer, positionX, positionY_text, printsettings_actiontimer_title, current_state.actionTimer_str);
 }
 
+static tsgl_print_settings printsettings_sleep_z_letter = {
+    .font = font,
+    .localLocationMode = tsgl_print_localLocationMode_center,
+    .targetWidth = SLEEP_Z_LETTERS_TARGET_WIDTH,
+    .targetHeight = SLEEP_Z_LETTERS_TARGET_HEIGHT,
+
+    .fill = TSGL_INVALID_RAWCOLOR,
+    .bg = TSGL_INVALID_RAWCOLOR
+};
+
+static void drawSleep() {
+    tsgl_framebuffer_clear(&framebuffer, black);
+    gfx_drawCenteredImageWithTransparentSupport(WIDTH / 2, (HEIGHT / 3) * 2, "/firmware/images/sleep.bmp");
+
+    float sleep_step = tsgl_time() * SLEEP_ANIM_SPEED;
+
+    for (size_t i = 0; i < SLEEP_Z_LETTERS_COUNT; i++) {
+        tsgl_pos x = sinf(sleep_step + (i * SLEEP_SIN_INDEX_MUL)) * SLEEP_SIN_MUL;
+        tsgl_pos y = i * SLEEP_Z_LETTERS_INDEX_OFFSET;
+
+        printsettings_sleep_z_letter.fg = tsgl_color_raw(TSGL_WHITE, framebuffer.colormode);
+        tsgl_framebuffer_text(&framebuffer, (WIDTH / 2) + x + SLEEP_Z_LETTERS_OFFSET_X, (HEIGHT / 2) + y + SLEEP_Z_LETTERS_OFFSET_Y, printsettings_sleep_z_letter, "Z");
+    }
+}
+
 static void render() {
     if (current_state.sleepTimer > 0) {
-        tsgl_framebuffer_clear(&framebuffer, black);
-        gfx_drawCenteredImageWithTransparentSupport(WIDTH / 2, (HEIGHT / 3) * 2, "/firmware/images/sleep.bmp");
+        drawSleep();
         return;
     }
 
@@ -383,6 +422,7 @@ void game_start() {
     game_upmenu_init();
     start();
 
+    bool firstFrame = true;
     while (true) {
         process();
 
@@ -398,6 +438,11 @@ void game_start() {
             tsgl_benchmark_print(&benchmark);
         #endif
         tsgl_benchmark_wait(&benchmark, TARGET_FPS);
+
+        if (firstFrame) {
+            afterFirstFrame();
+            firstFrame = false;
+        }
     }
 }
 
