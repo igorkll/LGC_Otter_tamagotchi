@@ -160,6 +160,7 @@ static tsgl_rawcolor _444read(size_t rawindex, uint8_t* buffer) {
         v2 = buffer[index+1] & 0b1111;
     }
     tsgl_rawcolor result = {
+        .invalid = false,
         .arr = {
             (v0 << 4) | v1,
             (v2 << 4) | v0,
@@ -401,12 +402,14 @@ void tsgl_framebuffer_setWithoutCheck(tsgl_framebuffer* framebuffer, tsgl_pos x,
     tsgl_framebuffer_updateChangedAreaXY(framebuffer, x, y);
 
     size_t index;
+    size_t index2;
     switch (framebuffer->colormode) {
         case tsgl_rgb444:
         case tsgl_bgr444:
             index = _getRawBufferIndex(framebuffer, x, y);
-            tsgl_framebuffer_updateChangedAreaIndex(framebuffer, index);
-            tsgl_framebuffer_updateChangedAreaIndex(framebuffer, index + 1);
+            index2 = index + (index >> 1);
+            tsgl_framebuffer_updateChangedAreaIndex(framebuffer, index2);
+            tsgl_framebuffer_updateChangedAreaIndex(framebuffer, index2 + 1);
             _444write(index, framebuffer->buffer, color);
             break;
 
@@ -484,11 +487,15 @@ void tsgl_framebuffer_fillWithoutCheck(tsgl_framebuffer* framebuffer, tsgl_pos x
         case tsgl_rgb444:
         case tsgl_bgr444:
             size_t idx = _getRawBufferIndex(framebuffer, x, y);
+            idx = idx + (idx >> 1);
             tsgl_framebuffer_updateChangedAreaIndex(framebuffer, idx);
             tsgl_framebuffer_updateChangedAreaIndex(framebuffer, idx + 1);
+
             idx = _getRawBufferIndex(framebuffer, right, down);
+            idx = idx + (idx >> 1);
             tsgl_framebuffer_updateChangedAreaIndex(framebuffer, idx);
             tsgl_framebuffer_updateChangedAreaIndex(framebuffer, idx + 1);
+
             for (tsgl_pos ix = x; ix < x + width; ix++) {
                 for (tsgl_pos iy = y; iy < y + height; iy++) {
                     _444write(_getRawBufferIndex(framebuffer, ix, iy), framebuffer->buffer, color);
