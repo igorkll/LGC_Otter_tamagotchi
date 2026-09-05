@@ -1,4 +1,5 @@
 #include "game_room_action.h"
+#include "game_actions.h"
 #include "game.h"
 
 // начало второй линии кнопок
@@ -11,11 +12,19 @@ static void car_selectRoom(game_room moveTo) {
         current_state.old_car_room = -1;
 
         // Поехали!
-        game_startActionTimer(GAMECFG_CAR_MOVE_TIME, "\xCF\xEE\xE5\xF5\xE0\xEB\xE8\x21", game_action_switchRoom, moveTo);
+        game_startActionTimer(GAMECFG_CAR_MOVE_TIME, "\xCF\xEE\xE5\xF5\xE0\xEB\xE8\x21", game_action_switchRoom, moveTo, true);
     }
 }
 
-void game_yard_roomAction(int action) {
+static void game_bedroom_roomAction(int action) {
+    switch (action) {
+        case L2:
+            game_actions_sleep(60);
+            break;
+    }
+} 
+
+static void game_yard_roomAction(int action) {
     switch (action) {
         case L2:
             game_selectRoom(ID_CAR);
@@ -23,7 +32,7 @@ void game_yard_roomAction(int action) {
     }
 }
 
-void game_car_roomAction(int action) {
+static void game_car_roomAction(int action) {
     switch (action) {
         case 0:
             car_selectRoom(ID_YARD);
@@ -35,7 +44,7 @@ void game_car_roomAction(int action) {
     }
 }
 
-void game_shop_roomAction(int action) {
+static void game_shop_roomAction(int action) {
     switch (action) {
         case 0:
             game_selectRoom(ID_CAR);
@@ -45,6 +54,10 @@ void game_shop_roomAction(int action) {
 
 void game_roomAction(int action) {
     switch (game_getCurrentRoomIndex()) {
+        case ID_BEDROOM:
+            game_bedroom_roomAction(action);
+            break;
+
         case ID_YARD:
             game_yard_roomAction(action);
             break;

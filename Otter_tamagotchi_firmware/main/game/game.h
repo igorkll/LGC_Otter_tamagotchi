@@ -2,6 +2,10 @@
 #include "../main.h"
 
 #define ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT 5
+#define ID_BEDROOM 0
+#define ID_KITCHEN 1
+#define ID_GAMING 2
+#define ID_TOILET 3
 #define ID_YARD 4
 #define ID_CAR 5
 #define ID_SHOP 6
@@ -35,6 +39,10 @@ typedef struct {
     char actionTimer_str[MAX_ACTION_LEN];
     game_action actionTimer_action;
     game_room actionTimer_nextRoom;
+    bool actionTimer_allowCancel;
+
+    // sleep
+    int sleepTimer;
 } Game_state;
 
 typedef struct {
@@ -54,5 +62,5 @@ bool game_isLockedInRoom();
 const char* game_getCurrentPerson();
 void game_save();
 void game_start();
-void game_startActionTimer(int actionTimer, const char* str, game_action action, game_room nextRoom);
+void game_startActionTimer(int actionTimer, const char* str, game_action action, game_room nextRoom, bool allowCancel);
 void game_stopActionTimer();

@@ -20,7 +20,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             NULL,
-            NULL,
+            "\xD1\xEF\xE0\xF2\xFC",
             NULL,
             NULL,
             NULL,

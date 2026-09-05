@@ -242,10 +242,7 @@ static void checkActionTimer() {
     }
 }
 
-static void process() {
-    checkActionTimer();
-    hctl_process();
-
+static void processControl() {
     bool allPressed = true;
     for (size_t i = 0; i < KEYS_COUNT; i++) {
         if (!tsgl_keyboard_getState(&keyboard, i)) {
@@ -256,6 +253,11 @@ static void process() {
     if (allPressed) {
         run_myaaaa();
     }
+
+    if (current_state.actionTimer > 0 && current_state.actionTimer_allowCancel && tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
+        game_stopActionTimer();
+        return;
+    }
     
     int used = game_upmenu_process();
     if (used >= 0) {
@@ -265,6 +267,13 @@ static void process() {
             game_roomAction(used);
         }
     }
+}
+
+static void process() {
+    checkActionTimer();
+    hctl_process();
+
+    processControl();
 
     if (memcmp(&current_state, &old_state, sizeof(Game_state)) != 0) {
         old_state = current_state;
@@ -353,12 +362,13 @@ void game_start() {
     }
 }
 
-void game_startActionTimer(int actionTimer, const char* str, game_action action, game_room nextRoom) {
+void game_startActionTimer(int actionTimer, const char* str, game_action action, game_room nextRoom, bool allowCancel) {
     current_state.actionTimer = actionTimer;
     current_state.actionTimer_max = actionTimer;
     slnprintf(current_state.actionTimer_str, MAX_ACTION_LEN, "%s", str);
     current_state.actionTimer_action = action;
     current_state.actionTimer_nextRoom = nextRoom;
+    current_state.actionTimer_allowCancel = allowCancel;
 }
 
 void game_stopActionTimer() {
