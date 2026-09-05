@@ -265,28 +265,40 @@ static void checkActionTimer() {
 }
 
 static void processControl() {
-    bool allPressed = true;
-    for (size_t i = 0; i < KEYS_COUNT; i++) {
-        if (!tsgl_keyboard_getState(&keyboard, i)) {
-            allPressed = false;
-            break;
+    if (current_state.sleepTimer == 0) {
+        bool allPressed = true;
+        for (size_t i = 0; i < KEYS_COUNT; i++) {
+            if (!tsgl_keyboard_getState(&keyboard, i)) {
+                allPressed = false;
+                break;
+            }
+        }
+        if (allPressed) {
+            run_myaaaa();
         }
     }
-    if (allPressed) {
-        run_myaaaa();
-    }
 
-    if (current_state.actionTimer > 0 && current_state.actionTimer_allowCancel && tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
-        game_stopActionTimer();
-        return;
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
+        if (current_state.sleepTimer > 0) {
+            sleepOut();
+            current_state.sleepTimer = 0;
+            return;
+        }
+
+        if (current_state.actionTimer > 0 && current_state.actionTimer_allowCancel) {
+            game_stopActionTimer();
+            return;
+        }
     }
     
-    int used = game_upmenu_process();
-    if (used >= 0) {
-        if (used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT && !game_isLockedInRoom()) {
-            game_selectRoom(used);
-        } else {
-            game_roomAction(used);
+    if (current_state.sleepTimer == 0) {
+        int used = game_upmenu_process();
+        if (used >= 0) {
+            if (used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT && !game_isLockedInRoom()) {
+                game_selectRoom(used);
+            } else {
+                game_roomAction(used);
+            }
         }
     }
 }
@@ -347,6 +359,19 @@ static void drawActionTimer() {
     tsgl_framebuffer_text(&framebuffer, positionX, positionY_text, printsettings_actiontimer_title, current_state.actionTimer_str);
 }
 
+static void render() {
+    if (current_state.sleepTimer > 0) {
+        tsgl_framebuffer_clear(&framebuffer, black);
+        return
+    }
+
+    loadSprites();
+    gfx_drawCenteredScreenImageSprite(room_sprite);
+    drawPerson();
+    drawActionTimer();
+    game_upmenu_draw();
+}
+
 void game_start() {
     ESP_LOGI(TAG, "game started!");
     tsgl_benchmark_reset(&benchmark);
@@ -360,12 +385,7 @@ void game_start() {
         process();
 
         tsgl_benchmark_startRendering(&benchmark);
-        loadSprites();
-        //tsgl_framebuffer_clear(&framebuffer, black);
-        gfx_drawCenteredScreenImageSprite(room_sprite);
-        drawPerson();
-        drawActionTimer();
-        game_upmenu_draw();
+        render();
         tsgl_benchmark_endRendering(&benchmark);
 
         tsgl_benchmark_startSend(&benchmark);

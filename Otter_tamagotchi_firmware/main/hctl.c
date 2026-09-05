@@ -7,6 +7,8 @@ static TimerHandle_t change_backlight_timer_handle = NULL;
 static time_t lastInteractTime = 0;
 static bool isIdle = false;
 static bool oldIsIdle = false;
+static bool autoBacklight = true;
+static bool forceUpdateBacklight = true;
 
 tsgl_keyboard keyboard;
 tsgl_sound_output* sound_output;
@@ -79,13 +81,21 @@ void hctl_process() {
         }
     }
 
-    isIdle = tsgl_time() - lastInteractTime > IDLE_AFTER_TIME;
-    if (isIdle != oldIsIdle) {
-        hctl_setBacklight(isIdle ? BACKLIGHT_IDLE : BACKLIGHT_MAX);
-        oldIsIdle = isIdle;
+    if (autoBacklight) {
+        isIdle = tsgl_time() - lastInteractTime > IDLE_AFTER_TIME;
+        if (isIdle != oldIsIdle || forceUpdateBacklight) {
+            hctl_setBacklight(isIdle ? BACKLIGHT_IDLE : BACKLIGHT_MAX);
+            oldIsIdle = isIdle;
+            forceUpdateBacklight = false;
+        }
     }
 }
 
 void hctl_resetIdleTimer() {
     lastInteractTime = tsgl_time();
+}
+
+void hctl_enableAutoBacklight(bool _autoBacklight) {
+    autoBacklight = _autoBacklight;
+    forceUpdateBacklight = true;
 }

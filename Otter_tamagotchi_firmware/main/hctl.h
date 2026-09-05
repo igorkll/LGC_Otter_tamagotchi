@@ -10,3 +10,4 @@ void hctl_setBacklightAndWait(uint8_t value);
 bool hctl_isBacklightChangeProcess();
 void hctl_process();
 void hctl_resetIdleTimer();
+void hctl_enableAutoBacklight(bool autoBacklight);
