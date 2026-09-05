@@ -68,6 +68,10 @@ static const Game_state default_state = {
     .person = game_person_otter
 };
 
+#define ACTION_TIMER_SIZE_MUL 0.8
+#define ACTION_TIMER_LINE_PADDING 4 
+#define ACTION_TIMER_HEIGHT 20
+
 // ------------------------------------ vars
 
 Game_state current_state;
@@ -272,15 +276,15 @@ static void drawPerson() {
 static void drawActionTimer() {
     if (current_state.actionTimer <= 0) return;
 
-    tsgl_pos sizeX = WIDTH * 0.8;
-    tsgl_pos sizeY = 20;
-    tsgl_pos fillSize = tsgl_math_imap(current_state.actionTimer, current_state.actionTimer_max, 0, 0, sizeX - 8);
+    tsgl_pos sizeX = WIDTH * ACTION_TIMER_SIZE_MUL;
+    tsgl_pos sizeY = ACTION_TIMER_HEIGHT;
+    tsgl_pos fillSize = tsgl_math_imap(current_state.actionTimer, current_state.actionTimer_max, 0, 0, sizeX - (ACTION_TIMER_LINE_PADDING * 2));
     
     int positionX = (WIDTH / 2) - (sizeX / 2);
     int positionY = (HEIGHT / 2) - (sizeY / 2);
 
     tsgl_framebuffer_rect(&framebuffer, positionX, positionY, sizeX, sizeY, red, 2);
-    tsgl_framebuffer_fill(&framebuffer, positionX + 4, positionY + 4, fillSize, sizeY - 8, red);
+    tsgl_framebuffer_fill(&framebuffer, positionX + ACTION_TIMER_LINE_PADDING, positionY + ACTION_TIMER_LINE_PADDING, fillSize, sizeY - (ACTION_TIMER_LINE_PADDING * 2), red);
 }
 
 void game_start() {
