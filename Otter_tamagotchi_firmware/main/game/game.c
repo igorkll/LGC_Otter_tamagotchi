@@ -165,7 +165,6 @@ void game_sleepIn() {
 static void sleepOut() {
     hctl_enableAutoBacklight(true);
     hctl_setBacklight(BACKLIGHT_MAX);
-    pushsound_play("/firmware/sounds/trigger.pcm", 16000, EFFECTS_SOUND_VOLUME);
 }
 
 static void loadSprites() {
@@ -285,6 +284,7 @@ static void processControl() {
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
         if (current_state.sleepTimer > 0) {
+            pushsound_play("/firmware/sounds/trigger.pcm", 16000, EFFECTS_SOUND_VOLUME);
             sleepOut();
             current_state.sleepTimer = 0;
             return;
