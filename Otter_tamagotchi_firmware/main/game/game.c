@@ -5,6 +5,7 @@
 #include "../funcs.h"
 #include "game_upmenu.h"
 #include "game_room_action.h"
+#include "game_funcs.h"
 
 // ------------------------------------ consts
 
@@ -67,11 +68,6 @@ static const Game_state default_state = {
     .room = game_room_bedroom,
     .person = game_person_otter
 };
-
-#define ANYSTATUS_SIZE_MUL 0.8
-#define ANYSTATUS_LINE_PADDING 4 
-#define ANYSTATUS_HEIGHT 20
-#define ANYSTATUS_OBJ_OFFSET 12
 
 #define ACTION_TIMER_TEXT_TARGET_WIDTH 10
 #define ACTION_TIMER_TEXT_TARGET_HEIGHT 16
@@ -337,47 +333,10 @@ static void drawPerson() {
     gfx_drawCenteredImageSpriteWithTransparentSupport(room->person_x, room->person_y, person_sprite);
 }
 
-static tsgl_print_settings printsettings_anystatus_title = {
-    .multiline = true,
-    .locationMode = tsgl_print_start_top,
-    .height = ANYSTATUS_HEIGHT,
-    .globalAlignmentX = tsgl_print_alignment_center,
-    .globalAlignmentY = tsgl_print_alignment_center,
-    .alignment = tsgl_print_alignment_center,
-    
-    // font
-    .font = DejaVuSerif,
-    .localLocationMode = tsgl_print_localLocationMode_center,
-    .targetWidth = ACTION_TIMER_TEXT_TARGET_WIDTH,
-    .targetHeight = ACTION_TIMER_TEXT_TARGET_HEIGHT,
-
-    .fill = TSGL_INVALID_RAWCOLOR,
-    .bg = TSGL_INVALID_RAWCOLOR
-};
-
-static void drawAnyStatus(tsgl_pos y, int state, int stateMin, int stateMax, const char* text) {
-    tsgl_pos sizeX = WIDTH * ANYSTATUS_SIZE_MUL;
-    tsgl_pos sizeY = ANYSTATUS_HEIGHT;
-    tsgl_pos fillSize = tsgl_math_imap(state, stateMin, stateMax, 0, sizeX - (ANYSTATUS_LINE_PADDING * 2));
-    
-    tsgl_pos positionX = (WIDTH / 2) - (sizeX / 2);
-    tsgl_pos positionY = y - (sizeY / 2);
-
-    tsgl_pos positionY_line = positionY - ANYSTATUS_OBJ_OFFSET;
-    tsgl_pos positionY_text = positionY + ANYSTATUS_OBJ_OFFSET;
-
-    tsgl_framebuffer_rect(&framebuffer, positionX, positionY_line, sizeX, sizeY, red, 2);
-    tsgl_framebuffer_fill(&framebuffer, positionX + ANYSTATUS_LINE_PADDING, positionY_line + ANYSTATUS_LINE_PADDING, fillSize, sizeY - (ANYSTATUS_LINE_PADDING * 2), red);
-
-    printsettings_anystatus_title.width = sizeX;
-    printsettings_anystatus_title.fg = red;
-    tsgl_framebuffer_text(&framebuffer, positionX, positionY_text, printsettings_anystatus_title, text);
-}
-
 static void drawActionTimer() {
     if (current_state.actionTimer <= 0) return;
 
-    drawAnyStatus(HEIGHT / 2, current_state.actionTimer, current_state.actionTimer_max, 0, current_state.actionTimer_str);
+    game_funcs_drawAnyStatus(HEIGHT / 2, current_state.actionTimer, current_state.actionTimer_max, 0, current_state.actionTimer_str, false);
 }
 
 static tsgl_print_settings printsettings_sleep_z_letter = {
@@ -404,7 +363,10 @@ static void drawSleep() {
         tsgl_framebuffer_text(&framebuffer, (WIDTH / 2) + x + SLEEP_Z_LETTERS_OFFSET_X, (HEIGHT / 2) + y + SLEEP_Z_LETTERS_OFFSET_Y, printsettings_sleep_z_letter, "Z");
     }
 
-    drawAnyStatus(HEIGHT / 2, current_state.sleepTimer, current_state.sleepStartTimer, 0, "!@#");
+    game_funcs_drawAnyStatus(HEIGHT / 2, current_state.sleepTimer, current_state.sleepStartTimer, 0, "\xD1\xEF\xEB\xFE\x2E\x2E\x2E", true);
+
+    char sleepStatus[MAX_ACTION_LEN];
+    slnprintf(sleepStatus, MAX_ACTION_LEN, "");
 }
 
 static void render() {
