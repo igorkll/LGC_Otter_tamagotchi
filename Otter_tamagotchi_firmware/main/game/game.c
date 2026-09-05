@@ -191,7 +191,11 @@ static void exit_myaaaa(tsgl_sound* sound) {
 static void run_myaaaa() {
     unload_room_sound();
     hctl_resetIdleTimer();
-    hctl_setBacklight(BACKLIGHT_MAX);
+    if (current_state.sleepTimer > 0) {
+        sleepIn();
+    } else {
+        hctl_setBacklight(BACKLIGHT_MAX);
+    }
 
     gfx_drawCenteredScreenImage("/firmware/myaaaa/myaaaa.bmp");
     tsgl_display_send(&display, &framebuffer);
@@ -226,6 +230,16 @@ static void onTimerAction() {
     }
 }
 
+static void sleepIn() {
+    hctl_enableAutoBacklight(false);
+    hctl_setBacklight(BACKLIGHT_IDLE);
+}
+
+static void sleepOut() {
+    hctl_enableAutoBacklight(true);
+    hctl_setBacklight(BACKLIGHT_MAX);
+}
+
 static time_t oldTimerTickTime = -9999;
 static void checkActionTimer() {
     time_t currentTime = tsgl_time();
@@ -237,6 +251,14 @@ static void checkActionTimer() {
             if (current_state.actionTimer <= 0) {
                 onTimerAction();
                 current_state.actionTimer = 0;
+            }
+        }
+
+        if (current_state.sleepTimer > 0) {
+            current_state.sleepTimer--;
+            if (current_state.sleepTimer <= 0) {
+                sleepOut();
+                current_state.sleepTimer = 0;
             }
         }
     }
