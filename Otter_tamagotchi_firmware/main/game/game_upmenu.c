@@ -115,7 +115,7 @@ static void draw_option_description(int selectingIndex) {
     if (text != NULL) {
         printsettings_upselect.fg = white;
         if (renderedOptionDescription == NULL) renderedOptionDescription = tsgl_gfx_renderTextToSprite(0, 0, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, printsettings_upselect, text, framebuffer.colormode, 0, TSGL_INVALID_RAWCOLOR, black);
-        tsgl_framebuffer_pushFast(&framebuffer, positionX, position, renderedOptionDescription);
+        PUSH_FUNC(&framebuffer, positionX, position, renderedOptionDescription);
     }
 }
 

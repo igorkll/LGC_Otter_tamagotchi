@@ -146,7 +146,7 @@ void tsgl_gfx_push(void* arg, TSGL_SET_REFERENCE(set), tsgl_pos x, tsgl_pos y, t
                 sprite->resizeHeight == 0 ? getPosY : tsgl_math_imap(getPosY, 0, spriteMaxPointY, 0, spriteRealMaxPointY)
             );
 
-            if (sprite->transparentColor.invalid || !tsgl_color_rawColorCompare(color, sprite->transparentColor, sprite->sprite->colorsize)) {
+            if (sprite->transparentColor.invalid || !tsgl_color_rawColorCompare(color, sprite->transparentColor, sprite->sprite->colorsize, sprite->sprite->floatColorsize)) {
                 set(arg, setPosX, setPosY, color);
             }
         }
@@ -527,7 +527,7 @@ tsgl_sprite* tsgl_gfx_renderTextToSprite(tsgl_pos x, tsgl_pos y, tsgl_pos width,
     }
 
     if (!clearcolor.invalid) tsgl_framebuffer_clear(sprite_fb, clearcolor);
-    tsgl_gfx_text(sprite_fb, (TSGL_SET_REFERENCE())tsgl_framebuffer_setWithoutCheckFast, (TSGL_FILL_REFERENCE())tsgl_framebuffer_fillWithoutCheck, x, y, sets, text, sprite_fb->viewport_minX, sprite_fb->viewport_minY, sprite_fb->viewport_maxX, sprite_fb->viewport_maxY);
+    tsgl_gfx_text(sprite_fb, (TSGL_SET_REFERENCE())tsgl_framebuffer_setWithoutCheck, (TSGL_FILL_REFERENCE())tsgl_framebuffer_fillWithoutCheck, x, y, sets, text, sprite_fb->viewport_minX, sprite_fb->viewport_minY, sprite_fb->viewport_maxX, sprite_fb->viewport_maxY);
 
     return sprite;
 }
