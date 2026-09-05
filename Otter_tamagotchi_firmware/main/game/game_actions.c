@@ -2,7 +2,7 @@
 #include "../pushsound.h"
 
 void game_actions_sleep(int sleepTime) {
-    pushsound_play("/firmware/sounds/sadness.pcm", 16000, EFFECTS_SOUND_VOLUME * 3);
+    pushsound_play("/firmware/sounds/sadness.pcm", 16000, EFFECTS_SOUND_VOLUME * 5);
     current_state.sleepTimer = sleepTime;
     game_sleepIn();
 }
