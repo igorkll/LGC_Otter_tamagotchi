@@ -21,7 +21,6 @@ static tsgl_print_settings printsettings_anystatus_title = {
 
 void game_funcs_drawAnyStatus(tsgl_pos positionY, int state, int stateMin, int stateMax, const char* text, bool vflip) {
     tsgl_pos sizeX = WIDTH * ANYSTATUS_SIZE_MUL;
-    tsgl_pos sizeY = ANYSTATUS_HEIGHT;
     tsgl_pos fillSize = tsgl_math_imap(state, stateMin, stateMax, 0, sizeX - (ANYSTATUS_LINE_PADDING * 2));
     
     tsgl_pos positionX = (WIDTH / 2) - (sizeX / 2);
@@ -34,8 +33,8 @@ void game_funcs_drawAnyStatus(tsgl_pos positionY, int state, int stateMin, int s
         positionY_text = _old;
     }
 
-    tsgl_framebuffer_rect(&framebuffer, positionX, positionY_line, sizeX, sizeY, red, 2);
-    tsgl_framebuffer_fill(&framebuffer, positionX + ANYSTATUS_LINE_PADDING, positionY_line + ANYSTATUS_LINE_PADDING, fillSize, sizeY - (ANYSTATUS_LINE_PADDING * 2), red);
+    tsgl_framebuffer_rect(&framebuffer, positionX, positionY_line, sizeX, ANYSTATUS_HEIGHT, red, 2);
+    tsgl_framebuffer_fill(&framebuffer, positionX + ANYSTATUS_LINE_PADDING, positionY_line + ANYSTATUS_LINE_PADDING, fillSize, ANYSTATUS_HEIGHT - (ANYSTATUS_LINE_PADDING * 2), red);
 
     printsettings_anystatus_title.width = sizeX;
     printsettings_anystatus_title.fg = red;

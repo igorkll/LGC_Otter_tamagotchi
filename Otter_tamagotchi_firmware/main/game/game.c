@@ -78,7 +78,7 @@ static const Game_state default_state = {
 #define SLEEP_SIN_INDEX_MUL 0.3
 #define SLEEP_SIN_MUL 10
 #define SLEEP_Z_LETTERS_INDEX_OFFSET -15
-#define SLEEP_ANYSTATUS_BOTTOM_OFFSET 0
+#define SLEEP_ANYSTATUS_BOTTOM_OFFSET 4
 
 // ------------------------------------ vars
 
@@ -361,7 +361,7 @@ static void drawSleep() {
         tsgl_framebuffer_text(&framebuffer, (WIDTH / 2) + x + SLEEP_Z_LETTERS_OFFSET_X, (HEIGHT / 2) + y + SLEEP_Z_LETTERS_OFFSET_Y, printsettings_sleep_z_letter, "Z");
     }
 
-    tsgl_pos anyStatusY = HEIGHT - ANYSTATUS_HEIGHT - (ANYSTATUS_OBJ_OFFSET / 2) - SLEEP_ANYSTATUS_BOTTOM_OFFSET;
+    tsgl_pos anyStatusY = HEIGHT - ANYSTATUS_HEIGHT - ANYSTATUS_OBJ_OFFSET - SLEEP_ANYSTATUS_BOTTOM_OFFSET;
     game_funcs_drawAnyStatus(anyStatusY, current_state.sleepTimer, current_state.sleepStartTimer, 0, "\xD1\xEF\xEB\xFE\x2E\x2E\x2E", true);
 
     char sleepStatus[MAX_ACTION_LEN];
