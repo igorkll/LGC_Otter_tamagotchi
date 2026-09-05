@@ -4,4 +4,5 @@
 void game_actions_sleep(int sleepTime) {
     pushsound_play("/firmware/sounds/sadness.pcm", 16000, 1);
     current_state.sleepTimer = sleepTime;
+    game_sleepIn();
 }

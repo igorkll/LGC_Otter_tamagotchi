@@ -157,7 +157,7 @@ void game_selectRoom(int index) {
 
 // ------------------------------------ process
 
-static void sleepIn() {
+void game_sleepIn() {
     hctl_enableAutoBacklight(false);
     hctl_setBacklight(BACKLIGHT_IDLE);
 }
@@ -191,7 +191,7 @@ static void loadSprites() {
 
 static void start() {
     if (current_state.sleepTimer > 0) {
-        sleepIn();
+        game_sleepIn();
     }
 
     game_selectRoom(current_state.room);

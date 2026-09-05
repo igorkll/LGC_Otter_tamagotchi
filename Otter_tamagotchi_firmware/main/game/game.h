@@ -64,3 +64,4 @@ void game_save();
 void game_start();
 void game_startActionTimer(int actionTimer, const char* str, game_action action, game_room nextRoom, bool allowCancel);
 void game_stopActionTimer();
+void game_sleepIn();
