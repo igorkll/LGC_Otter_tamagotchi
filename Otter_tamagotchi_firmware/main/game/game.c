@@ -163,8 +163,9 @@ void game_sleepIn() {
 }
 
 static void sleepOut() {
-    hctl_enableAutoBacklight(true);
+    hctl_resetIdleTimer();
     hctl_setBacklight(BACKLIGHT_MAX);
+    hctl_enableAutoBacklight(true);
 }
 
 static void loadSprites() {
