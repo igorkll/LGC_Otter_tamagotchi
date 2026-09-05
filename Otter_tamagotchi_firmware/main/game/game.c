@@ -367,6 +367,7 @@ static void drawActionTimer() {
 static void render() {
     if (current_state.sleepTimer > 0) {
         tsgl_framebuffer_clear(&framebuffer, black);
+        gfx_drawCenteredImageWithTransparentSupport(WIDTH / 2, (HEIGHT / 3) * 2, "/firmware/images/sleep.bmp");
         return;
     }
 
