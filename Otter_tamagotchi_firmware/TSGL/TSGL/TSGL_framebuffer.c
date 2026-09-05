@@ -124,7 +124,7 @@ static void _monoWrite(size_t index, uint8_t offset, uint8_t* buffer, tsgl_rawco
 }
 
 static void _444write(size_t rawindex, uint8_t* buffer, tsgl_rawcolor color) {
-    size_t index = rawindex * 1.5;
+    size_t index = rawindex + (rawindex >> 1);
     if ((rawindex & 1) == 0) {
         buffer[index] = color.arr[0];
         buffer[index+1] = (color.arr[1] & 0b11110000) | (buffer[index+1] & 0b1111);
@@ -135,7 +135,7 @@ static void _444write(size_t rawindex, uint8_t* buffer, tsgl_rawcolor color) {
 }
 
 static tsgl_rawcolor _444read(size_t rawindex, uint8_t* buffer) {
-    size_t index = rawindex * 1.5;
+    size_t index = rawindex + (rawindex >> 1);
     uint8_t v0 = 0;
     uint8_t v1 = 0;
     uint8_t v2 = 0;
@@ -188,7 +188,13 @@ static void _unRotation(tsgl_framebuffer* framebuffer, tsgl_pos* x, tsgl_pos* y,
 
 esp_err_t tsgl_framebuffer_init(tsgl_framebuffer* framebuffer, tsgl_colormode colormode, tsgl_pos width, tsgl_pos height, int64_t caps) {
     framebuffer->colorsize = tsgl_colormodeSizes[colormode];
-    framebuffer->buffersize = width * height * framebuffer->colorsize;
+    framebuffer->floatColorsize = tsgl_floatColormodeSizes[colormode];
+
+    if (framebuffer->floatColorsize) {
+        framebuffer->buffersize = width * height * (((float)framebuffer->colorsize) / 8.0);
+    } else {
+        framebuffer->buffersize = width * height * framebuffer->colorsize;
+    }
 
     void* buffer = tsgl_malloc(framebuffer->buffersize, caps);
     tsgl_framebuffer_staticInit(framebuffer, buffer, colormode, width, height);
@@ -203,18 +209,24 @@ esp_err_t tsgl_framebuffer_init(tsgl_framebuffer* framebuffer, tsgl_colormode co
 
 esp_err_t tsgl_framebuffer_staticInit(tsgl_framebuffer* framebuffer, void* ptr, tsgl_colormode colormode, tsgl_pos width, tsgl_pos height) {
     memset(framebuffer, 0, sizeof(tsgl_framebuffer));
+
     framebuffer->black = tsgl_color_raw(TSGL_BLACK, colormode);
+    framebuffer->colormode = colormode;
     framebuffer->colorsize = tsgl_colormodeSizes[colormode];
-    framebuffer->colorsizeInt = (uint8_t)framebuffer->colorsize;
+    framebuffer->floatColorsize = tsgl_floatColormodeSizes[colormode];
+
+    if (framebuffer->floatColorsize) {
+        float f = ((float)framebuffer->colorsize) / 8.0;
+        framebuffer->buffersize = width * height * f;
+    } else {
+        framebuffer->buffersize = width * height * framebuffer->colorsize;
+    }
+
     framebuffer->width = width;
     framebuffer->height = height;
     framebuffer->defaultWidth = width;
     framebuffer->defaultHeight = height;
     framebuffer->rotationWidth = width;
-    framebuffer->colormode = colormode;
-    framebuffer->buffersize = width * height * framebuffer->colorsize;
-    double notUsed;
-    framebuffer->floatColorsize = modf(framebuffer->colorsize, &notUsed) != 0;
     framebuffer->buffer = ptr;
     tsgl_framebuffer_resetChangedArea(framebuffer);
     tsgl_framebuffer_clrViewport(framebuffer);
@@ -357,7 +369,7 @@ void tsgl_framebuffer_pushFastWithTransparentSupport(tsgl_framebuffer* framebuff
         for (tsgl_pos posY = 0; posY < spriteHeight; posY++) {
             tsgl_pos setPosY = posY + y;
             tsgl_rawcolor color = tsgl_framebuffer_getWithoutCheckFast(sprite->sprite, posX, posY);
-            if (sprite->transparentColor.invalid || memcmp(color.arr, sprite->transparentColor.arr, framebuffer->colorsizeInt) != 0) {
+            if (sprite->transparentColor.invalid || memcmp(color.arr, sprite->transparentColor.arr, framebuffer->colorsize) != 0) {
                 tsgl_framebuffer_setWithoutCheckFast(framebuffer, setPosX, setPosY, color);
             }
         }
@@ -424,9 +436,9 @@ void tsgl_framebuffer_setWithoutCheck(tsgl_framebuffer* framebuffer, tsgl_pos x,
 }
 
 void tsgl_framebuffer_setWithoutCheckFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_rawcolor color) {
-    size_t index = (x + (y * framebuffer->width)) * framebuffer->colorsizeInt;
+    size_t index = (x + (y * framebuffer->width)) * framebuffer->colorsize;
     _doubleSet(framebuffer, index, color);
-    if (framebuffer->colorsizeInt == 3) framebuffer->buffer[index + 2] = color.arr[2];
+    if (framebuffer->colorsize == 3) framebuffer->buffer[index + 2] = color.arr[2];
 }
 
 void tsgl_framebuffer_fill(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_pos width, tsgl_pos height, tsgl_rawcolor color) {
@@ -599,7 +611,7 @@ tsgl_rawcolor tsgl_framebuffer_getWithoutCheck(tsgl_framebuffer* framebuffer, ts
 }
 
 tsgl_rawcolor tsgl_framebuffer_getWithoutCheckFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y) {
-    size_t index = (x + (y * framebuffer->width)) * framebuffer->colorsizeInt;
+    size_t index = (x + (y * framebuffer->width)) * framebuffer->colorsize;
     return (tsgl_rawcolor) {
         .invalid = false,
         .arr = {framebuffer->buffer[index + 0], framebuffer->buffer[index + 1], framebuffer->buffer[index + 2]}

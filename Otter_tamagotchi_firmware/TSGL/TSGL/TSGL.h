@@ -10,7 +10,8 @@
 typedef int16_t tsgl_pos;
 typedef struct tsgl_sprite tsgl_sprite;
 typedef struct tsgl_display tsgl_display;
-typedef float tsgl_colormode_raw;
+//typedef float tsgl_colormode_raw;
+typedef uint8_t tsgl_colormode_raw;
 
 #define TSGL_VERSION "0.6.0"
 
@@ -22,7 +23,8 @@ typedef float tsgl_colormode_raw;
 
 #define TSGL_CALC_ARRSIZE(arr) (sizeof(arr) / sizeof(&arr))
 
-extern const float tsgl_colormodeSizes[];
+extern const tsgl_colormode_raw tsgl_colormodeSizes[];
+extern const bool tsgl_floatColormodeSizes[];
 
 typedef enum {
     tsgl_rgb565_le = 0,
