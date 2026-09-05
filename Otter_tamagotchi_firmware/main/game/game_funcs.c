@@ -19,14 +19,12 @@ static tsgl_print_settings printsettings_anystatus_title = {
     .bg = TSGL_INVALID_RAWCOLOR
 };
 
-void game_funcs_drawAnyStatus(tsgl_pos y, int state, int stateMin, int stateMax, const char* text, bool vflip) {
+void game_funcs_drawAnyStatus(tsgl_pos positionY, int state, int stateMin, int stateMax, const char* text, bool vflip) {
     tsgl_pos sizeX = WIDTH * ANYSTATUS_SIZE_MUL;
     tsgl_pos sizeY = ANYSTATUS_HEIGHT;
     tsgl_pos fillSize = tsgl_math_imap(state, stateMin, stateMax, 0, sizeX - (ANYSTATUS_LINE_PADDING * 2));
     
     tsgl_pos positionX = (WIDTH / 2) - (sizeX / 2);
-    tsgl_pos positionY = y - (sizeY / 2);
-
     tsgl_pos positionY_line = positionY - ANYSTATUS_OBJ_OFFSET;
     tsgl_pos positionY_text = positionY + ANYSTATUS_OBJ_OFFSET;
 
