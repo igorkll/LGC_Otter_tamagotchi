@@ -2,6 +2,6 @@
 #include "../pushsound.h"
 
 void game_actions_sleep(int sleepTime) {
-    pushsound_play("/firmware/sounds/trigger.pcm", 8000, 1);
+    pushsound_play("/firmware/sounds/trigger.pcm", 16000, 1);
     current_state.sleepTimer = sleepTime;
 }
