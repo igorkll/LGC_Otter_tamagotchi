@@ -163,7 +163,6 @@ void game_sleepIn() {
 }
 
 static void sleepOut() {
-    hctl_resetIdleTimer();
     hctl_setBacklight(BACKLIGHT_MAX);
     hctl_enableAutoBacklight(true);
 }
@@ -206,7 +205,6 @@ static void exit_myaaaa(tsgl_sound* sound) {
 static void run_myaaaa() {
     unload_room_sound();
     hctl_enableAutoBacklight(false);
-    hctl_resetIdleTimer();
     hctl_setBacklight(BACKLIGHT_MAX);
 
     gfx_drawCenteredScreenImage("/firmware/myaaaa/myaaaa.bmp");
@@ -228,8 +226,6 @@ static void run_myaaaa() {
     }
 
     hctl_enableAutoBacklight(true);
-    hctl_resetIdleTimer();
-    
     tsgl_benchmark_reset(&benchmark);
     game_selectRoom(current_state.room);
 }

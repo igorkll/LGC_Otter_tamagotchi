@@ -96,6 +96,7 @@ void hctl_resetIdleTimer() {
 }
 
 void hctl_enableAutoBacklight(bool _autoBacklight) {
+    hctl_resetIdleTimer();
     autoBacklight = _autoBacklight;
     forceUpdateBacklight = true;
 }
