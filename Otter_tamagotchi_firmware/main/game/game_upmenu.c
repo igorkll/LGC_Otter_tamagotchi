@@ -72,7 +72,27 @@ int game_upmenu_process() {
 }
 
 static tsgl_sprite* renderedOptionDescription;
-int old_selectingIndex = -1;
+static int old_selectingIndex = -1;
+
+static tsgl_print_settings printsettings_upselect = {
+    .multiline = true,
+    .locationMode = tsgl_print_start_top,
+    .width = OPTION_DESCRIPTION_WIDTH,
+    .height = OPTION_DESCRIPTION_HEIGHT,
+    .globalAlignmentX = tsgl_print_alignment_center,
+    .globalAlignmentY = tsgl_print_alignment_center,
+    .alignment = tsgl_print_alignment_center,
+    
+    // font
+    .font = DejaVuSerif,
+    .localLocationMode = tsgl_print_localLocationMode_center,
+    .targetWidth = OPTION_DESCRIPTION_TEXT_TARGET_WIDTH,
+    .targetHeight = OPTION_DESCRIPTION_TEXT_TARGET_HEIGHT,
+
+    .fill = TSGL_INVALID_RAWCOLOR,
+    .bg = TSGL_INVALID_RAWCOLOR
+};
+
 static void draw_option_description(int selectingIndex) {
     tsgl_pos positionX = (WIDTH / 2) - (OPTION_DESCRIPTION_WIDTH / 2);
     tsgl_pos position = selectingIndex < GAME_UPMENU_LINE_COUNT ? (OPTION_DESCRIPTION_POS + OPTION_DESCRIPTION_MARGIN) : (OPTION_DESCRIPTION_POS_DOWN - OPTION_DESCRIPTION_HEIGHT - OPTION_DESCRIPTION_MARGIN);
@@ -93,27 +113,8 @@ static void draw_option_description(int selectingIndex) {
     }
 
     if (text != NULL) {
-        tsgl_print_settings printsettings_title = {
-            .multiline = true,
-            .locationMode = tsgl_print_start_top,
-            .width = OPTION_DESCRIPTION_WIDTH,
-            .height = OPTION_DESCRIPTION_HEIGHT,
-            .globalAlignmentX = tsgl_print_alignment_center,
-            .globalAlignmentY = tsgl_print_alignment_center,
-            .alignment = tsgl_print_alignment_center,
-            
-            // font
-            .font = DejaVuSerif,
-            .localLocationMode = tsgl_print_localLocationMode_center,
-            .targetWidth = OPTION_DESCRIPTION_TEXT_TARGET_WIDTH,
-            .targetHeight = OPTION_DESCRIPTION_TEXT_TARGET_HEIGHT,
-        
-            .fill = TSGL_INVALID_RAWCOLOR,
-            .bg = TSGL_INVALID_RAWCOLOR,
-            .fg = white
-        };
-
-        if (renderedOptionDescription == NULL) renderedOptionDescription = tsgl_gfx_renderTextToSprite(0, 0, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, printsettings_title, text, framebuffer.colormode, 0, TSGL_INVALID_RAWCOLOR, black);
+        printsettings_upselect.fg = white;
+        if (renderedOptionDescription == NULL) renderedOptionDescription = tsgl_gfx_renderTextToSprite(0, 0, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, printsettings_upselect, text, framebuffer.colormode, 0, TSGL_INVALID_RAWCOLOR, black);
         tsgl_framebuffer_pushFast(&framebuffer, positionX, position, renderedOptionDescription);
     }
 }
