@@ -190,6 +190,10 @@ static void loadSprites() {
 }
 
 static void start() {
+    if (current_state.sleepTimer > 0) {
+        sleepIn();
+    }
+
     game_selectRoom(current_state.room);
 }
 
@@ -200,12 +204,9 @@ static void exit_myaaaa(tsgl_sound* sound) {
 
 static void run_myaaaa() {
     unload_room_sound();
+    hctl_enableAutoBacklight(false);
     hctl_resetIdleTimer();
-    if (current_state.sleepTimer > 0) {
-        sleepIn();
-    } else {
-        hctl_setBacklight(BACKLIGHT_MAX);
-    }
+    hctl_setBacklight(BACKLIGHT_MAX);
 
     gfx_drawCenteredScreenImage("/firmware/myaaaa/myaaaa.bmp");
     tsgl_display_send(&display, &framebuffer);
@@ -224,6 +225,9 @@ static void run_myaaaa() {
             running = false;
         }
     }
+
+    hctl_enableAutoBacklight(true);
+    hctl_resetIdleTimer();
     
     tsgl_benchmark_reset(&benchmark);
     game_selectRoom(current_state.room);
@@ -380,7 +384,6 @@ void game_start() {
     game_upmenu_init();
     start();
 
-    bool firstGameFrame = true;
     while (true) {
         process();
 
@@ -396,11 +399,6 @@ void game_start() {
             tsgl_benchmark_print(&benchmark);
         #endif
         tsgl_benchmark_wait(&benchmark, TARGET_FPS);
-
-        if (firstGameFrame) {
-            hctl_setBacklightAndWait(BACKLIGHT_MAX);
-            firstGameFrame = false;
-        }
     }
 }
 
