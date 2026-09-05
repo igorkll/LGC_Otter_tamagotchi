@@ -176,7 +176,6 @@ void game_upmenu_draw() {
     PUSH_FUNC(&framebuffer, 0, 0, sprite_iconline);
     PUSH_FUNC(&framebuffer, 0, bottomLineY, sprite_iconline);
     
-    
     draw_icons(0, 0, current_selected);
     draw_icons(GAME_UPMENU_LINE_COUNT, bottomLineY, current_selected);
     if (current_selected >= 0) draw_option_description(current_selected);

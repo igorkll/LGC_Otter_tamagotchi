@@ -123,6 +123,17 @@ static void _monoWrite(size_t index, uint8_t offset, uint8_t* buffer, tsgl_rawco
     }
 }
 
+static tsgl_rawcolor _monoRead(size_t index, uint8_t offset, uint8_t* buffer) {
+    tsgl_rawcolor color;
+    color.invalid = false;
+    if (buffer[index] & (1 << offset)) {
+        color.arr[0] = 1;
+    } else {
+        color.arr[0] = 0;
+    }
+    return color;
+}
+
 static void _444write(size_t rawindex, uint8_t* buffer, tsgl_rawcolor color) {
     size_t index = rawindex + (rawindex >> 1);
     if ((rawindex & 1) == 0) {
@@ -395,6 +406,7 @@ void tsgl_framebuffer_setWithoutCheck(tsgl_framebuffer* framebuffer, tsgl_pos x,
         case tsgl_bgr444:
             index = _getRawBufferIndex(framebuffer, x, y);
             tsgl_framebuffer_updateChangedAreaIndex(framebuffer, index);
+            tsgl_framebuffer_updateChangedAreaIndex(framebuffer, index + 1);
             _444write(index, framebuffer->buffer, color);
             break;
 
@@ -628,6 +640,9 @@ tsgl_rawcolor tsgl_framebuffer_rotationGet(tsgl_framebuffer* framebuffer, uint8_
         case tsgl_rgb444:
         case tsgl_bgr444:
             return _444read(_rawRotateGetBufferIndex(framebuffer, rotation, x, y), framebuffer->buffer);
+
+        case tsgl_monochrome:
+            return _monoRead(_getHorOffset(framebuffer, x, y), framebuffer->buffer);
         
         default: {
             size_t index = _rotateGetBufferIndex(framebuffer, rotation, x, y);
