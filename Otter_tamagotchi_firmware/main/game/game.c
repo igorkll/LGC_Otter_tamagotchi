@@ -165,6 +165,7 @@ void game_sleepIn() {
 static void sleepOut() {
     hctl_enableAutoBacklight(true);
     hctl_setBacklight(BACKLIGHT_MAX);
+    pushsound_play("/firmware/sounds/trigger.pcm", 16000, EFFECTS_SOUND_VOLUME);
 }
 
 static void loadSprites() {
