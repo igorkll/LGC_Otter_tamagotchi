@@ -483,8 +483,12 @@ void tsgl_framebuffer_fillWithoutCheck(tsgl_framebuffer* framebuffer, tsgl_pos x
     switch (framebuffer->colormode) {
         case tsgl_rgb444:
         case tsgl_bgr444:
-            tsgl_framebuffer_updateChangedAreaIndex(framebuffer, _getRawBufferIndex(framebuffer, x, y));
-            tsgl_framebuffer_updateChangedAreaIndex(framebuffer, _getRawBufferIndex(framebuffer, right, down));
+            size_t idx = _getRawBufferIndex(framebuffer, x, y);
+            tsgl_framebuffer_updateChangedAreaIndex(framebuffer, idx);
+            tsgl_framebuffer_updateChangedAreaIndex(framebuffer, idx + 1);
+            idx = _getRawBufferIndex(framebuffer, right, down);
+            tsgl_framebuffer_updateChangedAreaIndex(framebuffer, idx);
+            tsgl_framebuffer_updateChangedAreaIndex(framebuffer, idx + 1);
             for (tsgl_pos ix = x; ix < x + width; ix++) {
                 for (tsgl_pos iy = y; iy < y + height; iy++) {
                     _444write(_getRawBufferIndex(framebuffer, ix, iy), framebuffer->buffer, color);
@@ -609,6 +613,9 @@ tsgl_rawcolor tsgl_framebuffer_getWithoutCheck(tsgl_framebuffer* framebuffer, ts
         case tsgl_rgb444:
         case tsgl_bgr444:
             return _444read(_getRawBufferIndex(framebuffer, x, y), framebuffer->buffer);
+
+        case tsgl_monochrome:
+            return _monoRead(_getRawHorBufferIndex(framebuffer, x, y), _getHorOffset(framebuffer, x, y), framebuffer->buffer);
         
         default: {
             size_t index = _getBufferIndex(framebuffer, x, y);
@@ -641,8 +648,8 @@ tsgl_rawcolor tsgl_framebuffer_rotationGet(tsgl_framebuffer* framebuffer, uint8_
         case tsgl_bgr444:
             return _444read(_rawRotateGetBufferIndex(framebuffer, rotation, x, y), framebuffer->buffer);
 
-        case tsgl_monochrome:
-            return _monoRead(_getHorOffset(framebuffer, x, y), framebuffer->buffer);
+        //case tsgl_monochrome:
+        //    return _monoRead(_getRawHorBufferIndex(framebuffer, x, y), _getHorOffset(framebuffer, x, y), framebuffer->buffer);
         
         default: {
             size_t index = _rotateGetBufferIndex(framebuffer, rotation, x, y);
