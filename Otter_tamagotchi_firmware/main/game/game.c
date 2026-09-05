@@ -157,6 +157,16 @@ void game_selectRoom(int index) {
 
 // ------------------------------------ process
 
+static void sleepIn() {
+    hctl_enableAutoBacklight(false);
+    hctl_setBacklight(BACKLIGHT_IDLE);
+}
+
+static void sleepOut() {
+    hctl_enableAutoBacklight(true);
+    hctl_setBacklight(BACKLIGHT_MAX);
+}
+
 static void loadSprites() {
     static int room_sprite_old_index = 0;
     if (room_sprite == NULL || current_state.room != room_sprite_old_index) {
@@ -228,16 +238,6 @@ static void onTimerAction() {
         default:
             break;
     }
-}
-
-static void sleepIn() {
-    hctl_enableAutoBacklight(false);
-    hctl_setBacklight(BACKLIGHT_IDLE);
-}
-
-static void sleepOut() {
-    hctl_enableAutoBacklight(true);
-    hctl_setBacklight(BACKLIGHT_MAX);
 }
 
 static time_t oldTimerTickTime = -9999;
@@ -362,7 +362,7 @@ static void drawActionTimer() {
 static void render() {
     if (current_state.sleepTimer > 0) {
         tsgl_framebuffer_clear(&framebuffer, black);
-        return
+        return;
     }
 
     loadSprites();
