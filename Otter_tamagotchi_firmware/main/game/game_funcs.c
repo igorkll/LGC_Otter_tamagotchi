@@ -1,11 +1,6 @@
 #include "game_funcs.h"
 #include "game.h"
 
-#define ANYSTATUS_SIZE_MUL 0.8
-#define ANYSTATUS_LINE_PADDING 4 
-#define ANYSTATUS_HEIGHT 20
-#define ANYSTATUS_OBJ_OFFSET 12
-
 static tsgl_print_settings printsettings_anystatus_title = {
     .multiline = true,
     .locationMode = tsgl_print_start_top,
@@ -17,8 +12,8 @@ static tsgl_print_settings printsettings_anystatus_title = {
     // font
     .font = DejaVuSerif,
     .localLocationMode = tsgl_print_localLocationMode_center,
-    .targetWidth = ACTION_TIMER_TEXT_TARGET_WIDTH,
-    .targetHeight = ACTION_TIMER_TEXT_TARGET_HEIGHT,
+    .targetWidth = ANYSTATUS_TEXT_TARGET_WIDTH,
+    .targetHeight = ANYSTATUS_TEXT_TARGET_HEIGHT,
 
     .fill = TSGL_INVALID_RAWCOLOR,
     .bg = TSGL_INVALID_RAWCOLOR

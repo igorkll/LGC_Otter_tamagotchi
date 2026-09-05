@@ -69,9 +69,6 @@ static const Game_state default_state = {
     .person = game_person_otter
 };
 
-#define ACTION_TIMER_TEXT_TARGET_WIDTH 10
-#define ACTION_TIMER_TEXT_TARGET_HEIGHT 16
-
 #define SLEEP_Z_LETTERS_COUNT 4
 #define SLEEP_Z_LETTERS_TARGET_WIDTH 8
 #define SLEEP_Z_LETTERS_TARGET_HEIGHT 8
@@ -81,6 +78,7 @@ static const Game_state default_state = {
 #define SLEEP_SIN_INDEX_MUL 0.3
 #define SLEEP_SIN_MUL 10
 #define SLEEP_Z_LETTERS_INDEX_OFFSET -15
+#define SLEEP_ANYSTATUS_BOTTOM_OFFSET 0
 
 // ------------------------------------ vars
 
@@ -363,7 +361,8 @@ static void drawSleep() {
         tsgl_framebuffer_text(&framebuffer, (WIDTH / 2) + x + SLEEP_Z_LETTERS_OFFSET_X, (HEIGHT / 2) + y + SLEEP_Z_LETTERS_OFFSET_Y, printsettings_sleep_z_letter, "Z");
     }
 
-    game_funcs_drawAnyStatus(HEIGHT / 2, current_state.sleepTimer, current_state.sleepStartTimer, 0, "\xD1\xEF\xEB\xFE\x2E\x2E\x2E", true);
+    tsgl_pos anyStatusY = HEIGHT - ANYSTATUS_HEIGHT - (ANYSTATUS_OBJ_OFFSET / 2) - SLEEP_ANYSTATUS_BOTTOM_OFFSET;
+    game_funcs_drawAnyStatus(anyStatusY, current_state.sleepTimer, current_state.sleepStartTimer, 0, "\xD1\xEF\xEB\xFE\x2E\x2E\x2E", true);
 
     char sleepStatus[MAX_ACTION_LEN];
     slnprintf(sleepStatus, MAX_ACTION_LEN, "");
