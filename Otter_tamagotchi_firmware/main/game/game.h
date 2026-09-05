@@ -43,6 +43,7 @@ typedef struct {
 
     // sleep
     int sleepTimer;
+    int sleepStartTimer;
 } Game_state;
 
 typedef struct {

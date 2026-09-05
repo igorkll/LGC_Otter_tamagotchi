@@ -68,10 +68,10 @@ static const Game_state default_state = {
     .person = game_person_otter
 };
 
-#define ACTION_TIMER_SIZE_MUL 0.8
-#define ACTION_TIMER_LINE_PADDING 4 
-#define ACTION_TIMER_HEIGHT 20
-#define ACTION_TIMER_OBJ_OFFSET 12
+#define ANYSTATUS_SIZE_MUL 0.8
+#define ANYSTATUS_LINE_PADDING 4 
+#define ANYSTATUS_HEIGHT 20
+#define ANYSTATUS_OBJ_OFFSET 12
 
 #define ACTION_TIMER_TEXT_TARGET_WIDTH 10
 #define ACTION_TIMER_TEXT_TARGET_HEIGHT 16
@@ -337,10 +337,10 @@ static void drawPerson() {
     gfx_drawCenteredImageSpriteWithTransparentSupport(room->person_x, room->person_y, person_sprite);
 }
 
-static tsgl_print_settings printsettings_actiontimer_title = {
+static tsgl_print_settings printsettings_anystatus_title = {
     .multiline = true,
     .locationMode = tsgl_print_start_top,
-    .height = ACTION_TIMER_HEIGHT,
+    .height = ANYSTATUS_HEIGHT,
     .globalAlignmentX = tsgl_print_alignment_center,
     .globalAlignmentY = tsgl_print_alignment_center,
     .alignment = tsgl_print_alignment_center,
@@ -355,25 +355,29 @@ static tsgl_print_settings printsettings_actiontimer_title = {
     .bg = TSGL_INVALID_RAWCOLOR
 };
 
+static void drawAnyStatus(tsgl_pos y, int state, int stateMin, int stateMax, const char* text) {
+    tsgl_pos sizeX = WIDTH * ANYSTATUS_SIZE_MUL;
+    tsgl_pos sizeY = ANYSTATUS_HEIGHT;
+    tsgl_pos fillSize = tsgl_math_imap(state, stateMin, stateMax, 0, sizeX - (ANYSTATUS_LINE_PADDING * 2));
+    
+    tsgl_pos positionX = (WIDTH / 2) - (sizeX / 2);
+    tsgl_pos positionY = y - (sizeY / 2);
+
+    tsgl_pos positionY_line = positionY - ANYSTATUS_OBJ_OFFSET;
+    tsgl_pos positionY_text = positionY + ANYSTATUS_OBJ_OFFSET;
+
+    tsgl_framebuffer_rect(&framebuffer, positionX, positionY_line, sizeX, sizeY, red, 2);
+    tsgl_framebuffer_fill(&framebuffer, positionX + ANYSTATUS_LINE_PADDING, positionY_line + ANYSTATUS_LINE_PADDING, fillSize, sizeY - (ANYSTATUS_LINE_PADDING * 2), red);
+
+    printsettings_anystatus_title.width = sizeX;
+    printsettings_anystatus_title.fg = red;
+    tsgl_framebuffer_text(&framebuffer, positionX, positionY_text, printsettings_anystatus_title, text);
+}
+
 static void drawActionTimer() {
     if (current_state.actionTimer <= 0) return;
 
-    tsgl_pos sizeX = WIDTH * ACTION_TIMER_SIZE_MUL;
-    tsgl_pos sizeY = ACTION_TIMER_HEIGHT;
-    tsgl_pos fillSize = tsgl_math_imap(current_state.actionTimer, current_state.actionTimer_max, 0, 0, sizeX - (ACTION_TIMER_LINE_PADDING * 2));
-    
-    tsgl_pos positionX = (WIDTH / 2) - (sizeX / 2);
-    tsgl_pos positionY = (HEIGHT / 2) - (sizeY / 2);
-
-    tsgl_pos positionY_line = positionY - ACTION_TIMER_OBJ_OFFSET;
-    tsgl_pos positionY_text = positionY + ACTION_TIMER_OBJ_OFFSET;
-
-    tsgl_framebuffer_rect(&framebuffer, positionX, positionY_line, sizeX, sizeY, red, 2);
-    tsgl_framebuffer_fill(&framebuffer, positionX + ACTION_TIMER_LINE_PADDING, positionY_line + ACTION_TIMER_LINE_PADDING, fillSize, sizeY - (ACTION_TIMER_LINE_PADDING * 2), red);
-
-    printsettings_actiontimer_title.width = sizeX;
-    printsettings_actiontimer_title.fg = red;
-    tsgl_framebuffer_text(&framebuffer, positionX, positionY_text, printsettings_actiontimer_title, current_state.actionTimer_str);
+    drawAnyStatus(HEIGHT / 2, current_state.actionTimer, current_state.actionTimer_max, 0, current_state.actionTimer_str);
 }
 
 static tsgl_print_settings printsettings_sleep_z_letter = {
@@ -388,7 +392,7 @@ static tsgl_print_settings printsettings_sleep_z_letter = {
 
 static void drawSleep() {
     tsgl_framebuffer_clear(&framebuffer, black);
-    gfx_drawCenteredImageWithTransparentSupport(WIDTH / 2, (HEIGHT / 3) * 2, "/firmware/images/sleep.bmp");
+    gfx_drawCenteredImageWithTransparentSupport(WIDTH / 2, HEIGHT / 2, "/firmware/images/sleep.bmp");
 
     float sleep_step = tsgl_time() * SLEEP_ANIM_SPEED;
 
@@ -399,6 +403,8 @@ static void drawSleep() {
         printsettings_sleep_z_letter.fg = tsgl_color_raw(TSGL_WHITE, framebuffer.colormode);
         tsgl_framebuffer_text(&framebuffer, (WIDTH / 2) + x + SLEEP_Z_LETTERS_OFFSET_X, (HEIGHT / 2) + y + SLEEP_Z_LETTERS_OFFSET_Y, printsettings_sleep_z_letter, "Z");
     }
+
+    drawAnyStatus(HEIGHT / 2, current_state.sleepTimer, current_state.sleepStartTimer, 0, "!@#");
 }
 
 static void render() {
