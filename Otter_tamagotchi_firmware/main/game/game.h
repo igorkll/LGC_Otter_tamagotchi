@@ -62,11 +62,11 @@ typedef struct {
     // states
     bool states_opened;
     int16_t states_money;
-    int8_t states_fatigue;
-    int8_t states_hunger;
-    int8_t states_thirst;
-    int8_t states_caress;
-    int8_t states_sadness;
+    float states_fatigue;
+    float states_hunger;
+    float states_thirst;
+    float states_caress;
+    float states_sadness;
 } Game_state;
 
 typedef struct {
@@ -75,6 +75,12 @@ typedef struct {
     float musicVolume;
     tsgl_pos person_x;
     tsgl_pos person_y;
+
+    float states_delta_fatigue;
+    float states_delta_hunger;
+    float states_delta_thirst;
+    float states_delta_caress;
+    float states_delta_sadness;
 } Room;
 
 extern Game_state current_state;

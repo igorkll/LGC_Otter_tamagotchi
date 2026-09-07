@@ -45,7 +45,7 @@ static tsgl_pos drawstate_num(tsgl_pos x, tsgl_pos y, const char* title, int val
     return drawstate_str(x, y, text);
 }
 
-static void raw_draw_slider(tsgl_pos x, tsgl_pos y, int8_t value) {
+static void raw_draw_slider(tsgl_pos x, tsgl_pos y, float value) {
     float floatValue = (float)value / 100.0;
 
     tsgl_framebuffer_rect(&framebuffer, 
@@ -66,7 +66,7 @@ static void raw_draw_slider(tsgl_pos x, tsgl_pos y, int8_t value) {
     );
 }
 
-static tsgl_pos drawstate_slider(tsgl_pos x, tsgl_pos y, const char* title, int8_t value) {
+static tsgl_pos drawstate_slider(tsgl_pos x, tsgl_pos y, const char* title, float value) {
     drawstate_str(x, y, title);
     tsgl_pos slider_pos = y + STATES_FONT_TARGET_HEIGHT + STATES_GAP;
     raw_draw_slider(x, slider_pos, value);
@@ -110,4 +110,10 @@ void game_states_toggle() {
     } else {
         game_states_open();
     }
+}
+
+void game_states_change(float* ptr, float delta) {
+    *ptr += delta;
+    if (*ptr < 0) *ptr = 0;
+    if (*ptr > 100) *ptr = 100;
 }

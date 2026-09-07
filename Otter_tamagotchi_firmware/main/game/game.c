@@ -227,6 +227,21 @@ static void onTimerAction() {
     }
 }
 
+static void processParametersDelta() {
+    float states_delta_fatigue = 0;
+    float states_delta_hunger = 0;
+    float states_delta_thirst = 0;
+    float states_delta_caress = 0;
+    float states_delta_sadness = 0;
+
+    Room* room = game_getCurrentRoom();
+    game_states_change(&current_state.states_fatigue, room->states_delta_fatigue + states_delta_fatigue);
+    game_states_change(&current_state.states_hunger, room->states_delta_hunger + states_delta_hunger);
+    game_states_change(&current_state.states_thirst, room->states_delta_thirst + states_delta_thirst);
+    game_states_change(&current_state.states_caress, room->states_delta_caress + states_delta_caress);
+    game_states_change(&current_state.states_sadness, room->states_delta_sadness + states_delta_sadness);
+}
+
 static time_t oldTimerTickTime = -9999;
 static void checkActionTimer() {
     time_t currentTime = tsgl_time();
@@ -248,6 +263,8 @@ static void checkActionTimer() {
                 current_state.sleepTimer = 0;
             }
         }
+
+        processParametersDelta();
     }
 }
 

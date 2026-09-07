@@ -49,5 +49,10 @@ const Room rooms[] = {
         .musicVolume = 0.6,
         .person_x = (WIDTH / 4) - 20,
         .person_y = (HEIGHT / 4) * 3,
+
+        .states_delta_fatigue = 1,
+        .states_delta_hunger = 0.2,
+        .states_delta_thirst = 0.3,
+        .states_delta_sadness = -0.2
     }
 };
