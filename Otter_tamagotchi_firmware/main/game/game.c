@@ -132,6 +132,7 @@ static void game_load() {
             if (current_state.resetSettingsId != RESET_SETTINGS_ID) {
                 ESP_LOGI(TAG, "reset settings id changed: %i > %i", current_state.resetSettingsId, RESET_SETTINGS_ID);
                 game_loadDefaultSettings();
+                current_state.resetSettingsId = RESET_SETTINGS_ID;
             }
         } else {
             ESP_LOGE(TAG, "failed to load game");
