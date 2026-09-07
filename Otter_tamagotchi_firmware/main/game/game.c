@@ -228,24 +228,56 @@ static void onTimerAction() {
 }
 
 static void processParametersDelta() {
+    const Room* room = game_getCurrentRoom();
+    
     float states_delta_fatigue = 0.01;
     float states_delta_hunger = 0.01;
     float states_delta_thirst = 0.05;
     float states_delta_caress = 0;
     float states_delta_sadness = 0;
 
-    states_delta_fatigue += (current_state.states_hunger / 100 / 50) + (current_state.states_thirst / 100 / 20) + (current_state.states_caress / 100 / 100);
+    states_delta_fatigue += (current_state.states_hunger / 100 / 50) + (current_state.states_thirst / 100 / 20);
     states_delta_hunger += current_state.states_fatigue / 100;
-    states_delta_thirst -= current_state.states_fatigue / 2000;
+    states_delta_thirst += current_state.states_fatigue / 1000;
     states_delta_caress += 0.2 - ((current_state.states_fatigue / 100) * 0.2);
     states_delta_sadness += current_state.states_fatigue / 100;
 
-    Room* room = game_getCurrentRoom();
-    game_states_change(&current_state.states_fatigue, room->states_delta_fatigue + states_delta_fatigue);
-    game_states_change(&current_state.states_hunger, room->states_delta_hunger + states_delta_hunger);
-    game_states_change(&current_state.states_thirst, room->states_delta_thirst + states_delta_thirst);
-    game_states_change(&current_state.states_caress, room->states_delta_caress + states_delta_caress);
-    game_states_change(&current_state.states_sadness, room->states_delta_sadness + states_delta_sadness);
+    #ifdef DEBUG_PARAMS
+        ESP_LOGI(TAG, "-------- parameters");
+        ESP_LOGI(TAG, "fatigue: %f", states_delta_fatigue);
+        ESP_LOGI(TAG, "hunger: %f", states_delta_hunger);
+        ESP_LOGI(TAG, "thirst: %f", states_delta_thirst);
+        ESP_LOGI(TAG, "caress: %f", states_delta_caress);
+        ESP_LOGI(TAG, "sadness: %f", states_delta_sadness);
+    #endif
+
+    states_delta_fatigue += room->states_delta_fatigue;
+    states_delta_hunger += room->states_delta_hunger;
+    states_delta_thirst += room->states_delta_thirst;
+    states_delta_caress += room->states_delta_caress;
+    states_delta_sadness += room->states_delta_sadness;
+
+    #ifdef DEBUG_PARAMS
+        ESP_LOGI(TAG, "-------- parameters after add room parameters");
+        ESP_LOGI(TAG, "fatigue: %f", states_delta_fatigue);
+        ESP_LOGI(TAG, "hunger: %f", states_delta_hunger);
+        ESP_LOGI(TAG, "thirst: %f", states_delta_thirst);
+        ESP_LOGI(TAG, "caress: %f", states_delta_caress);
+        ESP_LOGI(TAG, "sadness: %f", states_delta_sadness);
+    #endif
+
+    float parameters_mul = GAMECFG_PARAMS_SPEED_MUL;
+    states_delta_fatigue *= room->states_delta_fatigue * parameters_mul;
+    states_delta_hunger *= room->states_delta_hunger * parameters_mul;
+    states_delta_thirst *= room->states_delta_thirst * parameters_mul;
+    states_delta_caress *= room->states_delta_caress * parameters_mul;
+    states_delta_sadness *= room->states_delta_sadness * parameters_mul;
+
+    game_states_change(&current_state.states_fatigue, states_delta_fatigue);
+    game_states_change(&current_state.states_hunger, states_delta_hunger);
+    game_states_change(&current_state.states_thirst, states_delta_thirst);
+    game_states_change(&current_state.states_caress, states_delta_caress);
+    game_states_change(&current_state.states_sadness, states_delta_sadness);
 }
 
 static time_t oldTimerTickTime = -9999;

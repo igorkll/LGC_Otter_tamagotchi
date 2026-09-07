@@ -45,3 +45,4 @@
 
 //#define DEBUG_FPS
 //#define DEBUG_TITLE
+#define DEBUG_PARAMS
