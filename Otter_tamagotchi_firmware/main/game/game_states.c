@@ -24,7 +24,7 @@ static tsgl_print_settings printsettings = {
     .locationMode = tsgl_print_start_top,
     
     // font
-    .font = font,
+    .font = DejaVuSerif,
     .localLocationMode = tsgl_print_localLocationMode_bottom,
     .targetWidth = STATES_FONT_TARGET_WIDTH,
     .targetHeight = STATES_FONT_TARGET_HEIGHT,
