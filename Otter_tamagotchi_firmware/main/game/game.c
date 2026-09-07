@@ -150,7 +150,7 @@ static void reload_room_sound() {
     }
 }
 
-void updateActiveIcons() {
+void game_updateActiveIcons() {
     for (size_t i = 0; i < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT; i++) {
         game_upmenu_setActivate(i, current_state.room == i);
     }
@@ -165,7 +165,7 @@ void updateActiveIcons() {
 void game_selectRoom(int index) {
     current_state.room = index;
 
-    updateActiveIcons();
+    game_updateActiveIcons();
     reload_room_sound();
     game_upmenu_redrawTitle();
     game_upmenu_reloadIcons();
@@ -309,13 +309,13 @@ static void processControl() {
             return;
         }
 
-        if (current_state.actionTimer > 0 && current_state.actionTimer_allowCancel) {
-            game_stopActionTimer();
+        if (current_state.backpack_opened) {
+            game_backpack_close();
             return;
         }
 
-        if (current_state.backpack_opened) {
-            game_backpack_close();
+        if (current_state.actionTimer > 0 && current_state.actionTimer_allowCancel) {
+            game_stopActionTimer();
             return;
         }
     }
@@ -393,11 +393,12 @@ static void render() {
     }
 
     loadSprites();
+    
     gfx_drawCenteredScreenImageSprite(room_sprite);
     drawPerson();
-    game_upmenu_draw();
-    game_backpack_draw();
     drawActionTimer();
+    game_backpack_draw();
+    game_upmenu_draw();
 }
 
 void game_start() {

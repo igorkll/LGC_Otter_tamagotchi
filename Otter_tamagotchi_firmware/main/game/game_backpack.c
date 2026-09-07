@@ -13,17 +13,19 @@ void game_backpack_draw() {
     tsgl_pos x = (WIDTH / 2) - (BACKPACK_WIDTH / 2);
     tsgl_pos y = (HEIGHT / 2) - (BACKPACK_HEIGHT / 2);
     
-    tsgl_framebuffer_fill(&framebuffer, x, y, BACKPACK_WIDTH, BACKPACK_HEIGHT, red);
+    tsgl_framebuffer_fill(&framebuffer, x, y, BACKPACK_WIDTH, BACKPACK_HEIGHT, black);
 }
 
 void game_backpack_open() {
     pushsound_play("/firmware/sounds/bp_open.pcm", 16000, EFFECTS_SOUND_VOLUME * 2);
     current_state.backpack_opened = true;
+    game_updateActiveIcons();
 }
 
 void game_backpack_close() {
     pushsound_play("/firmware/sounds/bp_close.pcm", 16000, EFFECTS_SOUND_VOLUME * 2);
     current_state.backpack_opened = false;
+    game_updateActiveIcons();
 }
 
 void game_backpack_toggle() {
