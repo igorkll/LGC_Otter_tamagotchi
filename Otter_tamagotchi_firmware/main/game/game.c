@@ -414,4 +414,9 @@ void game_startActionTimer(int actionTimer, const char* str, game_action action,
 
 void game_stopActionTimer() {
     current_state.actionTimer = 0;
+
+    if (current_state.room == ID_CAR) {
+        current_state.next_car_icon = -1;
+        game_updateActiveIcons();
+    }
 }
