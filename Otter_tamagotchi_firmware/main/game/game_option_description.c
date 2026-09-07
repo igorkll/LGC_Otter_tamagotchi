@@ -4,6 +4,7 @@
 #define YARD_STR  "\xC4\xE2\xEE\xF0"
 #define SHOP_STR  "\xCC\xE0\xE3\xE0\xE7\xE8\xED"
 #define CLUB_STR  "\xCA\xEB\xF3\xE1" //Клуб
+#define MUSEUM_STR  "\xCC\xF3\xE7\xE5\xE9" //Музей
 
 const char* game_rooms_option_descriptions_main_rooms[GAME_UPMENU_LINE_COUNT] = {
     "\xD1\xEF\xE0\xEB\xFC\xED\xFF", //Спальня
@@ -108,7 +109,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             YARD_STR,
             SHOP_STR,
             CLUB_STR,
-            NULL,
+            MUSEUM_STR,
             NULL,
             
             NULL,

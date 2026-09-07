@@ -77,5 +77,15 @@ const Room rooms[] = {
         .states_delta_hunger = 0.1,
         .states_delta_thirst = 0.2,
         .states_delta_sadness = -0.5
+    },
+    {
+        .background = "museum",
+
+        .person_x = (WIDTH / 4) - 20,
+        .person_y = (HEIGHT / 4) * 3,
+
+        .states_delta_fatigue = -0.01,
+        .states_delta_thirst = 0.1,
+        .states_delta_sadness = -0.3
     }
 };

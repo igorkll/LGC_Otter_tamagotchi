@@ -23,6 +23,10 @@ static void car_roomSelect(game_room room) {
         case ID_CLUB:
             current_state.next_car_icon = 2;
             break;
+
+        case ID_MUSEUM:
+            current_state.next_car_icon = 3;
+            break;
     }
 
     game_updateActiveIcons();
@@ -88,6 +92,14 @@ static void game_club_roomAction(int action) {
     }
 }
 
+static void game_museum_roomAction(int action) {
+    switch (action) {
+        case 0:
+            game_selectRoom(ID_CAR);
+            break;
+    }
+}
+
 void game_roomAction(int action) {
     switch (game_getCurrentRoomIndex()) {
         case ID_BEDROOM:
@@ -108,6 +120,10 @@ void game_roomAction(int action) {
 
         case ID_CLUB:
             game_club_roomAction(action);
+            break;
+
+        case ID_MUSEUM:
+            game_museum_roomAction(action);
             break;
     }
 

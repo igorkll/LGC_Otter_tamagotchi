@@ -11,6 +11,7 @@
 #define ID_CAR 5
 #define ID_SHOP 6
 #define ID_CLUB 7
+#define ID_MUSEUM 8
 
 #define ID_CONSTIEM_STATES 8
 #define ID_CONSTIEM_BACKPACK 9
