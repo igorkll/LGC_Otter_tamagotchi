@@ -1,5 +1,6 @@
 #pragma once
 #include "../main.h"
+#include "game.h"
 
 void game_states_draw();
 void game_states_open();
