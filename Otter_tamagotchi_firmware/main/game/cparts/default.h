@@ -7,5 +7,9 @@ static const Game_state default_state = {
     .old_car_room = -1,
     .next_car_icon = -1,
 
-    .states_money = 100
+    .states_money = 100,
+    .states_fatigue = 0,
+    .states_hunger = 0,
+    .states_thirst = 0,
+    .states_horny = 0
 };
