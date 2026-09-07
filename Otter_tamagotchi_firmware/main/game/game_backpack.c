@@ -4,7 +4,7 @@
 #define BACKPACK_MARGIN_LEFT_RIGHT 20
 #define BACKPACK_MARGIN_TOP_BOTTOM 40
 #define BACKPACK_WIDTH (WIDTH - (BACKPACK_MARGIN_LEFT_RIGHT * 2))
-#define BACKPACK_HEIGHT (HEIGHT * (BACKPACK_MARGIN_TOP_BOTTOM * 2))
+#define BACKPACK_HEIGHT (HEIGHT - (BACKPACK_MARGIN_TOP_BOTTOM * 2))
 
 void game_backpack_draw() {
     if (!current_state.backpack_opened) return;

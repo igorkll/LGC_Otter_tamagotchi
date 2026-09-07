@@ -26,7 +26,7 @@ void game_upmenu_reloadIcons() {
         path[0] = '\0';
 
         slnprintf(path, MAX_PATH_LEN, "/firmware/icons/%s/%i.bmp", game_getCurrentRoom()->background, i);
-        if (!game_isLockedInRoom() && !tsgl_filesystem_exists(path))
+        if ((!game_isLockedInRoom() || i >= ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT) && !tsgl_filesystem_exists(path))
             slnprintf(path, MAX_PATH_LEN, "/firmware/icons/%i.bmp", i);
 
         if (sprites[i] != NULL)
@@ -93,6 +93,14 @@ static tsgl_print_settings printsettings_upselect = {
     .bg = TSGL_INVALID_RAWCOLOR
 };
 
+static void free_option_description() {
+    if (renderedOptionDescription) {
+        tsgl_bmp_free(renderedOptionDescription);
+        renderedOptionDescription = NULL;
+        old_selectingIndex = -1;
+    }
+}
+
 static void draw_option_description(int selectingIndex) {
     tsgl_pos positionX = (WIDTH / 2) - (OPTION_DESCRIPTION_WIDTH / 2);
     tsgl_pos position = selectingIndex < GAME_UPMENU_LINE_COUNT ? (OPTION_DESCRIPTION_POS + OPTION_DESCRIPTION_MARGIN) : (OPTION_DESCRIPTION_POS_DOWN - OPTION_DESCRIPTION_HEIGHT - OPTION_DESCRIPTION_MARGIN);
@@ -107,10 +115,9 @@ static void draw_option_description(int selectingIndex) {
         if (text == NULL) text = game_rooms_option_descriptions_constitems[selectingIndex];
     }
 
-    if (renderedOptionDescription && selectingIndex != old_selectingIndex) {
+    if (selectingIndex != old_selectingIndex) {
+        free_option_description();
         old_selectingIndex = selectingIndex;
-        tsgl_bmp_free(renderedOptionDescription);
-        renderedOptionDescription = NULL;
     }
 
     if (text != NULL) {
@@ -133,9 +140,16 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         int x = ((width / 2) - (iconWidth / 2)) + ((i - (GAME_UPMENU_LINE_COUNT / 2)) * (width / 5));
         int y = offsetHeight + ((lineHeight / 2) - (iconHeight / 2));
 
-        tsgl_rawcolor borderColor = sprites_active[i2] ? red : black;
+        bool activeFlag = false;
+        bool selectedFlag = false;
+        if (!current_state.backpack_opened) {
+            activeFlag = sprites_active[i2];
+            selectedFlag = i2 == selected;
+        }
+
+        tsgl_rawcolor borderColor = activeFlag ? red : black;
         tsgl_rawcolor cornersColor = uptime % 1000 >= 500 ? magenta : yellow;
-        tsgl_rawcolor currentCordersColor = i2 == selected ? cornersColor : borderColor;
+        tsgl_rawcolor currentCordersColor = selectedFlag ? cornersColor : borderColor;
 
         tsgl_pos posX = x - 1;
         tsgl_pos posY = y - 1;
@@ -182,7 +196,11 @@ void game_upmenu_draw() {
     
     draw_icons(0, 0, current_selected);
     draw_icons(GAME_UPMENU_LINE_COUNT, bottomLineY, current_selected);
-    if (current_selected >= 0) draw_option_description(current_selected);
+    if (current_selected >= 0 && current_state.backpack_opened) {
+        draw_option_description(current_selected);
+    } else {
+        free_option_description();
+    }
 }
 
 int game_upmenu_currentSelected() {
