@@ -237,8 +237,8 @@ static void processParametersDelta() {
     float states_delta_sadness = 0;
 
     states_delta_fatigue += (current_state.states_hunger / 100 / 50) + (current_state.states_thirst / 100 / 20);
-    states_delta_hunger += current_state.states_fatigue / 100;
-    states_delta_thirst += current_state.states_fatigue / 1000;
+    states_delta_hunger += current_state.states_fatigue / 500;
+    states_delta_thirst += current_state.states_fatigue / 250;
     states_delta_caress += 0.2 - ((current_state.states_fatigue / 100) * 0.2);
     states_delta_sadness += current_state.states_fatigue / 100;
 
