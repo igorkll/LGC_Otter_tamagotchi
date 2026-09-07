@@ -3,7 +3,7 @@
 #include "../pushsound.h"
 #include "../funcs.h"
 
-#define STATES_MARGIN_LEFT_RIGHT 20
+#define STATES_MARGIN_LEFT_RIGHT 10
 #define STATES_MARGIN_TOP_BOTTOM 40
 #define STATES_WIDTH (WIDTH - (STATES_MARGIN_LEFT_RIGHT * 2))
 #define STATES_HEIGHT (HEIGHT - (STATES_MARGIN_TOP_BOTTOM * 2))
@@ -86,6 +86,10 @@ void game_states_draw() {
     tsgl_pos y2 = STATES_CONTENT_OFFSET + y;
     y2 = drawstate_num(x2, y2, "MONEY", current_state.states_money);
     y2 = drawstate_slider(x2, y2, "\xF3\xF1\xF2\xE0\xEB\xEE\xF1\xF2\xFC", current_state.states_fatigue); //усталость
+    y2 = drawstate_slider(x2, y2, "\xE3\xEE\xEB\xEE\xE4", current_state.states_hunger); //голод
+    y2 = drawstate_slider(x2, y2, "\xE6\xE0\xE6\xE4\xE0", current_state.states_thirst); //жажда
+    y2 = drawstate_slider(x2, y2, "\xED\xE5\xE6\xED\xEE\xF1\xF2\xFC", current_state.states_caress); //нежность
+    y2 = drawstate_slider(x2, y2, "\xEF\xE5\xF7\xE0\xEB\xFC", current_state.states_sadness); //печаль
 }
 
 void game_states_open() {
