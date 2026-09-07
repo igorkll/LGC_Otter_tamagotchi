@@ -9,6 +9,8 @@
 #define L2 5
 
 static void car_roomSelect(game_room room) {
+    current_state.next_car_icon = -1;
+    
     switch (room) {
         case ID_YARD:
             current_state.next_car_icon = 0;

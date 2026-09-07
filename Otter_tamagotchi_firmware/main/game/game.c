@@ -116,7 +116,7 @@ void game_updateActiveIcons() {
         game_upmenu_setActivate(i, false);
     }
 
-    if (current_state.room == ID_CAR) game_upmenu_setActivate(current_state.next_car_icon, true);
+    if (current_state.room == ID_CAR && current_state.next_car_icon >= 0) game_upmenu_setActivate(current_state.next_car_icon, true);
     
     game_upmenu_setActivate(ID_CONSTIEM_STATES, current_state.states_opened);
     game_upmenu_setActivate(ID_CONSTIEM_BACKPACK, current_state.backpack_opened);
