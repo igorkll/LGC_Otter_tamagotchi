@@ -133,5 +133,35 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL
         }
+    },
+    { //Клуб
+        .arr = {
+            CAR_STR,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL
+        }
+    },
+    { //Музей
+        .arr = {
+            CAR_STR,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL
+        }
     }
 };
