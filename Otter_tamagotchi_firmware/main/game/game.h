@@ -15,7 +15,7 @@
 #define ID_CONSTIEM_STATES 8
 #define ID_CONSTIEM_BACKPACK 9
 
-#define RESET_SETTINGS_ID 7
+#define RESET_SETTINGS_ID 8
 
 typedef double game_state_val;
 
