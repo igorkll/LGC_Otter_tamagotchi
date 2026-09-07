@@ -9,9 +9,14 @@
 #define STATES_HEIGHT (HEIGHT - (STATES_MARGIN_TOP_BOTTOM * 2))
 #define STATES_BORDER_SIZE 2
 #define STATES_CONTENT_OFFSET (STATES_BORDER_SIZE + 2)
+#define STATES_CONTENT_WIDTH (STATES_WIDTH - (STATES_CONTENT_OFFSET * 2))
 
 #define STATES_FONT_TARGET_WIDTH 8
 #define STATES_FONT_TARGET_HEIGHT 8
+
+#define STATES_SLIDER_HEIGHT 4
+#define STATES_SLIDER_BORDER_SIZE 1
+#define STATES_SLIDER_FILL_OFFSET (STATES_BORDER_SIZE + 1)
 
 static tsgl_print_settings printsettings = {
     .locationMode = tsgl_print_start_top,
@@ -36,6 +41,17 @@ static void drawstate_num(tsgl_pos x, tsgl_pos y, const char* title, int value) 
     slnprintf(text, MAX_ACTION_LEN, "%s: %i", title, value);
     drawstate_str(x, y, text);
 }
+
+static void raw_draw_slider(tsgl_pos x, tsgl_pos y, int8_t value) {
+    tsgl_framebuffer_rect(&framebuffer, x, y, STATES_CONTENT_WIDTH, STATES_SLIDER_HEIGHT, blue, STATES_SLIDER_BORDER_SIZE);
+    tsgl_framebuffer_fill(&framebuffer, x + STATES_SLIDER_FILL_OFFSET, y + STATES_SLIDER_FILL_OFFSET, STATES_CONTENT_WIDTH - (STATES_SLIDER_FILL_OFFSET * 2), STATES_SLIDER_HEIGHT - (STATES_SLIDER_FILL_OFFSET * 2), green);
+}
+
+static void drawstate_slider(tsgl_pos x, tsgl_pos y, const char* title, int8_t value) {
+    drawstate_str(x, y, title);
+}
+
+states_sadness
 
 void game_states_draw() {
     if (!current_state.states_opened) return;
