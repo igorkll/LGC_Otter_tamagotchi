@@ -5,9 +5,7 @@ const Room rooms[] = {
         .person_x = (WIDTH / 4) * 3,
         .person_y = (HEIGHT / 4) * 3,
 
-        .states_delta_fatigue = -0.02,
-        .states_delta_thirst = 0.01,
-        .states_delta_sadness = 0.01
+        .states_delta_fatigue = -0.02
     },
     {
         .background = "kitchen",
