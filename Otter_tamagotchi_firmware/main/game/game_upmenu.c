@@ -196,7 +196,7 @@ void game_upmenu_draw() {
     
     draw_icons(0, 0, current_selected);
     draw_icons(GAME_UPMENU_LINE_COUNT, bottomLineY, current_selected);
-    if (current_selected >= 0 && current_state.backpack_opened) {
+    if (current_selected >= 0 && !current_state.backpack_opened) {
         draw_option_description(current_selected);
     } else {
         free_option_description();
