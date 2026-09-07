@@ -14,7 +14,7 @@
 #define STATES_FONT_TARGET_WIDTH 8
 #define STATES_FONT_TARGET_HEIGHT 8
 
-#define STATES_SLIDER_HEIGHT 4
+#define STATES_SLIDER_HEIGHT 6
 #define STATES_SLIDER_BORDER_SIZE 1
 #define STATES_SLIDER_FILL_OFFSET (STATES_BORDER_SIZE + 1)
 
@@ -46,8 +46,24 @@ static tsgl_pos drawstate_num(tsgl_pos x, tsgl_pos y, const char* title, int val
 }
 
 static void raw_draw_slider(tsgl_pos x, tsgl_pos y, int8_t value) {
-    tsgl_framebuffer_rect(&framebuffer, x, y, STATES_CONTENT_WIDTH, STATES_SLIDER_HEIGHT, blue, STATES_SLIDER_BORDER_SIZE);
-    tsgl_framebuffer_fill(&framebuffer, x + STATES_SLIDER_FILL_OFFSET, y + STATES_SLIDER_FILL_OFFSET, STATES_CONTENT_WIDTH - (STATES_SLIDER_FILL_OFFSET * 2), STATES_SLIDER_HEIGHT - (STATES_SLIDER_FILL_OFFSET * 2), green);
+    float floatValue = (float)value / 100.0;
+
+    tsgl_framebuffer_rect(&framebuffer, 
+        x,
+        y,
+        STATES_CONTENT_WIDTH,
+        STATES_SLIDER_HEIGHT,
+        blue,
+        STATES_SLIDER_BORDER_SIZE
+    );
+    
+    tsgl_framebuffer_fill(&framebuffer,
+        x + STATES_SLIDER_FILL_OFFSET,
+        y + STATES_SLIDER_FILL_OFFSET,
+        STATES_CONTENT_WIDTH - (STATES_SLIDER_FILL_OFFSET * 2),
+        floatValue * (STATES_SLIDER_HEIGHT - (STATES_SLIDER_FILL_OFFSET * 2)),
+        green
+    );
 }
 
 static tsgl_pos drawstate_slider(tsgl_pos x, tsgl_pos y, const char* title, int8_t value) {
