@@ -19,7 +19,7 @@ static void car_roomSelect(game_room room) {
             break;
 
         case ID_CLUB:
-            current_state.next_car_icon = 1;
+            current_state.next_car_icon = 2;
             break;
     }
 
