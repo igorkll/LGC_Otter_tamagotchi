@@ -7,6 +7,7 @@
 #include "game_room_action.h"
 #include "game_funcs.h"
 #include "game_backpack.h"
+#include "game_states.h"
 
 // ------------------------------------ consts
 
@@ -66,6 +67,8 @@ static const char* game_persons_images[] = {
 #define ROOMS_COUNT TSGL_CALC_ARRSIZE(rooms)
 
 static const Game_state default_state = {
+    .resetSettingsId = RESET_SETTINGS_ID,
+
     .room = game_room_bedroom,
     .person = game_person_otter
 };
@@ -116,11 +119,20 @@ void game_save() {
     }
 }
 
-static void game_load() {
+static void game_loadDefaultSettings() {
     memcpy(&current_state, &default_state, sizeof(Game_state));
+}
+
+static void game_load() {
+    game_loadDefaultSettings();
     if (tsgl_filesystem_exists(game_state_path)) {
         if (tsgl_filesystem_readFile(game_state_path, &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
             ESP_LOGI(TAG, "game loaded");
+
+            if (current_state.resetSettingsId != RESET_SETTINGS_ID) {
+                ESP_LOGI(TAG, "reset settings id changed: %i > %i", current_state.resetSettingsId, RESET_SETTINGS_ID);
+                game_loadDefaultSettings();
+            }
         } else {
             ESP_LOGE(TAG, "failed to load game");
         }
@@ -159,6 +171,7 @@ void game_updateActiveIcons() {
         game_upmenu_setActivate(i, false);
     }
 
+    game_upmenu_setActivate(ID_CONSTIEM_STATES, current_state.states_opened);
     game_upmenu_setActivate(ID_CONSTIEM_BACKPACK, current_state.backpack_opened);
 }
 
@@ -170,6 +183,10 @@ void game_selectRoom(int index) {
     game_upmenu_redrawTitle();
     game_upmenu_reloadIcons();
     game_roomSelected(index);
+}
+
+bool game_isAnyOverlayOpened() {
+    return current_state.backpack_opened || current_state.states_opened;
 }
 
 // ------------------------------------ process
@@ -314,13 +331,18 @@ static void processControl() {
             return;
         }
 
+        if (current_state.states_opened) {
+            game_states_close();
+            return;
+        }
+
         if (current_state.actionTimer > 0 && current_state.actionTimer_allowCancel) {
             game_stopActionTimer();
             return;
         }
     }
     
-    if (current_state.sleepTimer == 0 && !current_state.backpack_opened) {
+    if (current_state.sleepTimer == 0 && !game_isAnyOverlayOpened()) {
         int used = game_upmenu_process();
         if (used >= 0) {
             if (used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT && !game_isLockedInRoom()) {
@@ -393,10 +415,11 @@ static void render() {
     }
 
     loadSprites();
-    
+
     gfx_drawCenteredScreenImageSprite(room_sprite);
     drawPerson();
     drawActionTimer();
+    game_states_draw();
     game_backpack_draw();
     game_upmenu_draw();
 }

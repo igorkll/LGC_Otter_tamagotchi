@@ -2,6 +2,7 @@
 #include "../main.h"
 
 #define ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT 5
+
 #define ID_BEDROOM 0
 #define ID_KITCHEN 1
 #define ID_GAMING 2
@@ -9,7 +10,11 @@
 #define ID_YARD 4
 #define ID_CAR 5
 #define ID_SHOP 6
+
+#define ID_CONSTIEM_STATES 8
 #define ID_CONSTIEM_BACKPACK 9
+
+#define RESET_SETTINGS_ID 2
 
 typedef enum {
     game_room_bedroom = 0,
@@ -28,6 +33,9 @@ typedef enum {
 #define game_action uint8_t
 
 typedef struct {
+    uint16_t resetSettingsId;
+
+    // main
     game_room room;
     game_person person;
     
@@ -48,6 +56,10 @@ typedef struct {
 
     // backpack
     bool backpack_opened;
+
+    // states
+    bool states_opened;
+    int states_money;
 } Game_state;
 
 typedef struct {
@@ -71,3 +83,4 @@ void game_startActionTimer(int actionTimer, const char* str, game_action action,
 void game_stopActionTimer();
 void game_sleepIn();
 void game_updateActiveIcons();
+bool game_isAnyOverlayOpened();

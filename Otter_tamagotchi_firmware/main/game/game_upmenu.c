@@ -141,7 +141,7 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         int y = offsetHeight + ((lineHeight / 2) - (iconHeight / 2));
 
         bool activeFlag = sprites_active[i2];
-        bool selectedFlag = !current_state.backpack_opened && i2 == selected;
+        bool selectedFlag = !game_isAnyOverlayOpened() && i2 == selected;
 
         tsgl_rawcolor borderColor = activeFlag ? red : black;
         tsgl_rawcolor cornersColor = uptime % 1000 >= 500 ? magenta : yellow;
@@ -192,7 +192,7 @@ void game_upmenu_draw() {
     
     draw_icons(0, 0, current_selected);
     draw_icons(GAME_UPMENU_LINE_COUNT, bottomLineY, current_selected);
-    if (current_selected >= 0 && !current_state.backpack_opened) {
+    if (current_selected >= 0 && !game_isAnyOverlayOpened()) {
         draw_option_description(current_selected);
     } else {
         free_option_description();
