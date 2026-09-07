@@ -13,11 +13,11 @@ typedef struct {
     tsgl_pos height;
     tsgl_pos defaultWidth;
     tsgl_pos defaultHeight;
-    tsgl_pos rotationWidth;
+    tsgl_pos rotationWidth; //всегда defaultWidth при програмном повороте, принимает значения width при аппаратном
     tsgl_colormode_raw colorsize;
     bool floatColorsize;
     uint8_t rotation;
-    uint8_t realRotation;
+    uint8_t realRotation; //всега 0 при аппаратном повороте, принимает значение поворота при програмном повороте
     tsgl_colormode colormode;
     tsgl_rawcolor black;
     bool hardwareRotate;

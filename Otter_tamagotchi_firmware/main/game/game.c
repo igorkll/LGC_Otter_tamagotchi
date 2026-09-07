@@ -155,7 +155,7 @@ void updateActiveIcons() {
     }
 
     for (size_t i = ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT; i < GAME_UPMENU_COUNT; i++) {
-        game_upmenu_setActivate(i, true);
+        game_upmenu_setActivate(i, false);
     }
 
     game_upmenu_setActivate(ID_CONSTIEM_BACKPACK, current_state.backpack_opened);

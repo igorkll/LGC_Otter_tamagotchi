@@ -84,6 +84,10 @@ void game_roomAction(int action) {
             game_shop_roomAction(action);
             break;
     }
+
+    if (action == ID_CONSTIEM_BACKPACK) {
+        current_state.backpack_opened = !current_state.backpack_opened;
+    }
 }
 
 void game_roomSelected(game_room selected) {
