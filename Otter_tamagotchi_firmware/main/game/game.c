@@ -228,13 +228,15 @@ static void onTimerAction() {
 }
 
 static void processParametersDelta() {
+    if (current_state.sleepTimer > 0) return;
+
     const Room* room = game_getCurrentRoom();
 
-    float states_delta_fatigue = 0.01;
-    float states_delta_hunger = 0.01;
-    float states_delta_thirst = 0.05;
-    float states_delta_caress = 0;
-    float states_delta_sadness = 0;
+    game_state_val states_delta_fatigue = 0.01;
+    game_state_val states_delta_hunger = 0.01;
+    game_state_val states_delta_thirst = 0.05;
+    game_state_val states_delta_caress = 0;
+    game_state_val states_delta_sadness = 0;
 
     states_delta_fatigue += (current_state.states_hunger / 100 / 50) + (current_state.states_thirst / 100 / 20);
     states_delta_hunger += current_state.states_fatigue / 500;
@@ -266,7 +268,7 @@ static void processParametersDelta() {
         ESP_LOGI(TAG, "sadness: %f", states_delta_sadness);
     #endif
 
-    float parameters_mul = GAMECFG_PARAMS_SPEED_MUL;
+    game_state_val parameters_mul = GAMECFG_PARAMS_SPEED_MUL;
     states_delta_fatigue *= parameters_mul;
     states_delta_hunger *= parameters_mul;
     states_delta_thirst *= parameters_mul;
@@ -300,6 +302,11 @@ static void checkActionTimer() {
                 sleepOut();
                 current_state.sleepTimer = 0;
             }
+
+            game_state_val step = (1 / GAMECFG_FULL_SLEEP_TIME) * 100;
+            current_state.states_fatigue += step;
+            current_state.states_caress += step;
+            current_state.states_sadness -= step;
         }
 
         processParametersDelta();
@@ -359,7 +366,6 @@ static void processControl() {
 static void process() {
     checkActionTimer();
     hctl_process();
-
     processControl();
 
     if (memcmp(&current_state, &old_state, sizeof(Game_state)) != 0) {

@@ -17,6 +17,8 @@
 
 #define RESET_SETTINGS_ID 7
 
+typedef double game_state_val;
+
 typedef enum {
     game_room_bedroom = 0,
     game_room_kitchen
@@ -62,11 +64,11 @@ typedef struct {
     // states
     bool states_opened;
     int16_t states_money;
-    float states_fatigue;
-    float states_hunger;
-    float states_thirst;
-    float states_caress;
-    float states_sadness;
+    game_state_val states_fatigue;
+    game_state_val states_hunger;
+    game_state_val states_thirst;
+    game_state_val states_caress;
+    game_state_val states_sadness;
 } Game_state;
 
 typedef struct {
@@ -76,11 +78,11 @@ typedef struct {
     tsgl_pos person_x;
     tsgl_pos person_y;
 
-    float states_delta_fatigue;
-    float states_delta_hunger;
-    float states_delta_thirst;
-    float states_delta_caress;
-    float states_delta_sadness;
+    game_state_val states_delta_fatigue;
+    game_state_val states_delta_hunger;
+    game_state_val states_delta_thirst;
+    game_state_val states_delta_caress;
+    game_state_val states_delta_sadness;
 } Room;
 
 extern Game_state current_state;
