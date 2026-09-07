@@ -297,16 +297,16 @@ static void checkActionTimer() {
         }
 
         if (current_state.sleepTimer > 0) {
+            game_state_val step = (1.0 / GAMECFG_FULL_SLEEP_TIME) * 100.0;
+            current_state.states_fatigue += step;
+            current_state.states_caress += step;
+            current_state.states_sadness -= step;
+            
             current_state.sleepTimer--;
             if (current_state.sleepTimer <= 0) {
                 sleepOut();
                 current_state.sleepTimer = 0;
             }
-
-            game_state_val step = (1 / GAMECFG_FULL_SLEEP_TIME) * 100;
-            current_state.states_fatigue += step;
-            current_state.states_caress += step;
-            current_state.states_sadness -= step;
         }
 
         processParametersDelta();
