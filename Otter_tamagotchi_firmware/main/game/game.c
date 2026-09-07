@@ -125,6 +125,7 @@ static void game_loadDefaultSettings() {
 
 static void game_load() {
     game_loadDefaultSettings();
+    
     if (tsgl_filesystem_exists(game_state_path)) {
         if (tsgl_filesystem_readFile(game_state_path, &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
             ESP_LOGI(TAG, "game loaded");
@@ -132,14 +133,16 @@ static void game_load() {
             if (current_state.resetSettingsId != RESET_SETTINGS_ID) {
                 ESP_LOGI(TAG, "reset settings id changed: %i > %i", current_state.resetSettingsId, RESET_SETTINGS_ID);
                 game_loadDefaultSettings();
-                current_state.resetSettingsId = RESET_SETTINGS_ID;
             }
         } else {
             ESP_LOGE(TAG, "failed to load game");
+            game_loadDefaultSettings();
         }
     } else {
         ESP_LOGI(TAG, "game default loaded");
     }
+
+    current_state.resetSettingsId = RESET_SETTINGS_ID;
     memcpy(&old_state, &current_state, sizeof(Game_state));
 }
 
