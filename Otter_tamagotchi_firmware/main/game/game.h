@@ -65,7 +65,8 @@ typedef struct {
     int8_t states_fatigue;
     int8_t states_hunger;
     int8_t states_thirst;
-    int8_t states_horny;
+    int8_t states_caress;
+    int8_t states_sadness;
 } Game_state;
 
 typedef struct {
