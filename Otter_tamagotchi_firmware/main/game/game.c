@@ -316,10 +316,11 @@ static void processControl() {
 
         if (current_state.backpack_opened) {
             game_backpack_close();
+            return;
         }
     }
     
-    if (current_state.sleepTimer == 0) {
+    if (current_state.sleepTimer == 0 && !current_state.backpack_opened) {
         int used = game_upmenu_process();
         if (used >= 0) {
             if (used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT && !game_isLockedInRoom()) {
