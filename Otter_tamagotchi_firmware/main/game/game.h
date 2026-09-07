@@ -61,7 +61,11 @@ typedef struct {
 
     // states
     bool states_opened;
-    int states_money;
+    int16_t states_money;
+    int8_t states_fatigue;
+    int8_t states_hunger;
+    int8_t states_thirst;
+    int8_t states_;
 } Game_state;
 
 typedef struct {
