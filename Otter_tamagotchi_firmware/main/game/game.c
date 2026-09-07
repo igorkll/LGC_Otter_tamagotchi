@@ -70,7 +70,10 @@ static const Game_state default_state = {
     .resetSettingsId = RESET_SETTINGS_ID,
 
     .room = game_room_bedroom,
-    .person = game_person_otter
+    .person = game_person_otter,
+
+    .old_car_room = -1,
+    .next_car_icon = -1
 };
 
 #define SLEEP_Z_LETTERS_COUNT 4
@@ -175,6 +178,8 @@ void game_updateActiveIcons() {
         game_upmenu_setActivate(i, false);
     }
 
+    if (current_state.room == ID_CAR) game_upmenu_setActivate(current_state.next_car_icon, true);
+    
     game_upmenu_setActivate(ID_CONSTIEM_STATES, current_state.states_opened);
     game_upmenu_setActivate(ID_CONSTIEM_BACKPACK, current_state.backpack_opened);
 }

@@ -14,23 +14,23 @@
 #define ID_CONSTIEM_STATES 8
 #define ID_CONSTIEM_BACKPACK 9
 
-#define RESET_SETTINGS_ID 2
+#define RESET_SETTINGS_ID 3
 
 typedef enum {
     game_room_bedroom = 0,
     game_room_kitchen
 } game_room;
-#define game_room uint8_t
+#define game_room int8_t
 
 typedef enum {
     game_person_otter = 0
 } game_person;
-#define game_person uint8_t
+#define game_person int8_t
 
 typedef enum {
     game_action_switchRoom = 0
 } game_action;
-#define game_action uint8_t
+#define game_action int8_t
 
 typedef struct {
     uint16_t resetSettingsId;
@@ -41,6 +41,7 @@ typedef struct {
     
     // car
     game_room old_car_room;
+    int8_t next_car_icon;
 
     // action timer
     int actionTimer;
