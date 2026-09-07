@@ -14,6 +14,7 @@ void game_backpack_draw() {
     tsgl_pos y = (HEIGHT / 2) - (BACKPACK_HEIGHT / 2);
     
     tsgl_framebuffer_fill(&framebuffer, x, y, BACKPACK_WIDTH, BACKPACK_HEIGHT, black);
+    tsgl_framebuffer_rect(&framebuffer, x, y, BACKPACK_WIDTH, BACKPACK_HEIGHT, white, 2);
 }
 
 void game_backpack_open() {

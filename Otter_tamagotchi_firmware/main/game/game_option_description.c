@@ -22,7 +22,7 @@ const char* game_rooms_option_descriptions_constitems[GAME_UPMENU_COUNT] = {
     NULL,
     NULL,
     NULL,
-    NULL,
+    "\xD1\xF2\xE0\xF2\xF3\xF1", //Статус
     "\xD0\xFE\xEA\xE7\xE0\xEA" //Рюкзак
 };
 

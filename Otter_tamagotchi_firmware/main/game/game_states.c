@@ -6,7 +6,6 @@
 #define STATES_MARGIN_TOP_BOTTOM 40
 #define STATES_WIDTH (WIDTH - (STATES_MARGIN_LEFT_RIGHT * 2))
 #define STATES_HEIGHT (HEIGHT - (STATES_MARGIN_TOP_BOTTOM * 2))
-#define STATES_COLOR tsgl_color_fromHex(0x458200)
 
 void game_states_draw() {
     if (!current_state.states_opened) return;
@@ -14,7 +13,8 @@ void game_states_draw() {
     tsgl_pos x = (WIDTH / 2) - (STATES_WIDTH / 2);
     tsgl_pos y = (HEIGHT / 2) - (STATES_HEIGHT / 2);
     
-    tsgl_framebuffer_fill(&framebuffer, x, y, STATES_WIDTH, STATES_HEIGHT, tsgl_color_raw(STATES_COLOR, framebuffer.colormode));
+    tsgl_framebuffer_fill(&framebuffer, x, y, STATES_WIDTH, STATES_HEIGHT, black);
+    tsgl_framebuffer_rect(&framebuffer, x, y, STATES_WIDTH, STATES_HEIGHT, white, 2);
 }
 
 void game_states_open() {
