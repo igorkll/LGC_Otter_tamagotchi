@@ -3,6 +3,7 @@
 #define CAR_STR   "\xCC\xE0\xF8\xE8\xED\xE0"
 #define YARD_STR  "\xC4\xE2\xEE\xF0"
 #define SHOP_STR  "\xCC\xE0\xE3\xE0\xE7\xE8\xED"
+#define CLUB_STR  "\xCA\xEB\xF3\xE1" //Клуб
 
 const char* game_rooms_option_descriptions_main_rooms[GAME_UPMENU_LINE_COUNT] = {
     "\xD1\xEF\xE0\xEB\xFC\xED\xFF", //Спальня
@@ -106,7 +107,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
         .arr = {
             YARD_STR,
             SHOP_STR,
-            NULL,
+            CLUB_STR,
             NULL,
             NULL,
             

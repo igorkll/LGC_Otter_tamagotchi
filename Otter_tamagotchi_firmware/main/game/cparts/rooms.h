@@ -31,7 +31,7 @@ const Room rooms[] = {
     },
     {
         .background = "car",
-        .music = "mnepoxuy",
+        .music = "brbigirl",
         .musicVolume = 1,
         .person_x = (WIDTH / 4) * 3,
         .person_y = (HEIGHT / 4) * 3,
@@ -41,6 +41,13 @@ const Room rooms[] = {
         .music = "shop",
         .musicVolume = 0.6,
         .person_x = (WIDTH / 4) * 3,
+        .person_y = (HEIGHT / 4) * 3,
+    },
+    {
+        .background = "club",
+        .music = "mnepoxuy",
+        .musicVolume = 0.6,
+        .person_x = (WIDTH / 4) - 20,
         .person_y = (HEIGHT / 4) * 3,
     }
 };
