@@ -11,11 +11,11 @@
 static void car_roomSelect(game_room room) {
     switch (room) {
         case ID_YARD:
-            current_state.next_car_room = 0;
+            current_state.next_car_icon = 0;
             break;
 
         case ID_SHOP:
-            current_state.next_car_room = 1;
+            current_state.next_car_icon = 1;
             break;
     }
 }
