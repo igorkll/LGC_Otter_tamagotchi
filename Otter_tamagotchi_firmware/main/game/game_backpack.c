@@ -6,6 +6,7 @@
 #define BACKPACK_MARGIN_TOP_BOTTOM 40
 #define BACKPACK_WIDTH (WIDTH - (BACKPACK_MARGIN_LEFT_RIGHT * 2))
 #define BACKPACK_HEIGHT (HEIGHT - (BACKPACK_MARGIN_TOP_BOTTOM * 2))
+#define BACKPACK_BORDER_SIZE 2
 
 void game_backpack_draw() {
     if (!current_state.backpack_opened) return;
@@ -14,7 +15,7 @@ void game_backpack_draw() {
     tsgl_pos y = (HEIGHT / 2) - (BACKPACK_HEIGHT / 2);
     
     tsgl_framebuffer_fill(&framebuffer, x, y, BACKPACK_WIDTH, BACKPACK_HEIGHT, black);
-    tsgl_framebuffer_rect(&framebuffer, x, y, BACKPACK_WIDTH, BACKPACK_HEIGHT, white, 2);
+    tsgl_framebuffer_rect(&framebuffer, x, y, BACKPACK_WIDTH, BACKPACK_HEIGHT, white, BACKPACK_BORDER_SIZE);
 }
 
 void game_backpack_open() {

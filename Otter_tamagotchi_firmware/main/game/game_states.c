@@ -1,11 +1,14 @@
 #include "game_states.h"
 #include "game.h"
 #include "../pushsound.h"
+#include "../funcs.h"
 
 #define STATES_MARGIN_LEFT_RIGHT 20
 #define STATES_MARGIN_TOP_BOTTOM 40
 #define STATES_WIDTH (WIDTH - (STATES_MARGIN_LEFT_RIGHT * 2))
 #define STATES_HEIGHT (HEIGHT - (STATES_MARGIN_TOP_BOTTOM * 2))
+#define STATES_BORDER_SIZE 2
+#define STATES_CONTENT_OFFSET (STATES_BORDER_SIZE + 2)
 
 #define STATES_FONT_TARGET_WIDTH 8
 #define STATES_FONT_TARGET_HEIGHT 8
@@ -23,10 +26,15 @@ static tsgl_print_settings printsettings = {
     .bg = TSGL_INVALID_RAWCOLOR
 };
 
-static void draw_number_state() {
+static void drawstate_str(tsgl_pos x, tsgl_pos y, const char* text) {
     printsettings.fg = green;
+    tsgl_framebuffer_text(&framebuffer, x, y, printsettings, text);
+}
 
-
+static void drawstate_num(tsgl_pos x, tsgl_pos y, const char* title, int value) {
+    char text[MAX_ACTION_LEN];
+    slnprintf(text, MAX_ACTION_LEN, "%s: %i", title, value);
+    drawstate_str(x, y, text);
 }
 
 void game_states_draw() {
@@ -36,7 +44,9 @@ void game_states_draw() {
     tsgl_pos y = (HEIGHT / 2) - (STATES_HEIGHT / 2);
     
     tsgl_framebuffer_fill(&framebuffer, x, y, STATES_WIDTH, STATES_HEIGHT, black);
-    tsgl_framebuffer_rect(&framebuffer, x, y, STATES_WIDTH, STATES_HEIGHT, white, 2);
+    tsgl_framebuffer_rect(&framebuffer, x, y, STATES_WIDTH, STATES_HEIGHT, white, STATES_BORDER_SIZE);
+
+    drawstate_num(STATES_CONTENT_OFFSET + x, STATES_CONTENT_OFFSET + y, "MONEY", current_state.states_money);
 }
 
 void game_states_open() {
