@@ -12,6 +12,20 @@ const char* game_rooms_option_descriptions_main_rooms[GAME_UPMENU_LINE_COUNT] = 
     YARD_STR //Двор
 };
 
+const char* game_rooms_option_descriptions_constitems[GAME_UPMENU_COUNT] = {
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    "\xD0\xFE\xEA\xE7\xE0\xEA" //Рюкзак
+};
+
 Room_option_descriptions game_rooms_option_descriptions[] = {
     { //Спальня
         .arr = {
@@ -20,6 +34,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             NULL,
+
             "\xD1\xEF\xE0\xF2\xFC",
             NULL,
             NULL,
@@ -34,6 +49,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             NULL,
+
             NULL,
             NULL,
             NULL,
@@ -48,6 +64,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             NULL,
+            
             NULL,
             NULL,
             NULL,
@@ -62,6 +79,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             NULL,
+            
             NULL,
             NULL,
             NULL,
@@ -76,6 +94,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             NULL,
+            
             CAR_STR,
             NULL,
             NULL,
@@ -90,6 +109,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             NULL,
+            
             NULL,
             NULL,
             NULL,
@@ -104,6 +124,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             NULL,
+            
             NULL,
             NULL,
             NULL,

@@ -104,6 +104,7 @@ static void draw_option_description(int selectingIndex) {
         text = game_rooms_option_descriptions_main_rooms[selectingIndex];
     } else {
         text = game_rooms_option_descriptions[currentRoom].arr[selectingIndex];
+        if (text == NULL) text = game_rooms_option_descriptions_constitems[selectingIndex];
     }
 
     if (renderedOptionDescription && selectingIndex != old_selectingIndex) {

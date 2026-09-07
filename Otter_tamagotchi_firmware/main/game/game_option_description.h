@@ -3,6 +3,7 @@
 #include "game_upmenu.h"
 
 extern const char* game_rooms_option_descriptions_main_rooms[GAME_UPMENU_LINE_COUNT];
+extern const char* game_rooms_option_descriptions_constitems[GAME_UPMENU_COUNT];
 
 typedef struct {
     const char* arr[GAME_UPMENU_COUNT];

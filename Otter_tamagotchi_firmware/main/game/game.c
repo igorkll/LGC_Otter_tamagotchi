@@ -6,6 +6,7 @@
 #include "game_upmenu.h"
 #include "game_room_action.h"
 #include "game_funcs.h"
+#include "game_backpack.h"
 
 // ------------------------------------ consts
 
@@ -312,6 +313,10 @@ static void processControl() {
             game_stopActionTimer();
             return;
         }
+
+        if (current_state.backpack_opened) {
+            game_backpack_close();
+        }
     }
     
     if (current_state.sleepTimer == 0) {
@@ -389,6 +394,7 @@ static void render() {
     loadSprites();
     gfx_drawCenteredScreenImageSprite(room_sprite);
     drawPerson();
+    game_backpack_draw();
     drawActionTimer();
     game_upmenu_draw();
 }
