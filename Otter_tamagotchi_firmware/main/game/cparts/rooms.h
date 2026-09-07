@@ -40,7 +40,7 @@ const Room rooms[] = {
 
         .states_delta_fatigue = -0.01,
         .states_delta_thirst = 0.1,
-        .states_delta_sadness = -0.03
+        .states_delta_sadness = -0.3
     },
     {
         .background = "car",
@@ -76,6 +76,6 @@ const Room rooms[] = {
         .states_delta_fatigue = 0.05,
         .states_delta_hunger = 0.1,
         .states_delta_thirst = 0.2,
-        .states_delta_sadness = -0.1
+        .states_delta_sadness = -0.5
     }
 };
