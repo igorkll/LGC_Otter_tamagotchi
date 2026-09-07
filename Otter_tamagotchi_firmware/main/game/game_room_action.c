@@ -50,7 +50,19 @@ static void game_bedroom_roomAction(int action) {
             game_actions_sleep(60);
             break;
     }
-} 
+}
+
+static void game_kitchen_roomAction(int action) {
+    switch (action) {
+        case L2:
+            game_actions_eat();
+            break;
+
+        case L2 + 1:
+            game_actions_drink();
+            break;
+    }
+}
 
 static void game_yard_roomAction(int action) {
     switch (action) {
@@ -108,6 +120,10 @@ void game_roomAction(int action) {
     switch (game_getCurrentRoomIndex()) {
         case ID_BEDROOM:
             game_bedroom_roomAction(action);
+            break;
+
+        case ID_KITCHEN:
+            game_kitchen_roomAction(action);
             break;
 
         case ID_YARD:
