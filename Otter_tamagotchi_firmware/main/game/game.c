@@ -104,7 +104,7 @@ static void reload_room_sound() {
 
         uint16_t musicSampleRate = room->musicSampleRate;
         if (musicSampleRate == 0) musicSampleRate = 4000;
-        
+
         room_music = pushsound_loop(path, musicSampleRate, room->musicVolume);
         tsgl_sound_setLoop(room_music, true);
     }
@@ -332,7 +332,7 @@ static void processControl() {
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
         if (current_state.sleepTimer > 0) {
-            pushsound_play("/firmware/sounds/trigger.pcm", 16000, EFFECTS_SOUND_VOLUME);
+            pushsound_play("/firmware/sounds/trigger.pcm", 16000, EFFECTS_SOUND_VOLUME * TRIGGER_SOUND_VOLUME);
             sleepOut();
             current_state.sleepTimer = 0;
             return;

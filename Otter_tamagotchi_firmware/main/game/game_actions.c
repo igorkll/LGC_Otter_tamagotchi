@@ -3,18 +3,18 @@
 #include "../pushsound.h"
 
 void game_actions_sleep(int sleepTime) {
-    pushsound_play("/firmware/sounds/sadness.pcm", 16000, EFFECTS_SOUND_VOLUME * 5);
+    pushsound_play("/firmware/sounds/sadness.pcm", 16000, EFFECTS_SOUND_VOLUME * SADNESS_SOUND_VOLUME);
     current_state.sleepTimer = sleepTime;
     current_state.sleepStartTimer = sleepTime;
     game_sleepIn();
 }
 
 void game_actions_eat() {
-    pushsound_play("/firmware/sounds/eat.pcm", 16000, EFFECTS_SOUND_VOLUME * 2);
+    pushsound_play("/firmware/sounds/eat.pcm", 16000, EFFECTS_SOUND_VOLUME);
     
 }
 
 void game_actions_drink() {
-    pushsound_play("/firmware/sounds/drinking.pcm", 16000, EFFECTS_SOUND_VOLUME * 2);
+    pushsound_play("/firmware/sounds/drinking.pcm", 16000, EFFECTS_SOUND_VOLUME);
     
 }

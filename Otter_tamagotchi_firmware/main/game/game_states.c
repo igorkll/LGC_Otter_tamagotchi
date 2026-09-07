@@ -94,13 +94,13 @@ void game_states_draw() {
 }
 
 void game_states_open() {
-    pushsound_play("/firmware/sounds/bp_open.pcm", 16000, EFFECTS_SOUND_VOLUME * 2);
+    pushsound_play("/firmware/sounds/bp_open.pcm", 16000, EFFECTS_SOUND_VOLUME);
     current_state.states_opened = true;
     game_updateActiveIcons();
 }
 
 void game_states_close() {
-    pushsound_play("/firmware/sounds/bp_close.pcm", 16000, EFFECTS_SOUND_VOLUME * 2);
+    pushsound_play("/firmware/sounds/bp_close.pcm", 16000, EFFECTS_SOUND_VOLUME);
     current_state.states_opened = false;
     game_updateActiveIcons();
 }
