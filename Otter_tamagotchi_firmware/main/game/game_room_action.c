@@ -18,6 +18,8 @@ static void car_roomSelect(game_room room) {
             current_state.next_car_icon = 1;
             break;
     }
+
+    game_updateActiveIcons();
 }
 
 static void car_selectRoom(game_room moveTo) {
