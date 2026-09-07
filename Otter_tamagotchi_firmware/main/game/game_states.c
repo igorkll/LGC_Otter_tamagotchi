@@ -33,15 +33,16 @@ static tsgl_print_settings printsettings = {
     .bg = TSGL_INVALID_RAWCOLOR
 };
 
-static void drawstate_str(tsgl_pos x, tsgl_pos y, const char* text) {
+static tsgl_pos drawstate_str(tsgl_pos x, tsgl_pos y, const char* text) {
     printsettings.fg = green;
     tsgl_framebuffer_text(&framebuffer, x, y, printsettings, text);
+    return y + STATES_FONT_TARGET_HEIGHT + STATES_GAP;
 }
 
-static void drawstate_num(tsgl_pos x, tsgl_pos y, const char* title, int value) {
+static tsgl_pos drawstate_num(tsgl_pos x, tsgl_pos y, const char* title, int value) {
     char text[MAX_ACTION_LEN];
     slnprintf(text, MAX_ACTION_LEN, "%s: %i", title, value);
-    drawstate_str(x, y, text);
+    return drawstate_str(x, y, text);
 }
 
 static void raw_draw_slider(tsgl_pos x, tsgl_pos y, int8_t value) {
@@ -49,9 +50,11 @@ static void raw_draw_slider(tsgl_pos x, tsgl_pos y, int8_t value) {
     tsgl_framebuffer_fill(&framebuffer, x + STATES_SLIDER_FILL_OFFSET, y + STATES_SLIDER_FILL_OFFSET, STATES_CONTENT_WIDTH - (STATES_SLIDER_FILL_OFFSET * 2), STATES_SLIDER_HEIGHT - (STATES_SLIDER_FILL_OFFSET * 2), green);
 }
 
-static void drawstate_slider(tsgl_pos x, tsgl_pos y, const char* title, int8_t value) {
+static tsgl_pos drawstate_slider(tsgl_pos x, tsgl_pos y, const char* title, int8_t value) {
     drawstate_str(x, y, title);
-    raw_draw_slider(x, y + STATES_FONT_TARGET_HEIGHT + STATES_GAP, value);
+    tsgl_pos slider_pos = y + STATES_FONT_TARGET_HEIGHT + STATES_GAP;
+    raw_draw_slider(x, slider_pos, value);
+    return slider_pos + STATES_SLIDER_HEIGHT + STATES_GAP;
 }
 
 void game_states_draw() {
@@ -65,8 +68,8 @@ void game_states_draw() {
 
     tsgl_pos x2 = STATES_CONTENT_OFFSET + x;
     tsgl_pos y2 = STATES_CONTENT_OFFSET + y;
-    drawstate_num(x2, y2, "MONEY", current_state.states_money);
-    drawstate_slider(x2, y2, "\xF3\xF1\xF2\xE0\xEB\xEE\xF1\xF2\xFC", current_state.states_fatigue); //усталость
+    y2 = drawstate_num(x2, y2, "MONEY", current_state.states_money);
+    y2 = drawstate_slider(x2, y2, "\xF3\xF1\xF2\xE0\xEB\xEE\xF1\xF2\xFC", current_state.states_fatigue); //усталость
 }
 
 void game_states_open() {
