@@ -76,6 +76,7 @@ typedef struct {
     const char* background;
     const char* music;
     float musicVolume;
+    uint16_t musicSampleRate;
     tsgl_pos person_x;
     tsgl_pos person_y;
 

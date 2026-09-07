@@ -73,6 +73,10 @@ static void game_car_roomAction(int action) {
         case 2:
             car_selectRoom(ID_CLUB);
             break;
+
+        case 3:
+            car_selectRoom(ID_MUSEUM);
+            break;
     }
 }
 

@@ -81,6 +81,10 @@ const Room rooms[] = {
     {
         .background = "museum",
 
+        .music = "gmp0",
+        .musicVolume = 1,
+        .musicSampleRate = 1000,
+
         .person_x = (WIDTH / 4) - 20,
         .person_y = (HEIGHT / 4) * 3,
 

@@ -102,7 +102,10 @@ static void reload_room_sound() {
         char path[MAX_PATH_LEN];
         slnprintf(path, MAX_PATH_LEN, "/firmware/music/%s.pcm", room->music);
 
-        room_music = pushsound_loop(path, 4000, room->musicVolume);
+        uint16_t musicSampleRate = room->musicSampleRate;
+        if (musicSampleRate == 0) musicSampleRate = 4000;
+        
+        room_music = pushsound_loop(path, musicSampleRate, room->musicVolume);
         tsgl_sound_setLoop(room_music, true);
     }
 }
