@@ -366,9 +366,9 @@ static void render() {
     gfx_drawCenteredScreenImageSprite(room_sprite);
     drawPerson();
     drawActionTimer();
+    game_upmenu_draw();
     game_states_draw();
     game_backpack_draw();
-    game_upmenu_draw();
 }
 
 void game_start() {

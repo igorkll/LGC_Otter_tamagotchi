@@ -15,7 +15,7 @@
 #define ID_CONSTIEM_STATES 8
 #define ID_CONSTIEM_BACKPACK 9
 
-#define RESET_SETTINGS_ID 3
+#define RESET_SETTINGS_ID 4
 
 typedef enum {
     game_room_bedroom = 0,
