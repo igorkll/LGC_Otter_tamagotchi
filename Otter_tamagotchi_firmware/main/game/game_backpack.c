@@ -1,5 +1,6 @@
 #include "game_backpack.h"
 #include "game.h"
+#include "../pushsound.h"
 
 #define BACKPACK_MARGIN_LEFT_RIGHT 20
 #define BACKPACK_MARGIN_TOP_BOTTOM 40
@@ -16,10 +17,12 @@ void game_backpack_draw() {
 }
 
 void game_backpack_open() {
+    pushsound_play("/firmware/sounds/bp_open.pcm", 16000, EFFECTS_SOUND_VOLUME * 2);
     current_state.backpack_opened = true;
 }
 
 void game_backpack_close() {
+    pushsound_play("/firmware/sounds/bp_close.pcm", 16000, EFFECTS_SOUND_VOLUME * 2);
     current_state.backpack_opened = false;
 }
 

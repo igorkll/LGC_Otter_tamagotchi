@@ -2,6 +2,7 @@
 #include "game_actions.h"
 #include "game_upmenu.h"
 #include "game.h"
+#include "game_backpack.h"
 
 // начало второй линии кнопок
 #define L2 5
@@ -79,7 +80,7 @@ void game_roomAction(int action) {
     }
 
     if (action == ID_CONSTIEM_BACKPACK) {
-        current_state.backpack_opened = !current_state.backpack_opened;
+        game_backpack_toggle();
     }
 }
 
