@@ -16,7 +16,7 @@
 
 #define STATES_SLIDER_HEIGHT 6
 #define STATES_SLIDER_BORDER_SIZE 1
-#define STATES_SLIDER_FILL_OFFSET (STATES_BORDER_SIZE + 1)
+#define STATES_SLIDER_FILL_OFFSET (STATES_SLIDER_BORDER_SIZE + 1)
 
 #define STATES_GAP 2
 
@@ -60,10 +60,12 @@ static void raw_draw_slider(tsgl_pos x, tsgl_pos y, int8_t value) {
     tsgl_framebuffer_fill(&framebuffer,
         x + STATES_SLIDER_FILL_OFFSET,
         y + STATES_SLIDER_FILL_OFFSET,
-        STATES_CONTENT_WIDTH - (STATES_SLIDER_FILL_OFFSET * 2),
-        floatValue * (STATES_SLIDER_HEIGHT - (STATES_SLIDER_FILL_OFFSET * 2)),
+        floatValue * (STATES_CONTENT_WIDTH - (STATES_SLIDER_FILL_OFFSET * 2)),
+        STATES_SLIDER_HEIGHT - (STATES_SLIDER_FILL_OFFSET * 2),
         green
     );
+
+    printf("%f %i %f\n", floatValue * (STATES_CONTENT_WIDTH - (STATES_SLIDER_FILL_OFFSET * 2)), STATES_SLIDER_HEIGHT - (STATES_SLIDER_FILL_OFFSET * 2), floatValue);
 }
 
 static tsgl_pos drawstate_slider(tsgl_pos x, tsgl_pos y, const char* title, int8_t value) {
