@@ -136,14 +136,7 @@ static void unload_room_sound() {
     }
 }
 
-void game_selectRoom(int index) {
-    current_state.room = index;
-    if (index != ID_CAR) current_state.old_car_room = index;
-
-    for (size_t i = 0; i < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT; i++) {
-        game_upmenu_setActivate(i, index == i);
-    }
-
+static void reload_room_sound() {
     unload_room_sound();
 
     const Room* room = game_getCurrentRoom();
@@ -154,9 +147,28 @@ void game_selectRoom(int index) {
         room_music = pushsound_loop(path, 4000, room->musicVolume);
         tsgl_sound_setLoop(room_music, true);
     }
+}
 
+void updateActiveIcons() {
+    for (size_t i = 0; i < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT; i++) {
+        game_upmenu_setActivate(i, current_state.room == i);
+    }
+
+    for (size_t i = ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT; i < GAME_UPMENU_COUNT; i++) {
+        game_upmenu_setActivate(i, true);
+    }
+
+    game_upmenu_setActivate(ID_CONSTIEM_BACKPACK, current_state.backpack_opened);
+}
+
+void game_selectRoom(int index) {
+    current_state.room = index;
+
+    updateActiveIcons();
+    reload_room_sound();
     game_upmenu_redrawTitle();
     game_upmenu_reloadIcons();
+    game_roomSelected(index);
 }
 
 // ------------------------------------ process

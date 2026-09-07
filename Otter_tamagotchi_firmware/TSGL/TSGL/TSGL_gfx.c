@@ -153,6 +153,62 @@ void tsgl_gfx_push(void* arg, TSGL_SET_REFERENCE(set), tsgl_pos x, tsgl_pos y, t
     }
 }
 
+void tsgl_gfx_push_wtrans(void* arg, TSGL_SET_REFERENCE(set), tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite, tsgl_pos minX, tsgl_pos minY, tsgl_pos maxX, tsgl_pos maxY) {
+    sprite->rotation = ((uint8_t)(-sprite->rotation)) % (uint8_t)4;
+
+    if (sprite->sprite->hardwareRotate) {
+        ESP_LOGE(TAG, "a sprite cannot have a hardware rotation");
+        return;
+    }
+
+    tsgl_pos realSpriteWidth;
+    tsgl_pos realSpriteHeight;
+    switch (sprite->rotation) {
+        case 1:
+        case 3:
+            realSpriteWidth = sprite->sprite->defaultHeight;
+            realSpriteHeight = sprite->sprite->defaultWidth;
+            break;
+
+        default:
+            realSpriteWidth = sprite->sprite->defaultWidth;
+            realSpriteHeight = sprite->sprite->defaultHeight;
+            break;
+    }
+
+    tsgl_pos spriteWidth = realSpriteWidth;
+    if (sprite->resizeWidth != 0) spriteWidth = sprite->resizeWidth;
+    tsgl_pos spriteHeight = realSpriteHeight;
+    if (sprite->resizeHeight != 0) spriteHeight = sprite->resizeHeight;
+
+    tsgl_pos startX = 0;
+    tsgl_pos startY = 0;
+    if (x < minX) startX = minX - x;
+    if (y < minY) startY = minY - y;
+    tsgl_pos maxSpriteWidth = maxX - x;
+    tsgl_pos maxSpriteHeight = maxY - y;
+    tsgl_pos spriteMaxPointX = spriteWidth - 1;
+    tsgl_pos spriteMaxPointY = spriteHeight - 1;
+    tsgl_pos spriteRealMaxPointX = realSpriteWidth - 1;
+    tsgl_pos spriteRealMaxPointY = realSpriteHeight - 1;
+    if (spriteWidth > maxSpriteWidth) spriteWidth = maxSpriteWidth;
+    if (spriteHeight > maxSpriteHeight) spriteHeight = maxSpriteHeight;
+    for (tsgl_pos posX = startX; posX < spriteWidth; posX++) {
+        tsgl_pos setPosX = posX + x;
+        for (tsgl_pos posY = startY; posY < spriteHeight; posY++) {
+            tsgl_pos setPosY = posY + y;
+            tsgl_pos getPosX = sprite->flixX ? (spriteMaxPointX - posX) : posX;
+            tsgl_pos getPosY = sprite->flixY ? (spriteMaxPointY - posY) : posY;
+            tsgl_rawcolor color = tsgl_framebuffer_rotationGet(sprite->sprite, sprite->rotation,
+                sprite->resizeWidth == 0 ? getPosX : tsgl_math_imap(getPosX, 0, spriteMaxPointX, 0, spriteRealMaxPointX),
+                sprite->resizeHeight == 0 ? getPosY : tsgl_math_imap(getPosY, 0, spriteMaxPointY, 0, spriteRealMaxPointY)
+            );
+
+            set(arg, setPosX, setPosY, color);
+        }
+    }
+}
+
 static size_t _len(const char* str) {
     size_t size = 0;
     while (str[size] != '\n' && str[size] != '\0') size++;

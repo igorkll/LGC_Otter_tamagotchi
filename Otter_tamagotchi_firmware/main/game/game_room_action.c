@@ -1,9 +1,22 @@
 #include "game_room_action.h"
 #include "game_actions.h"
+#include "game_upmenu.h"
 #include "game.h"
 
 // начало второй линии кнопок
 #define L2 5
+
+static void car_roomSelect(game_room room) {
+    switch (room) {
+        case ID_YARD:
+            game_upmenu_setActivate(0, true);
+            break;
+
+        case ID_SHOP:
+            game_upmenu_setActivate(1, true);
+            break;
+    }
+}
 
 static void car_selectRoom(game_room moveTo) {
     if (current_state.old_car_room == moveTo) {
@@ -13,6 +26,7 @@ static void car_selectRoom(game_room moveTo) {
 
         // Поехали!
         game_startActionTimer(GAMECFG_CAR_MOVE_TIME, "\xCF\xEE\xE5\xF5\xE0\xEB\xE8\x21", game_action_switchRoom, moveTo, true);
+        car_roomSelect(moveTo);
     }
 }
 
@@ -68,6 +82,16 @@ void game_roomAction(int action) {
 
         case ID_SHOP:
             game_shop_roomAction(action);
+            break;
+    }
+}
+
+void game_roomSelected(game_room selected) {
+    if (selected != ID_CAR) current_state.old_car_room = selected;
+
+    switch (selected) {
+        case ID_CAR:
+            car_roomSelect(current_state.old_car_room);
             break;
     }
 }

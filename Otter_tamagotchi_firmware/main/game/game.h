@@ -9,6 +9,7 @@
 #define ID_YARD 4
 #define ID_CAR 5
 #define ID_SHOP 6
+#define ID_CONSTIEM_BACKPACK 9
 
 typedef enum {
     game_room_bedroom = 0,
@@ -44,6 +45,9 @@ typedef struct {
     // sleep
     int sleepTimer;
     int sleepStartTimer;
+
+    // backpack
+    bool backpack_opened;
 } Game_state;
 
 typedef struct {

@@ -1,4 +1,5 @@
 #include "game_actions.h"
+#include "game_upmenu.h"
 #include "../pushsound.h"
 
 void game_actions_sleep(int sleepTime) {

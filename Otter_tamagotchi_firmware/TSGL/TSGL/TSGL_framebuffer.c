@@ -65,6 +65,29 @@ static size_t _getRawHorBufferIndex(tsgl_framebuffer* framebuffer, tsgl_pos x, t
     }
 }
 
+static size_t _getRawHorBufferIndexCustomRotation(tsgl_framebuffer* framebuffer, uint8_t rotation, tsgl_pos x, tsgl_pos y) {
+    if (rotation == 0) {
+        return x + ((y / 8) * framebuffer->rotationWidth);
+    } else {
+        return _customRotateX(framebuffer, rotation, x, y) + ((_customRotateY(framebuffer, rotation, x, y) / 8) * framebuffer->rotationWidth);
+    }
+}
+
+static uint8_t _getHorOffsetCustomRotation(tsgl_framebuffer* framebuffer, uint8_t rotation, tsgl_pos x, tsgl_pos y) {
+    switch (rotation) {
+        case 1:
+            return x % 8;
+
+        case 2:
+            return 7 - (y % 8);
+
+        case 3:
+            return 7 - (x % 8);
+    }
+
+    return y % 8;
+}
+
 static uint8_t _getHorOffset(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y) {
     switch (framebuffer->realRotation) {
         case 1:
@@ -355,22 +378,11 @@ void tsgl_framebuffer_push(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y
     tsgl_gfx_push(framebuffer, (TSGL_SET_REFERENCE())tsgl_framebuffer_setWithoutCheck, x, y, sprite, framebuffer->viewport_minX, framebuffer->viewport_minY, framebuffer->viewport_maxX, framebuffer->viewport_maxY);
 }
 
-void tsgl_framebuffer_pushFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite) {
-    framebuffer->changed = true;
-    
-    tsgl_pos spriteWidth = sprite->sprite->defaultWidth;
-    tsgl_pos spriteHeight = sprite->sprite->defaultHeight;
-
-    for (tsgl_pos posX = 0; posX < spriteWidth; posX++) {
-        tsgl_pos setPosX = posX + x;
-        for (tsgl_pos posY = 0; posY < spriteHeight; posY++) {
-            tsgl_pos setPosY = posY + y;
-            tsgl_framebuffer_setWithoutCheckFast(framebuffer, setPosX, setPosY, tsgl_framebuffer_getWithoutCheckFast(sprite->sprite, posX, posY));
-        }
-    }
+void tsgl_framebuffer_push_wtrans(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite) {
+    tsgl_gfx_push_wtrans(framebuffer, (TSGL_SET_REFERENCE())tsgl_framebuffer_setWithoutCheck, x, y, sprite, framebuffer->viewport_minX, framebuffer->viewport_minY, framebuffer->viewport_maxX, framebuffer->viewport_maxY);
 }
 
-void tsgl_framebuffer_pushFastWithTransparentSupport(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite) {
+void tsgl_framebuffer_pushFast(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite) {
     framebuffer->changed = true;
     
     tsgl_pos spriteWidth = sprite->sprite->defaultWidth;
@@ -384,6 +396,21 @@ void tsgl_framebuffer_pushFastWithTransparentSupport(tsgl_framebuffer* framebuff
             if (sprite->transparentColor.invalid || memcmp(color.arr, sprite->transparentColor.arr, framebuffer->colorsize) != 0) {
                 tsgl_framebuffer_setWithoutCheckFast(framebuffer, setPosX, setPosY, color);
             }
+        }
+    }
+}
+
+void tsgl_framebuffer_pushFast_wtrans(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite) {
+    framebuffer->changed = true;
+    
+    tsgl_pos spriteWidth = sprite->sprite->defaultWidth;
+    tsgl_pos spriteHeight = sprite->sprite->defaultHeight;
+
+    for (tsgl_pos posX = 0; posX < spriteWidth; posX++) {
+        tsgl_pos setPosX = posX + x;
+        for (tsgl_pos posY = 0; posY < spriteHeight; posY++) {
+            tsgl_pos setPosY = posY + y;
+            tsgl_framebuffer_setWithoutCheckFast(framebuffer, setPosX, setPosY, tsgl_framebuffer_getWithoutCheckFast(sprite->sprite, posX, posY));
         }
     }
 }
@@ -615,6 +642,32 @@ void tsgl_framebuffer_clear(tsgl_framebuffer* framebuffer, tsgl_rawcolor color) 
     }
 }
 
+// ------------------------------------------------------------ get funcs
+
+tsgl_rawcolor tsgl_framebuffer_get(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y) {
+    if (!_pointInFrame(framebuffer, x, y)) return framebuffer->black;
+    return tsgl_framebuffer_getWithoutCheck(framebuffer, x, y);
+}
+
+tsgl_rawcolor tsgl_framebuffer_rotationGet(tsgl_framebuffer* framebuffer, uint8_t rotation, tsgl_pos x, tsgl_pos y) {
+    switch (framebuffer->colormode) {
+        case tsgl_rgb444:
+        case tsgl_bgr444:
+            return _444read(_rawRotateGetBufferIndex(framebuffer, rotation, x, y), framebuffer->buffer);
+
+        case tsgl_monochrome:
+            return _monoRead(_getRawHorBufferIndexCustomRotation(framebuffer, rotation, x, y), _getHorOffsetCustomRotation(framebuffer, rotation, x, y), framebuffer->buffer);
+        
+        default: {
+            size_t index = _rotateGetBufferIndex(framebuffer, rotation, x, y);
+            return (tsgl_rawcolor) {
+                .invalid = false,
+                .arr = {framebuffer->buffer[index + 0], framebuffer->buffer[index + 1], framebuffer->buffer[index + 2]}
+            };
+        }
+    }
+}
+
 tsgl_rawcolor tsgl_framebuffer_getWithoutCheck(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y) {
     switch (framebuffer->colormode) {
         case tsgl_rgb444:
@@ -642,30 +695,4 @@ tsgl_rawcolor tsgl_framebuffer_getWithoutCheckFast(tsgl_framebuffer* framebuffer
         .invalid = false,
         .arr = {framebuffer->buffer[index + 0], framebuffer->buffer[index + 1], framebuffer->buffer[index + 2]}
     };
-}
-
-tsgl_rawcolor tsgl_framebuffer_get(tsgl_framebuffer* framebuffer, tsgl_pos x, tsgl_pos y) {
-    if (!_pointInFrame(framebuffer, x, y)) return framebuffer->black;
-    return tsgl_framebuffer_getWithoutCheck(framebuffer, x, y);
-}
-
-tsgl_rawcolor tsgl_framebuffer_rotationGet(tsgl_framebuffer* framebuffer, uint8_t rotation, tsgl_pos x, tsgl_pos y) {
-    switch (framebuffer->colormode) {
-        case tsgl_rgb444:
-        case tsgl_bgr444:
-            return _444read(_rawRotateGetBufferIndex(framebuffer, rotation, x, y), framebuffer->buffer);
-
-        //case tsgl_monochrome:
-        //    return _monoRead(_getRawHorBufferIndex(framebuffer, x, y), _getHorOffset(framebuffer, x, y), framebuffer->buffer);
-        
-        default: {
-            size_t index = _rotateGetBufferIndex(framebuffer, rotation, x, y);
-            tsgl_rawcolor rawcolor;
-            rawcolor.invalid = false;
-            for (uint8_t i = 0; i < framebuffer->colorsize; i++) {
-                rawcolor.arr[i] = framebuffer->buffer[index + i];
-            }
-            return rawcolor;
-        }
-    }
 }
