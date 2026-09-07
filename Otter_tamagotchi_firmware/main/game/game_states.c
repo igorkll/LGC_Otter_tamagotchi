@@ -18,6 +18,8 @@
 #define STATES_SLIDER_BORDER_SIZE 1
 #define STATES_SLIDER_FILL_OFFSET (STATES_BORDER_SIZE + 1)
 
+#define STATES_GAP 2
+
 static tsgl_print_settings printsettings = {
     .locationMode = tsgl_print_start_top,
     
@@ -49,9 +51,8 @@ static void raw_draw_slider(tsgl_pos x, tsgl_pos y, int8_t value) {
 
 static void drawstate_slider(tsgl_pos x, tsgl_pos y, const char* title, int8_t value) {
     drawstate_str(x, y, title);
+    raw_draw_slider(x, y + STATES_FONT_TARGET_HEIGHT + STATES_GAP, value);
 }
-
-states_sadness
 
 void game_states_draw() {
     if (!current_state.states_opened) return;
@@ -62,7 +63,10 @@ void game_states_draw() {
     tsgl_framebuffer_fill(&framebuffer, x, y, STATES_WIDTH, STATES_HEIGHT, black);
     tsgl_framebuffer_rect(&framebuffer, x, y, STATES_WIDTH, STATES_HEIGHT, white, STATES_BORDER_SIZE);
 
-    drawstate_num(STATES_CONTENT_OFFSET + x, STATES_CONTENT_OFFSET + y, "MONEY", current_state.states_money);
+    tsgl_pos x2 = STATES_CONTENT_OFFSET + x;
+    tsgl_pos y2 = STATES_CONTENT_OFFSET + y;
+    drawstate_num(x2, y2, "MONEY", current_state.states_money);
+    drawstate_slider(x2, y2, "\xF3\xF1\xF2\xE0\xEB\xEE\xF1\xF2\xFC", current_state.states_fatigue); //усталость
 }
 
 void game_states_open() {
