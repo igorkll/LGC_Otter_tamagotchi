@@ -7,6 +7,28 @@
 #define STATES_WIDTH (WIDTH - (STATES_MARGIN_LEFT_RIGHT * 2))
 #define STATES_HEIGHT (HEIGHT - (STATES_MARGIN_TOP_BOTTOM * 2))
 
+#define STATES_FONT_TARGET_WIDTH 8
+#define STATES_FONT_TARGET_HEIGHT 8
+
+static tsgl_print_settings printsettings = {
+    .locationMode = tsgl_print_start_top,
+    
+    // font
+    .font = font,
+    .localLocationMode = tsgl_print_localLocationMode_bottom,
+    .targetWidth = STATES_FONT_TARGET_WIDTH,
+    .targetHeight = STATES_FONT_TARGET_HEIGHT,
+
+    .fill = TSGL_INVALID_RAWCOLOR,
+    .bg = TSGL_INVALID_RAWCOLOR
+};
+
+static void draw_number_state() {
+    printsettings.fg = green;
+
+
+}
+
 void game_states_draw() {
     if (!current_state.states_opened) return;
 
