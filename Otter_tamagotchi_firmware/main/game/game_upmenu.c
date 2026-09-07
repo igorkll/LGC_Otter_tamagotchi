@@ -140,12 +140,8 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         int x = ((width / 2) - (iconWidth / 2)) + ((i - (GAME_UPMENU_LINE_COUNT / 2)) * (width / 5));
         int y = offsetHeight + ((lineHeight / 2) - (iconHeight / 2));
 
-        bool activeFlag = false;
-        bool selectedFlag = false;
-        if (!current_state.backpack_opened) {
-            activeFlag = sprites_active[i2];
-            selectedFlag = i2 == selected;
-        }
+        bool activeFlag = sprites_active[i2];
+        bool selectedFlag = !current_state.backpack_opened && i2 == selected;
 
         tsgl_rawcolor borderColor = activeFlag ? red : black;
         tsgl_rawcolor cornersColor = uptime % 1000 >= 500 ? magenta : yellow;

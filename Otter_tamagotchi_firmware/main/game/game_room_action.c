@@ -7,15 +7,8 @@
 #define L2 5
 
 static void car_roomSelect(game_room room) {
-    switch (room) {
-        case ID_YARD:
-            game_upmenu_setActivate(0, true);
-            break;
-
-        case ID_SHOP:
-            game_upmenu_setActivate(1, true);
-            break;
-    }
+    game_upmenu_setActivate(0, room == ID_YARD);
+    game_upmenu_setActivate(1, room == ID_SHOP);
 }
 
 static void car_selectRoom(game_room moveTo) {
