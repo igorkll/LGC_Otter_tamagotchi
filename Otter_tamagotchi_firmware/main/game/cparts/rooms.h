@@ -13,7 +13,7 @@ const Room rooms[] = {
         .person_x = (WIDTH / 4) - 20,
         .person_y = (HEIGHT / 4) * 3,
 
-        .states_delta_fatigue = 0.02
+        .states_delta_fatigue = 0.02,
         .states_delta_hunger = 0.4,
         .states_delta_thirst = 0.2,
         .states_delta_sadness = 0.4
