@@ -229,7 +229,7 @@ static void onTimerAction() {
 
 static void processParametersDelta() {
     const Room* room = game_getCurrentRoom();
-    
+
     float states_delta_fatigue = 0.01;
     float states_delta_hunger = 0.01;
     float states_delta_thirst = 0.05;
@@ -267,11 +267,11 @@ static void processParametersDelta() {
     #endif
 
     float parameters_mul = GAMECFG_PARAMS_SPEED_MUL;
-    states_delta_fatigue *= room->states_delta_fatigue * parameters_mul;
-    states_delta_hunger *= room->states_delta_hunger * parameters_mul;
-    states_delta_thirst *= room->states_delta_thirst * parameters_mul;
-    states_delta_caress *= room->states_delta_caress * parameters_mul;
-    states_delta_sadness *= room->states_delta_sadness * parameters_mul;
+    states_delta_fatigue *= parameters_mul;
+    states_delta_hunger *= parameters_mul;
+    states_delta_thirst *= parameters_mul;
+    states_delta_caress *= parameters_mul;
+    states_delta_sadness *= parameters_mul;
 
     game_states_change(&current_state.states_fatigue, states_delta_fatigue);
     game_states_change(&current_state.states_hunger, states_delta_hunger);
