@@ -60,7 +60,7 @@ typedef struct {
 
     // combine menu
     bool combinemenu_opened;
-    uint8_t combinemenu_index;
+    int8_t combinemenu_index;
 
     // backpack
     bool backpack_opened;
