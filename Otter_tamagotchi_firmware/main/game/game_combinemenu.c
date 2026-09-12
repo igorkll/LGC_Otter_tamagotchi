@@ -53,21 +53,17 @@ void game_combinemenu_draw()
 
     for (size_t index = 0; index < POINTS_COUNT; index++)
     {
+        printsettings.fill = TSGL_INVALID_RAWCOLOR;
         printsettings.fg = green;
         if (index == current_state.combinemenu_index)
-                printsettings.fg = black;
+        {
+            tsgl_rawcolor temp = printsettings.fill;
+            printsettings.fill = printsettings.fg;
+            printsettings.fg = temp;
+        }
 
         tsgl_pos point_y = index * POINT_HEIGHT;
         tsgl_framebuffer_text(&framebuffer, x, y + point_y, printsettings, combinemenu_points[index]);
-
-        if (index == current_state.combinemenu_index)
-            tsgl_framebuffer_fill(&framebuffer,
-                x + (COMBINEMENU_BORDER_SIZE * 2), 
-                y + point_y, 
-                COMBINEMENU_WIDTH - (COMBINEMENU_BORDER_SIZE * 4),
-                POINT_HEIGHT,
-                green
-            );
     }
 }
 
