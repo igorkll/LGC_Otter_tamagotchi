@@ -32,6 +32,7 @@ static tsgl_print_settings printsettings = {
 
     .fill = TSGL_INVALID_RAWCOLOR,
     .bg = TSGL_INVALID_RAWCOLOR,
+    .fg = TSGL_INVALID_RAWCOLOR,
 
     // multiline
     .multiline = true,
@@ -53,16 +54,13 @@ void game_combinemenu_draw()
 
     for (size_t index = 0; index < POINTS_COUNT; index++)
     {
-        printsettings.fill = TSGL_INVALID_RAWCOLOR;
-        printsettings.fg = green;
-        if (index == current_state.combinemenu_index)
-        {
-            tsgl_rawcolor temp = printsettings.fill;
-            printsettings.fill = printsettings.fg;
-            printsettings.fg = temp;
-        }
+        bool selected = index == current_state.combinemenu_index;
+        printsettings.fg = selected ? black : green;
 
         tsgl_pos point_y = index * POINT_HEIGHT;
+        tsgl_print_textArea textArea = tsgl_font_getTextArea(x, y + point_y, printsettings, combinemenu_points[index]);
+
+        if (selected)
         tsgl_framebuffer_text(&framebuffer, x, y + point_y, printsettings, combinemenu_points[index]);
     }
 }
