@@ -2,6 +2,8 @@
 #include "game.h"
 #include "../pushsound.h"
 #include "../funcs.h"
+#include "game_backpack.h"
+#include "game_states.h"
 
 #define COMBINEMENU_MARGIN_LEFT_RIGHT 20
 #define COMBINEMENU_MARGIN_TOP_BOTTOM 40
@@ -45,7 +47,15 @@ static void selectPoint(int index) {
     current_state.combinemenu_opened = false;
     game_updateActiveIcons();
 
+    switch (index) {
+        case 0:
+            game_backpack_open();
+            break;
 
+        case 1:
+            game_states_open();
+            break;
+    }
 }
 
 void game_combinemenu_draw()
