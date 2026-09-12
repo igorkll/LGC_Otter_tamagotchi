@@ -12,7 +12,7 @@
 #define COMBINEMENU_FONT_TARGET_WIDTH 8
 #define COMBINEMENU_FONT_TARGET_HEIGHT 8
 
-static const char *combinemenu_points[] = {
+static const char* combinemenu_points[] = {
     "\xD0\xFE\xEA\xE7\xE0\xEA", //Рюкзак
     "\xD1\xEE\xF1\xF2\xEE\xFF\xED\xE8\xE5", //Состояние
     "\xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8", //Настройки
@@ -37,7 +37,8 @@ static tsgl_print_settings printsettings = {
     .multiline = true,
     .globalCentering = true,
     .width = COMBINEMENU_WIDTH,
-    .height = POINT_HEIGHT};
+    .height = POINT_HEIGHT
+};
 
 void game_combinemenu_draw()
 {
@@ -52,17 +53,21 @@ void game_combinemenu_draw()
 
     for (size_t index = 0; index < POINTS_COUNT; index++)
     {
-        printsettings.bg = TSGL_INVALID_RAWCOLOR;
         printsettings.fg = green;
         if (index == current_state.combinemenu_index)
-        {
-            tsgl_rawcolor temp = printsettings.bg;
-            printsettings.bg = printsettings.fg;
-            printsettings.fg = temp;
-        }
+                printsettings.fg = black;
 
         tsgl_pos point_y = index * POINT_HEIGHT;
         tsgl_framebuffer_text(&framebuffer, x, y + point_y, printsettings, combinemenu_points[index]);
+
+        if (index == current_state.combinemenu_index)
+            tsgl_framebuffer_fill(&framebuffer,
+                x + (COMBINEMENU_BORDER_SIZE * 2), 
+                y + point_y, 
+                COMBINEMENU_WIDTH - (COMBINEMENU_BORDER_SIZE * 4),
+                POINT_HEIGHT,
+                green
+            );
     }
 }
 
