@@ -338,9 +338,20 @@ static void processControl() {
             return;
         }
 
-        if (current_state.combinemenu_opened) game_combinemenu_close();
-        if (current_state.backpack_opened) game_backpack_close();
-        if (current_state.states_opened) game_states_close();
+        if (current_state.combinemenu_opened) {
+            game_combinemenu_close();
+            return;
+        }
+
+        if (current_state.backpack_opened) {
+            game_backpack_close();
+            return;
+        }
+
+        if (current_state.states_opened) {
+            game_states_close();
+            return;
+        }
 
         if (current_state.actionTimer > 0 && current_state.actionTimer_allowCancel) {
             game_stopActionTimer();
@@ -425,6 +436,7 @@ static void render() {
     drawPerson();
     drawActionTimer();
     game_upmenu_draw();
+    game_combinemenu_draw();
     game_states_draw();
     game_backpack_draw();
 }
