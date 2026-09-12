@@ -13,8 +13,7 @@
 #define ID_CLUB 7
 #define ID_MUSEUM 8
 
-#define ID_CONSTIEM_STATES 8
-#define ID_CONSTIEM_BACKPACK 9
+#define ID_CONSTIEM_OVERLAY 9
 
 #define RESET_SETTINGS_ID 8
 
@@ -58,6 +57,9 @@ typedef struct {
     // sleep
     int sleepTimer;
     int sleepStartTimer;
+
+    // combine menu
+    bool combinemenu_opened;
 
     // backpack
     bool backpack_opened;

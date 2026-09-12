@@ -121,8 +121,7 @@ void game_updateActiveIcons() {
 
     if (current_state.room == ID_CAR && current_state.next_car_icon >= 0) game_upmenu_setActivate(current_state.next_car_icon, true);
     
-    game_upmenu_setActivate(ID_CONSTIEM_STATES, current_state.states_opened);
-    game_upmenu_setActivate(ID_CONSTIEM_BACKPACK, current_state.backpack_opened);
+    game_upmenu_setActivate(ID_CONSTIEM_OVERLAY, game_isAnyOverlayOpened());
 }
 
 void game_selectRoom(int index) {
@@ -136,7 +135,7 @@ void game_selectRoom(int index) {
 }
 
 bool game_isAnyOverlayOpened() {
-    return current_state.backpack_opened || current_state.states_opened;
+    return current_state.combinemenu_opened || current_state.backpack_opened || current_state.states_opened;
 }
 
 // ------------------------------------ process

@@ -148,11 +148,7 @@ void game_roomAction(int action) {
     }
 
     switch (action) {
-        case ID_CONSTIEM_STATES:
-            game_states_toggle();
-            break;
-            
-        case ID_CONSTIEM_BACKPACK:
+        case ID_CONSTIEM_OVERLAY:
             game_backpack_toggle();
             break;
     }
