@@ -3,22 +3,11 @@
 #include "../pushsound.h"
 #include "../funcs.h"
 
-#define COMBINEMENU_MARGIN_LEFT_RIGHT 10
-#define COMBINEMENU_MARGIN_TOP_BOTTOM 20
+#define COMBINEMENU_MARGIN_LEFT_RIGHT 20
+#define COMBINEMENU_MARGIN_TOP_BOTTOM 40
 #define COMBINEMENU_WIDTH (WIDTH - (COMBINEMENU_MARGIN_LEFT_RIGHT * 2))
 #define COMBINEMENU_HEIGHT (HEIGHT - (COMBINEMENU_MARGIN_TOP_BOTTOM * 2))
 #define COMBINEMENU_BORDER_SIZE 2
-#define COMBINEMENU_CONTENT_OFFSET (COMBINEMENU_BORDER_SIZE + 2)
-#define COMBINEMENU_CONTENT_WIDTH (COMBINEMENU_WIDTH - (COMBINEMENU_CONTENT_OFFSET * 2))
-
-#define COMBINEMENU_FONT_TARGET_WIDTH 8
-#define COMBINEMENU_FONT_TARGET_HEIGHT 8
-
-#define COMBINEMENU_SLIDER_HEIGHT 6
-#define COMBINEMENU_SLIDER_BORDER_SIZE 1
-#define COMBINEMENU_SLIDER_FILL_OFFSET (COMBINEMENU_SLIDER_BORDER_SIZE + 1)
-
-#define COMBINEMENU_GAP 2
 
 static tsgl_print_settings printsettings = {
     .locationMode = tsgl_print_start_top,
@@ -36,7 +25,13 @@ static tsgl_print_settings printsettings = {
 void game_combinemenu_draw() {
     if (!current_state.combinemenu_opened) return;
 
+    tsgl_pos x = (WIDTH / 2) - (BACKPACK_WIDTH / 2);
+    tsgl_pos y = (HEIGHT / 2) - (BACKPACK_HEIGHT / 2);
+    
+    tsgl_framebuffer_fill(&framebuffer, x, y, BACKPACK_WIDTH, BACKPACK_HEIGHT, black);
+    tsgl_framebuffer_rect(&framebuffer, x, y, BACKPACK_WIDTH, BACKPACK_HEIGHT, white, BACKPACK_BORDER_SIZE);
 
+    
 }
 
 void game_combinemenu_open() {
