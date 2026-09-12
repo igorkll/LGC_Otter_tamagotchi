@@ -12,7 +12,7 @@
 #define COMBINEMENU_FONT_TARGET_WIDTH 8
 #define COMBINEMENU_FONT_TARGET_HEIGHT 8
 
-static const char *combinemenu_points = {
+static const char* combinemenu_points[] = {
     "1",
     "2",
     "3",
@@ -37,7 +37,8 @@ static tsgl_print_settings printsettings = {
     .multiline = true,
     .globalCentering = true,
     .width = COMBINEMENU_WIDTH,
-    .height = };
+    .height = POINT_HEIGHT
+};
 
 void game_combinemenu_draw()
 {
@@ -52,8 +53,16 @@ void game_combinemenu_draw()
 
     for (size_t index = 0; index < POINTS_COUNT; index++)
     {
+        printsettings.bg = TSGL_INVALID_RAWCOLOR;
+        printsettings.fg = green;
+        if (index == current_state.combinemenu_index) {
+            tsgl_rawcolor temp = printsettings.bg;
+            printsettings.bg = printsettings.fg;
+            printsettings.fg = temp;
+        }
+
         tsgl_pos point_y = index * POINT_HEIGHT;
-        tsgl_framebuffer_text(x, y + point_y, printsettings, combinemenu_points[index]);
+        tsgl_framebuffer_text(&framebuffer, x, y + point_y, printsettings, combinemenu_points[index]);
     }
 }
 
