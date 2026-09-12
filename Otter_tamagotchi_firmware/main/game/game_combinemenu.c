@@ -60,7 +60,15 @@ void game_combinemenu_draw()
         tsgl_pos point_y = index * POINT_HEIGHT;
         tsgl_print_textArea textArea = tsgl_font_getTextArea(x, y + point_y, printsettings, combinemenu_points[index]);
 
-        if (selected)
+        if (selected) {
+            tsgl_framebuffer_fill(&framebuffer,
+                x + (COMBINEMENU_BORDER_SIZE * 2),
+                (y + point_y) - 2,
+                COMBINEMENU_WIDTH - (COMBINEMENU_BORDER_SIZE * 4),
+                COMBINEMENU_HEIGHT + 4,
+                green
+            );
+        }
         tsgl_framebuffer_text(&framebuffer, x, y + point_y, printsettings, combinemenu_points[index]);
     }
 }
