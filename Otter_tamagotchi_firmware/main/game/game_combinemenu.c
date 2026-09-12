@@ -65,7 +65,7 @@ void game_combinemenu_draw()
                 x + (COMBINEMENU_BORDER_SIZE * 2),
                 (y + point_y) - 2,
                 COMBINEMENU_WIDTH - (COMBINEMENU_BORDER_SIZE * 4),
-                COMBINEMENU_HEIGHT + 4,
+                POINT_HEIGHT + 4,
                 green
             );
         }
