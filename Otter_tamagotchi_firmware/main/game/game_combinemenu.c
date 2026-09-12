@@ -94,7 +94,7 @@ void game_combinemenu_draw()
         if (current_state.combinemenu_index < 0) current_state.combinemenu_index = 0;
     }
 
-    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
         selectPoint(current_state.combinemenu_index);
     }
 

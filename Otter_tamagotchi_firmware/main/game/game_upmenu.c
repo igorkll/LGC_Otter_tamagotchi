@@ -65,6 +65,7 @@ int game_upmenu_process() {
     }
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
+        tsgl_keyboard_findButton(&keyboard, KEY_INDEX_OKAY)->whenPressed = false;
         return current_selected;
     }
 
