@@ -41,6 +41,13 @@ static tsgl_print_settings printsettings = {
     .height = POINT_HEIGHT
 };
 
+static void selectPoint(int index) {
+    current_state.combinemenu_opened = false;
+    game_updateActiveIcons();
+
+
+}
+
 void game_combinemenu_draw()
 {
     if (!current_state.combinemenu_opened)
@@ -63,13 +70,27 @@ void game_combinemenu_draw()
         if (selected) {
             tsgl_framebuffer_fill(&framebuffer,
                 x + (COMBINEMENU_BORDER_SIZE * 2),
-                (y + point_y) - 2,
+                textArea.top - 2,
                 COMBINEMENU_WIDTH - (COMBINEMENU_BORDER_SIZE * 4),
-                POINT_HEIGHT + 4,
+                textArea.height + 4,
                 green
             );
         }
         tsgl_framebuffer_text(&framebuffer, x, y + point_y, printsettings, combinemenu_points[index]);
+    }
+
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
+        current_state.combinemenu_index--;
+        if (current_state.combinemenu_index < 0) current_state.combinemenu_index = 0;
+    }
+
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
+        selectPoint(current_state.combinemenu_index);
+    }
+
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
+        current_state.combinemenu_index++;
+        if (current_state.combinemenu_index >= POINTS_COUNT) current_state.combinemenu_index = POINTS_COUNT - 1;
     }
 }
 
