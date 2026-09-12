@@ -36,7 +36,7 @@ static tsgl_print_settings printsettings = {
 void game_combinemenu_draw() {
     if (!current_state.combinemenu_opened) return;
 
-    
+
 }
 
 void game_combinemenu_open() {
@@ -51,7 +51,7 @@ void game_combinemenu_close() {
     game_updateActiveIcons();
 }
 
-void game_COMBINEMENU_toggle() {
+void game_combinemenu_toggle() {
     if (current_state.combinemenu_opened) {
         game_combinemenu_close();
     } else {

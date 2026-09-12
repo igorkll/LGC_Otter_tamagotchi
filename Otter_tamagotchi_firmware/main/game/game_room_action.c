@@ -4,6 +4,7 @@
 #include "game.h"
 #include "game_backpack.h"
 #include "game_states.h"
+#include "game_combinemenu.h"
 
 // начало второй линии кнопок
 #define L2 5
@@ -149,7 +150,7 @@ void game_roomAction(int action) {
 
     switch (action) {
         case ID_CONSTIEM_OVERLAY:
-            game_backpack_toggle();
+            game_combinemenu_toggle();
             break;
     }
 }
