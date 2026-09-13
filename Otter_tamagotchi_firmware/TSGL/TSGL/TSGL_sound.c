@@ -359,7 +359,7 @@ static void _resetDfpwmDecoder(tsgl_sound* sound) {
 
     sound->bit_pos = 0;
     for (size_t i = 0; i < sound->channels; i++) {
-        tsgl_dfpwm_reset(&sound->dfpwm_decode_state[i], sound->scaled_sample_rate, sound->scaled_sample_rate / 2);
+        tsgl_dfpwm_reset(&sound->dfpwm_decode_state[i], sound->scaled_sample_rate, sound->scaled_sample_rate / 3);
     }
 }
 
