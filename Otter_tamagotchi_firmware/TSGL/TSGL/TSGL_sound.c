@@ -81,8 +81,9 @@ static void _soundTask(void* _sound) {
         }
 
         sound->tempStop = false;
-        if (sound->use_local_timer) {
+        if (sound->use_local_timer && sound->localTimerStopped) {
             gptimer_start(sound->timer);
+            sound->localTimerStopped = false;
         }
 
         vTaskSuspend(NULL);
@@ -128,6 +129,7 @@ static void IRAM_ATTR _read_next_block_raw(tsgl_sound* sound, int bufOffset) {
             if (sound->doubleSwapBuffer) {
                 if (sound->use_local_timer) {
                     gptimer_stop(sound->timer);
+                    sound->localTimerStopped = true;
                 } else {
                     sound->tempStop = true;
                 }
@@ -148,6 +150,7 @@ static void IRAM_ATTR _read_next_block_raw(tsgl_sound* sound, int bufOffset) {
                 sound->buffer2 = buffer;
             } else if (sound->use_local_timer) {
                 gptimer_stop(sound->timer);
+                sound->localTimerStopped = true;
             } else {
                 sound->tempStop = true;
             }
