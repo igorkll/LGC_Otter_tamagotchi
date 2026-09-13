@@ -189,7 +189,7 @@ static void IRAM_ATTR _addOutputsValues(tsgl_sound* sound) {
             tsgl_sound_output* output = sound->outputs[i];
 
             tsgl_sound_addOutputValue(output,
-                (sound->dfpwm_decode_state[i % sound->channels].charge * sound->volume) / 255
+                (sound->dfpwm_decode_state[i % sound->channels].fq * sound->volume) / 255
             );
         }
     } else {

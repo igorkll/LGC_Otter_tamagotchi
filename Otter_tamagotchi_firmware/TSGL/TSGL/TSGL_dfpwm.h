@@ -2,9 +2,10 @@
 #include "TSGL.h"
 
 typedef struct {
-    int8_t  charge;
-    int8_t  strength;
-    uint8_t last_bit;
+    int fq;  // Состояние низкочастотного фильтра (LPF)
+    int q;   // Текущий заряд (charge)
+    int s;   // Текущая сила (strength)
+    int lt;  // Последняя цель (last target): 127 или -128
 } tsgl_dfpwm_decode_state;
 
 void tsgl_dfpwm_reset(tsgl_dfpwm_decode_state* state);
