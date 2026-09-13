@@ -200,7 +200,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
 
         portENTER_CRITICAL_ISR(&sound->lock);
 
-        if (sound->playing && !sound->callback_end_run) {
+        if (sound->playing) {
             if (sound->global_timer_state == 0 && !sound->tempStop) {
                 _math_current_block(sound);
             }
