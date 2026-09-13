@@ -314,6 +314,14 @@ static void _freeOutputs(tsgl_sound* sound) {
     free(sound->outputs);
 }
 
+static void _resetDfpwmDecoder(tsgl_sound* sound) {
+    if (sound->dfpwm_decode_state == NULL) return;
+
+    for (size_t i = 0; i < sound->channels; i++) {
+        tsgl_dfpwm_reset(sound->dfpwm_decode_state[i]);
+    }
+}
+
 static void _setPosition(tsgl_sound* sound, size_t position) {
     sound->position = position;
     //if (sound->position < 0) sound->position = 0;
@@ -326,6 +334,8 @@ static void _setPosition(tsgl_sound* sound, size_t position) {
     } else {
         sound->bufferPosition = sound->position;
     }
+
+    _resetDfpwmDecoder(sound);
 }
 
 void tsgl_sound_enableGlobalTimer(int freq, size_t max_sounds) {
