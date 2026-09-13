@@ -66,7 +66,6 @@ static void _soundTask(void* _sound) {
         if (sound->loop && sound->readFromStart) {
             printf("seek start\n");
             fseek(sound->file, 0, SEEK_SET);
-            sound->readFromStart = false;
         }
         
         printf("read\n");
@@ -80,6 +79,7 @@ static void _soundTask(void* _sound) {
             if (setZeroSize > 0) memset((char*)sound->buffer2 + bytesRead, 0, setZeroSize);
         }
 
+        sound->readFromStart = false;
         sound->tempStop = false;
         if (sound->use_local_timer && sound->localTimerStopped) {
             gptimer_start(sound->timer);
