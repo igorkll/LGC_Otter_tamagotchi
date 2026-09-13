@@ -32,10 +32,12 @@
 #define SOUND_GLOBAL_TIMER_FREQ 16000
 #define SOUND_BUFFER_SIZE (4 * 1024)
 #define MAX_SOUNDS_COUNT 16
-#define VOLUME_MUL 2
-
 #define STARTUP_IMAGE_CHANGE_DELAY 3000
+#define USE_SOUND_DOUBLE_BUFFER true
+#define USE_SOUND_GLOBAL_TIMER true
 
+// --------------------------- volume
+#define VOLUME_MUL 0.2
 #define MYAAAA_SOUND_VOLUME 1.5
 #define EFFECTS_SOUND_VOLUME 1
 #define STARTUP_SOUND_VOLUME 0.25
@@ -43,9 +45,7 @@
 #define TRIGGER_SOUND_VOLUME 0.3
 #define SADNESS_SOUND_VOLUME 1.2
 
-#define USE_SOUND_DOUBLE_BUFFER true
-#define USE_SOUND_GLOBAL_TIMER true
-
+// --------------------------- debug
 #define DEBUG_FPS
 //#define DEBUG_TITLE
 //#define DEBUG_PARAMS
