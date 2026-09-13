@@ -75,14 +75,13 @@ void game_combinemenu_draw()
         printsettings.fg = selected ? black : green;
 
         tsgl_pos point_y = index * POINT_HEIGHT;
-        tsgl_print_textArea textArea = tsgl_font_getTextArea(x, y + point_y, printsettings, combinemenu_points[index]);
 
         if (selected) {
             tsgl_framebuffer_fill(&framebuffer,
                 x + (COMBINEMENU_BORDER_SIZE * 2),
-                textArea.top - 2,
+                (49 + point_y) - 2,
                 COMBINEMENU_WIDTH - (COMBINEMENU_BORDER_SIZE * 4),
-                textArea.height + 4,
+                8 + 4,
                 green
             );
         }
