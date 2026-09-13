@@ -47,7 +47,7 @@ tsgl_sound* pushsound_load(const char* path, int sample_rate) {
             USE_SOUND_DOUBLE_BUFFER) != ESP_OK)
         return NULL;
 
-    if (TSGL_funcs_hasext(path, ".dfpwm")) {
+    if (TSGL_funcs_hasext(path, ".dpw")) {
         tsgl_sound_allocatePcmDecoder(current_sound);
     }
 
