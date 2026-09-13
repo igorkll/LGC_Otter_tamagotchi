@@ -87,6 +87,8 @@ static void _soundTask(void* _sound) {
         if (!sound->doubleSwapBuffer) {
             if (sound->use_local_timer) {
                 gptimer_start(sound->timer);
+            } else {
+                sound->tempStop = false;
             }
         }
 
@@ -143,6 +145,8 @@ static void IRAM_ATTR _read_next_block_raw(tsgl_sound* sound, int bufOffset) {
                 sound->buffer2 = buffer;
             } else if (sound->use_local_timer) {
                 gptimer_stop(sound->timer);
+            } else {
+                sound->tempStop = true;
             }
             xTaskResumeFromISR(sound->task);
         }
@@ -210,7 +214,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
         portENTER_CRITICAL_ISR(&sound->lock);
 
         if (sound->playing && !sound->callback_end_run) {
-            if (sound->global_timer_state == 0) {
+            if (sound->global_timer_state == 0 && !sound->tempStop) {
                 _math_current_block(sound);
             }
 
@@ -219,7 +223,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
             }
 
             if (sound->global_timer_state >= sound->global_timer_div) {
-                _read_next_block(sound);
+                if (!sound->tempStop) _read_next_block(sound);
                 sound->global_timer_state = 0;
             } else {
                 sound->global_timer_state++;

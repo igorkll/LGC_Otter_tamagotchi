@@ -52,6 +52,7 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
     void* buffer;
     void* buffer2;
     bool doubleSwapBuffer;
+    bool tempStop;
 
     size_t bufferSize;
     size_t bufferPosition;

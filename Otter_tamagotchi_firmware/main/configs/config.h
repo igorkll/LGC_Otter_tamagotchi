@@ -42,7 +42,7 @@
 // --------------------------- sound
 
 #define SOUND_GLOBAL_TIMER_FREQ 16000
-#define SOUND_BUFFER_SIZE (16 * 1024)
+#define SOUND_BUFFER_SIZE (32 * 1024)
 #define MAX_SOUNDS_COUNT 16
 #define USE_SOUND_DOUBLE_BUFFER false
 #define USE_SOUND_GLOBAL_TIMER true
