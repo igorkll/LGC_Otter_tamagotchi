@@ -64,11 +64,11 @@ static void _soundTask(void* _sound) {
         }
 
         if (sound->loop && sound->readFromStart) {
-            printf("seek start\n");
+            //printf("seek start\n");
             fseek(sound->file, 0, SEEK_SET);
         }
         
-        printf("read\n");
+        //printf("read\n");
         size_t bytesRead = fread(buffer, 1, sound->bufferSize, sound->file);
         size_t setZeroSize = sound->bufferSize - bytesRead;
         if (setZeroSize > 0) memset((char*)buffer + bytesRead, 0, setZeroSize);
