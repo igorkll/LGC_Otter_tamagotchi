@@ -1,5 +1,6 @@
 #include "TSGL_funcs.h"
 #include <stdarg.h>
+#include <string.h>
 
 bool TSGL_funcs_hasext(const char* path, const char* ext) {
     size_t plen = strlen(path);
