@@ -62,6 +62,7 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
     size_t offset;
     size_t len;
     size_t sample_rate;
+    size_t scaled_sample_rate;
     size_t bit_rate;
     size_t channels;
     tsgl_sound_pcm_format pcm_format;

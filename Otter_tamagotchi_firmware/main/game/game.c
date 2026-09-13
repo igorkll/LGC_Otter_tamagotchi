@@ -101,10 +101,10 @@ static void reload_room_sound() {
     const Room* room = game_getCurrentRoom();
     if (room->music != NULL) {
         char path[MAX_PATH_LEN];
-        TSGL_funcs_slnprintf(path, MAX_PATH_LEN, "/firmware/music/%s.pcm", room->music);
+        TSGL_funcs_slnprintf(path, MAX_PATH_LEN, "/firmware/music/%s.dpw", room->music);
 
         uint16_t musicSampleRate = room->musicSampleRate;
-        if (musicSampleRate == 0) musicSampleRate = 4000;
+        if (musicSampleRate == 0) musicSampleRate = 16000;
 
         room_music = pushsound_loop(path, musicSampleRate, room->musicVolume);
         tsgl_sound_setLoop(room_music, true);
