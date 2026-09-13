@@ -42,9 +42,9 @@
 // --------------------------- sound
 
 #define SOUND_GLOBAL_TIMER_FREQ 16000
-#define SOUND_BUFFER_SIZE (4 * 1024)
+#define SOUND_BUFFER_SIZE (16 * 1024)
 #define MAX_SOUNDS_COUNT 16
-#define USE_SOUND_DOUBLE_BUFFER true
+#define USE_SOUND_DOUBLE_BUFFER false
 #define USE_SOUND_GLOBAL_TIMER true
 
 // --------------------------- volume
@@ -62,3 +62,4 @@
 #define DEBUG_FPS
 //#define DEBUG_TITLE
 //#define DEBUG_PARAMS
+#define DEBUG_DISABLE_STARTUP_SOUND

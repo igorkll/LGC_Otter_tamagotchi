@@ -121,7 +121,9 @@ void app_main() {
     hctl_init();
     tsgl_delay(100);
 
-    pushsound_play("/firmware/bootlogo/startup.dpw", 8000, STARTUP_SOUND_VOLUME);
+    #ifndef DEBUG_DISABLE_STARTUP_SOUND
+        pushsound_play("/firmware/bootlogo/startup.dpw", 8000, STARTUP_SOUND_VOLUME);
+    #endif
 
     hctl_setBacklightAndWait(BACKLIGHT_MAX);
     tsgl_delay(STARTUP_IMAGE_CHANGE_DELAY);
