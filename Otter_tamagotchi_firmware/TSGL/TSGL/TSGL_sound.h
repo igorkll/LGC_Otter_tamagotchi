@@ -27,7 +27,8 @@ typedef struct {
 
 typedef enum {
     tsgl_sound_pcm_unsigned,
-    tsgl_sound_pcm_signed
+    tsgl_sound_pcm_signed,
+    tsgl_sound_dfpwm
 } tsgl_sound_pcm_format;
 
 typedef struct tsgl_sound tsgl_sound;
