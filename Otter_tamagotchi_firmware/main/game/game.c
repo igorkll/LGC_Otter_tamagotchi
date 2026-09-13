@@ -101,7 +101,7 @@ static void reload_room_sound() {
     const Room* room = game_getCurrentRoom();
     if (room->music != NULL) {
         char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/firmware/music/%s.pcm", room->music);
+        TSGL_funcs_slnprintf(path, MAX_PATH_LEN, "/firmware/music/%s.pcm", room->music);
 
         uint16_t musicSampleRate = room->musicSampleRate;
         if (musicSampleRate == 0) musicSampleRate = 4000;
@@ -158,7 +158,7 @@ static void loadSprites() {
         if (room_sprite != NULL) tsgl_bmp_free(room_sprite);
 
         char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/firmware/rooms/%s.bmp", game_getCurrentRoom()->background);
+        TSGL_funcs_slnprintf(path, MAX_PATH_LEN, "/firmware/rooms/%s.bmp", game_getCurrentRoom()->background);
         room_sprite = gfx_loadSprite(path);
     }
 
@@ -168,7 +168,7 @@ static void loadSprites() {
         if (person_sprite != NULL) tsgl_bmp_free(person_sprite);
 
         char path[MAX_PATH_LEN];
-        slnprintf(path, MAX_PATH_LEN, "/firmware/persons/%s.bmp", game_getCurrentPerson());
+        TSGL_funcs_slnprintf(path, MAX_PATH_LEN, "/firmware/persons/%s.bmp", game_getCurrentPerson());
         person_sprite = gfx_loadSprite(path);
     }
 }
@@ -421,7 +421,7 @@ static void drawSleep() {
     game_funcs_drawAnyStatus(anyStatusY, current_state.sleepTimer, current_state.sleepStartTimer, 0, "\xD1\xEF\xEB\xFE\x2E\x2E\x2E", true);
 
     char sleepStatus[MAX_ACTION_LEN];
-    slnprintf(sleepStatus, MAX_ACTION_LEN, "");
+    TSGL_funcs_slnprintf(sleepStatus, MAX_ACTION_LEN, "");
 }
 
 static void render() {
@@ -476,7 +476,7 @@ void game_start() {
 void game_startActionTimer(int actionTimer, const char* str, game_action action, game_room nextRoom, bool allowCancel) {
     current_state.actionTimer = actionTimer;
     current_state.actionTimer_max = actionTimer;
-    slnprintf(current_state.actionTimer_str, MAX_ACTION_LEN, "%s", str);
+    TSGL_funcs_slnprintf(current_state.actionTimer_str, MAX_ACTION_LEN, "%s", str);
     current_state.actionTimer_action = action;
     current_state.actionTimer_nextRoom = nextRoom;
     current_state.actionTimer_allowCancel = allowCancel;

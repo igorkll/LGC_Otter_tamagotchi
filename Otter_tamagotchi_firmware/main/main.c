@@ -52,7 +52,7 @@ tsgl_print_settings printsettings_title = {
 static void bootlogo(int index, const char* title) {
     tsgl_framebuffer_clear(&framebuffer, black);
     char path[MAX_PATH_LEN];
-    slnprintf(path, MAX_PATH_LEN, "/firmware/bootlogo/bgrt%i.bmp", index);
+    TSGL_funcs_slnprintf(path, MAX_PATH_LEN, "/firmware/bootlogo/bgrt%i.bmp", index);
     gfx_drawCenteredScreenImage(path);
 
     #ifdef DEBUG_TITLE
