@@ -149,15 +149,12 @@ static void IRAM_ATTR _read_next_block_raw(tsgl_sound* sound, int bufOffset) {
     }
 }
 
-static void IRAM_ATTR _math_current_block() {
+static void IRAM_ATTR _math_current_block(tsgl_sound* sound) {
     if (sound->dfpwm_decode_state) {
         void* ptr = sound->buffer + sound->bufferPosition;
 
-        for (size_t i = 0; i < sound->outputsCount; i++) {
-            tsgl_sound_output* output = sound->outputs[i];
-    
-            int8_t channel = i % sound->channels;
-            tsgl_dfpwm_decode(&sound->dfpwm_decode_state[channel], (uint8_t*)ptr, sound->bit_pos + channel);
+        for (size_t i = 0; i < sound->channels; i++) {
+            tsgl_dfpwm_decode(&sound->dfpwm_decode_state[i], (uint8_t*)ptr, sound->bit_pos + i);
         }
     }
 }
@@ -350,6 +347,7 @@ static void _freeOutputs(tsgl_sound* sound) {
 static void _resetDfpwmDecoder(tsgl_sound* sound) {
     if (sound->dfpwm_decode_state == NULL) return;
 
+    sound->bit_pos = 0;
     for (size_t i = 0; i < sound->channels; i++) {
         tsgl_dfpwm_reset(&sound->dfpwm_decode_state[i]);
     }
