@@ -91,7 +91,7 @@ void game_combinemenu_draw()
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
         current_state.combinemenu_index--;
-        if (current_state.combinemenu_index < 0) current_state.combinemenu_index = 0;
+        if (current_state.combinemenu_index < 0) current_state.combinemenu_index = POINTS_COUNT - 1;
     }
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
@@ -100,7 +100,7 @@ void game_combinemenu_draw()
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
         current_state.combinemenu_index++;
-        if (current_state.combinemenu_index >= POINTS_COUNT) current_state.combinemenu_index = POINTS_COUNT - 1;
+        if (current_state.combinemenu_index >= POINTS_COUNT) current_state.combinemenu_index = 0;
     }
 }
 

@@ -16,7 +16,7 @@
 #define BACKLIGHT_CHANGE_STEP 2
 #define BACKLIGHT_CHANGE_PERIOD 10
 
-#define BUTTON_0_PIN 9 //pressing when power is applied will switch to bootloader mode, this is a smart solution
+#define BUTTON_0_PIN 9 //pressing when power is applied will switch to bootloader mode, this is a smart solution. this pin must be tightened with an external 10 kilohm resistor to 3.3 volts.
 #define BUTTON_1_PIN 10
 //#define BUTTON_2_PIN 20
 //#define BUTTON_3_PIN 21
@@ -46,6 +46,6 @@
 #define USE_SOUND_DOUBLE_BUFFER true
 #define USE_SOUND_GLOBAL_TIMER true
 
-//#define DEBUG_FPS
+#define DEBUG_FPS
 //#define DEBUG_TITLE
-#define DEBUG_PARAMS
+//#define DEBUG_PARAMS
