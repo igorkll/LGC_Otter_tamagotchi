@@ -85,6 +85,7 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
 
     // количество декодеров равно количеству каналов
     tsgl_dfpwm_decode_state* dfpwm_decode_state;
+    uint8_t bit_pos;
 
     void* userData;
     int userData_int;

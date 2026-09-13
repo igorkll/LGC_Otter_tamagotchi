@@ -150,23 +150,33 @@ static void IRAM_ATTR _read_next_block(tsgl_sound* sound, int bufOffset) {
 }
 
 static void IRAM_ATTR _addOutputsValues(tsgl_sound* sound) {
-    int div;
-    if (sound->bit_rate == 4) {
-        div = 256 * 256 * 256;
-    } else if (sound->bit_rate == 2) {
-        div = 256;
-    } else {
-        div = 1;
-    }
-
     void* ptr = sound->buffer + sound->bufferPosition;
-    
-    for (size_t i = 0; i < sound->outputsCount; i++) {
-        tsgl_sound_output* output = sound->outputs[i];
 
-        tsgl_sound_addOutputValue(output,
-            (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
-        );
+    if (sound->dfpwm_decode_state) {
+        for (size_t i = 0; i < sound->outputsCount; i++) {
+            tsgl_sound_output* output = sound->outputs[i];
+    
+            int8_t channel = i % sound->channels;
+            int8_t val = tsgl_dfpwm_decode(&sound->dfpwm_decode_state[], ptr, sound->bit_pos + channel);
+            tsgl_sound_addOutputValue(output, (val * sound->volume) / 255);
+        }
+    } else {
+        int div;
+        if (sound->bit_rate == 4) {
+            div = 256 * 256 * 256;
+        } else if (sound->bit_rate == 2) {
+            div = 256;
+        } else {
+            div = 1;
+        }
+        
+        for (size_t i = 0; i < sound->outputsCount; i++) {
+            tsgl_sound_output* output = sound->outputs[i];
+    
+            tsgl_sound_addOutputValue(output,
+                (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
+            );
+        }
     }
 }
 
