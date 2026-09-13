@@ -10,11 +10,15 @@
 //#define PUSH_FUNC tsgl_framebuffer_push_wtrans
 //#define PUSH_FUNC_TRANS tsgl_framebuffer_push
 
+// --------------------------- backlight
+
 #define BACKLIGHT_MAX 255
 #define BACKLIGHT_IDLE 64
 #define BACKLIGHT_OFF 0
 #define BACKLIGHT_CHANGE_STEP 2
 #define BACKLIGHT_CHANGE_PERIOD 10
+
+// --------------------------- gpio
 
 #define BUTTON_0_PIN 9 //pressing when power is applied will switch to bootloader mode, this is a smart solution. this pin must be tightened with an external 10 kilohm resistor to 3.3 volts.
 #define BUTTON_1_PIN 10
@@ -25,18 +29,26 @@
 
 #define SPEAKER_PIN 1
 
-#define IDLE_AFTER_TIME 60000
+// --------------------------- keys
+
 #define KEYS_DEBOUNCE_PRESSING_MS 10
 #define KEYS_DEBOUNCE_RELEASING_MS 30
+
+// --------------------------- other
+
+#define STARTUP_IMAGE_CHANGE_DELAY 3000
+#define IDLE_AFTER_TIME 60000
+
+// --------------------------- sound
 
 #define SOUND_GLOBAL_TIMER_FREQ 16000
 #define SOUND_BUFFER_SIZE (4 * 1024)
 #define MAX_SOUNDS_COUNT 16
-#define STARTUP_IMAGE_CHANGE_DELAY 3000
 #define USE_SOUND_DOUBLE_BUFFER true
 #define USE_SOUND_GLOBAL_TIMER true
 
 // --------------------------- volume
+
 #define VOLUME_MUL 0.2
 #define MYAAAA_SOUND_VOLUME 1.5
 #define EFFECTS_SOUND_VOLUME 1
@@ -46,6 +58,7 @@
 #define SADNESS_SOUND_VOLUME 1.2
 
 // --------------------------- debug
+
 #define DEBUG_FPS
 //#define DEBUG_TITLE
 //#define DEBUG_PARAMS
