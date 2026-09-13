@@ -116,7 +116,7 @@ static void _soundServiceTask(void* _sound) {
     }
 }
 
-static void IRAM_ATTR _read_next_block(tsgl_sound* sound, int bufOffset) {
+static void IRAM_ATTR _read_next_block_raw(tsgl_sound* sound, int bufOffset) {
     bool readFile = false;
 
     sound->bufferPosition += bufOffset;
@@ -149,16 +149,41 @@ static void IRAM_ATTR _read_next_block(tsgl_sound* sound, int bufOffset) {
     }
 }
 
+static void IRAM_ATTR _math_current_block() {
+    if (sound->dfpwm_decode_state) {
+        void* ptr = sound->buffer + sound->bufferPosition;
+
+        for (size_t i = 0; i < sound->outputsCount; i++) {
+            tsgl_sound_output* output = sound->outputs[i];
+    
+            int8_t channel = i % sound->channels;
+            tsgl_dfpwm_decode(&sound->dfpwm_decode_state[channel], (uint8_t*)ptr, sound->bit_pos + channel);
+        }
+    }
+}
+
+static void IRAM_ATTR _read_next_block(tsgl_sound* sound) {
+    if (sound->dfpwm_decode_state) {
+        sound->bit_pos += sound->channels;
+        if (sound->bit_pos >= 8) {
+            sound->bit_pos = 0;
+            _read_next_block_raw(sound, 1);
+        }
+    } else {
+        _read_next_block_raw(sound, sound->bit_rate * sound->channels);
+    }
+}
+
 static void IRAM_ATTR _addOutputsValues(tsgl_sound* sound) {
     void* ptr = sound->buffer + sound->bufferPosition;
 
     if (sound->dfpwm_decode_state) {
         for (size_t i = 0; i < sound->outputsCount; i++) {
             tsgl_sound_output* output = sound->outputs[i];
-    
-            int8_t channel = i % sound->channels;
-            int8_t val = tsgl_dfpwm_decode(&sound->dfpwm_decode_state[], ptr, sound->bit_pos + channel);
-            tsgl_sound_addOutputValue(output, (val * sound->volume) / 255);
+
+            tsgl_sound_addOutputValue(output,
+                (sound->dfpwm_decode_state[i % sound->channels].charge * sound->volume) / 255
+            );
         }
     } else {
         int div;
@@ -188,12 +213,16 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
         portENTER_CRITICAL_ISR(&sound->lock);
 
         if (sound->playing && !sound->callback_end_run) {
+            if (sound->global_timer_state == 0) {
+                _math_current_block(sound);
+            }
+
             if (!sound->mute) {
                 _addOutputsValues(sound);
             }
 
             if (sound->global_timer_state >= sound->global_timer_div) {
-                _read_next_block(sound, sound->bit_rate * sound->channels);
+                _read_next_block(sound);
                 sound->global_timer_state = 0;
             } else {
                 sound->global_timer_state++;
@@ -250,6 +279,8 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
         return false;
     }
 
+    _math_current_block(sound);
+
     if (!sound->mute) {
         _addOutputsValues(sound);
 
@@ -264,7 +295,7 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
         }
     }
 
-    _read_next_block(sound, sound->bit_rate * sound->channels);
+    _read_next_block(sound);
 
     portEXIT_CRITICAL_ISR(&sound->lock);
 
