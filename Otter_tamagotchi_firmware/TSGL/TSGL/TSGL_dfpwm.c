@@ -1,7 +1,9 @@
 #include "TSGL_dfpwm.h"
 
 void tsgl_dfpwm_reset(tsgl_dfpwm_decode_state* state) {
-    
+    state->charge = 0;
+    state->strength = 0;
+    state->last_bit = 0;
 }
 
 int8_t tsgl_dfpwm_decode(tsgl_dfpwm_decode_state* state, uint8_t* buf, size_t bit_pos) {

@@ -318,7 +318,7 @@ static void _resetDfpwmDecoder(tsgl_sound* sound) {
     if (sound->dfpwm_decode_state == NULL) return;
 
     for (size_t i = 0; i < sound->channels; i++) {
-        tsgl_dfpwm_reset(sound->dfpwm_decode_state[i]);
+        tsgl_dfpwm_reset(&sound->dfpwm_decode_state[i]);
     }
 }
 
@@ -335,6 +335,11 @@ static void _setPosition(tsgl_sound* sound, size_t position) {
         sound->bufferPosition = sound->position;
     }
 
+    _resetDfpwmDecoder(sound);
+}
+
+void tsgl_sound_allocatePcmDecoder(tsgl_sound* sound) {
+    sound->dfpwm_decode_state = malloc(sound->channels * sizeof(tsgl_dfpwm_decode_state));
     _resetDfpwmDecoder(sound);
 }
 
@@ -618,6 +623,7 @@ void tsgl_sound_free(tsgl_sound* sound) {
     }
     if (sound->buffer != NULL) free(sound->buffer);
     if (sound->buffer2 != NULL) free(sound->buffer2);
+    if (sound->dfpwm_decode_state != NULL) free(sound->dfpwm_decode_state);
     _freeOutputs(sound);
     if (use_global_timer) {
         portENTER_CRITICAL(&global_sounds_lock);
