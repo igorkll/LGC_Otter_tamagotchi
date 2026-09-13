@@ -57,14 +57,16 @@ static void _soundTask(void* _sound) {
 
     while (true) {
         void* buffer;
-        if (sound->doubleSwapBuffer) {
+        if (sound->doubleSwapBuffer && !sound->readFromStart) {
             buffer = sound->buffer2;
         } else {
             buffer = sound->buffer;
         }
 
-        if (sound->loop && sound->position == 0) {
-            fseek(sound->file, 0, SEEK_SET);    
+        if (sound->loop && sound->readFromStart) {
+            printf("seek start\n");
+            fseek(sound->file, 0, SEEK_SET);
+            sound->readFromStart = false;
         }
         
         printf("read\n");
@@ -72,12 +74,15 @@ static void _soundTask(void* _sound) {
         size_t setZeroSize = sound->bufferSize - bytesRead;
         if (setZeroSize > 0) memset((char*)buffer + bytesRead, 0, setZeroSize);
 
-        if (!sound->doubleSwapBuffer) {
-            if (sound->use_local_timer) {
-                gptimer_start(sound->timer);
-            } else {
-                sound->tempStop = false;
-            }
+        if (sound->doubleSwapBuffer && sound->readFromStart) {
+            fread(sound->buffer2, 1, sound->bufferSize, sound->file);
+            size_t setZeroSize = sound->bufferSize - bytesRead;
+            if (setZeroSize > 0) memset((char*)sound->buffer2 + bytesRead, 0, setZeroSize);
+        }
+
+        sound->tempStop = false;
+        if (!sound->doubleSwapBuffer && sound->use_local_timer) {
+            gptimer_start(sound->timer);
         }
 
         vTaskSuspend(NULL);
@@ -116,7 +121,18 @@ static void IRAM_ATTR _read_next_block_raw(tsgl_sound* sound, int bufOffset) {
 
     sound->position += bufOffset;
     if (sound->position >= sound->len) {
-        if (sound->loop) sound->position = 0;
+        if (sound->loop) {
+            sound->position = 0;
+            sound->readFromStart = true;
+
+            if (sound->doubleSwapBuffer) {
+                if (sound->use_local_timer) {
+                    gptimer_stop(sound->timer);
+                } else {
+                    sound->tempStop = true;
+                }
+            }
+        }
         readFile = sound->loop;
 
         sound->callback_end_run = true;
