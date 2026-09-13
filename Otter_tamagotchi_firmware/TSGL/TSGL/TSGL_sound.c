@@ -62,27 +62,15 @@ static void _soundTask(void* _sound) {
         } else {
             buffer = sound->buffer;
         }
-        
-        size_t bytesRead = fread(buffer, 1, sound->bufferSize, sound->file);
-        
-        // Проверка на конец файла
-        if (bytesRead < sound->bufferSize) {
-            if (sound->loop) {
-                // Перематываем файл в начало
-                fseek(sound->file, 0, SEEK_SET);
-                // Добираем оставшиеся байты из начала, чтобы буфер был полным
-                if (bytesRead > 0) {
-                    // Читаем недостающие байты в конец буфера (смещение на bytesRead)
-                    fread((char*)buffer + bytesRead, 1, sound->bufferSize - bytesRead, sound->file);
-                } else {
-                    // Если ничего не прочитано, читаем весь буфер заново
-                    fread(buffer, 1, sound->bufferSize, sound->file);
-                }
-            } else {
-                // Забиваю нулями остаток бфера
-                memset((char*)buffer + bytesRead, 0, sound->bufferSize - bytesRead);
-            }
+
+        if (sound->loop && sound->position == 0) {
+            fseek(sound->file, 0, SEEK_SET);    
         }
+        
+        printf("read\n");
+        size_t bytesRead = fread(buffer, 1, sound->bufferSize, sound->file);
+        size_t setZeroSize = sound->bufferSize - bytesRead;
+        if (setZeroSize > 0) memset((char*)buffer + bytesRead, 0, setZeroSize);
 
         if (!sound->doubleSwapBuffer) {
             if (sound->use_local_timer) {
@@ -128,8 +116,7 @@ static void IRAM_ATTR _read_next_block_raw(tsgl_sound* sound, int bufOffset) {
 
     sound->position += bufOffset;
     if (sound->position >= sound->len) {
-        sound->position = 0;
-
+        if (sound->loop) sound->position = 0;
         readFile = sound->loop;
 
         sound->callback_end_run = true;
