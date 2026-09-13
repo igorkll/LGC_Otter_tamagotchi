@@ -149,7 +149,7 @@ static void IRAM_ATTR _read_next_block(tsgl_sound* sound, int bufOffset) {
     }
 }
 
-static void IRAM_ATTR _addOutputsValues(tsgl_sound* sound, void* ptr, size_t index) {
+static void IRAM_ATTR _addOutputsValues(tsgl_sound* sound) {
     int div;
     if (sound->bit_rate == 4) {
         div = 256 * 256 * 256;
@@ -158,6 +158,8 @@ static void IRAM_ATTR _addOutputsValues(tsgl_sound* sound, void* ptr, size_t ind
     } else {
         div = 1;
     }
+
+    void* ptr = sound->buffer + sound->bufferPosition;
     
     for (size_t i = 0; i < sound->outputsCount; i++) {
         tsgl_sound_output* output = sound->outputs[i];
@@ -177,9 +179,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
 
         if (sound->playing && !sound->callback_end_run) {
             if (!sound->mute) {
-                void* ptr = sound->buffer + sound->bufferPosition;
-
-                _addOutputsValues(sound, ptr, i);
+                _addOutputsValues(sound);
             }
 
             if (sound->global_timer_state >= sound->global_timer_div) {
@@ -241,9 +241,8 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
     }
 
     if (!sound->mute) {
-        void* ptr = sound->buffer + sound->bufferPosition;
+        _addOutputsValues(sound);
 
-        _addOutputsValues(sound, ptr, i);
         for (size_t i = 0; i < sound->outputsCount; i++) {
             tsgl_sound_output* output = sound->outputs[i];
             tsgl_sound_flushOutput(output);
