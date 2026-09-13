@@ -81,7 +81,7 @@ static void _soundTask(void* _sound) {
         }
 
         sound->tempStop = false;
-        if (!sound->doubleSwapBuffer && sound->use_local_timer) {
+        if (sound->use_local_timer) {
             gptimer_start(sound->timer);
         }
 
