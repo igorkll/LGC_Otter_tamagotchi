@@ -14,6 +14,7 @@ static bool use_global_timer = false;
 
 static portMUX_TYPE global_sounds_lock = portMUX_INITIALIZER_UNLOCKED;
 static gptimer_handle_t global_timer;
+static bool global_timer_enabled;
 static int global_timer_freq = 0;
 
 static tsgl_sound** global_sounds;
@@ -148,6 +149,16 @@ static void IRAM_ATTR _read_next_block(tsgl_sound* sound, int bufOffset) {
     }
 }
 
+static void IRAM_ATTR _addOutputsValues(tsgl_sound* sound, void* buf, size_t index) {
+    for (size_t i = 0; i < sound->outputsCount; i++) {
+        tsgl_sound_output* output = sound->outputs[i];
+
+        tsgl_sound_addOutputValue(output,
+            (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
+        );
+    }
+}
+
 static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
     portENTER_CRITICAL_ISR(&global_sounds_lock);
     for (size_t i = 0; i < global_sounds_index; i++) {
@@ -168,13 +179,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
                     div = 1;
                 }
 
-                for (size_t i = 0; i < sound->outputsCount; i++) {
-                    tsgl_sound_output* output = sound->outputs[i];
-
-                    tsgl_sound_addOutputValue(output,
-                        (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
-                    );
-                }
+                _addOutputsValues(sound, buf, i);
             }
 
             if (sound->global_timer_state >= sound->global_timer_div) {
@@ -246,13 +251,8 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
             div = 1;
         }
 
+        _addOutputsValues(sound, buf, i);
         for (size_t i = 0; i < sound->outputsCount; i++) {
-            tsgl_sound_output* output = sound->outputs[i];
-
-            tsgl_sound_addOutputValue(output,
-                (_convertPcm(sound, ptr + ((i % sound->channels) * sound->bit_rate)) * sound->volume) / 255 / div
-            );
-
             tsgl_sound_flushOutput(output);
         }
     } else {
@@ -574,8 +574,9 @@ void tsgl_sound_play(tsgl_sound* sound) {
     if (sound->use_local_timer) {
         _initTimer(sound);
         gptimer_start(sound->timer);
-    } else {
+    } else if (!global_timer_enabled) {
         gptimer_start(global_timer);
+        global_timer_enabled = true;
     }
     portEXIT_CRITICAL(&sound->lock);
 }
@@ -598,8 +599,9 @@ static void _stop(tsgl_sound* sound) {
                 break;
             }
         }
-        if (!found_playing) {
+        if (!found_playing && global_timer_enabled) {
             gptimer_stop(global_timer);
+            global_timer_enabled = false;
         }
         portEXIT_CRITICAL(&global_sounds_lock);
     }
