@@ -48,7 +48,7 @@ tsgl_sound* pushsound_load(const char* path, int sample_rate) {
         return NULL;
 
     if (TSGL_funcs_hasext(path, ".dpw")) {
-        tsgl_sound_allocatePcmDecoder(current_sound);
+        tsgl_sound_allocatePcmDecoder(current_sound, 0);
     }
 
     pushsound_incrementSlot();
