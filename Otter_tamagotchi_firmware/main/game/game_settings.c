@@ -44,15 +44,25 @@ static tsgl_pos drawstate_str(tsgl_pos x, tsgl_pos y, const char* text) {
 }
 
 static void raw_draw_slider(tsgl_pos x, tsgl_pos y, game_state_val value, bool selected) {
-    tsgl_rawcolor col = blue;
-    if (selected) col = setting_lock ? red : magenta;
+    tsgl_rawcolor rectColor = blue;
+    tsgl_rawcolor bodyColor = green;
+
+    if (selected) {
+        if (setting_lock) {
+            rectColor = tsgl_color_raw(tsgl_color_pack(100, 100, 255), colormode);
+            bodyColor = tsgl_color_raw(tsgl_color_pack(100, 255, 100), colormode);
+        } else {
+            rectColor = tsgl_color_raw(tsgl_color_pack(150, 150, 255), colormode);
+            bodyColor = tsgl_color_raw(tsgl_color_pack(150, 255, 150), colormode);
+        }
+    }
 
     tsgl_framebuffer_rect(&framebuffer, 
         x,
         y,
         SETTINGS_CONTENT_WIDTH,
         SETTINGS_SLIDER_HEIGHT,
-        col,
+        rectColor,
         SETTINGS_SLIDER_BORDER_SIZE
     );
     
@@ -61,7 +71,7 @@ static void raw_draw_slider(tsgl_pos x, tsgl_pos y, game_state_val value, bool s
         y + SETTINGS_SLIDER_FILL_OFFSET,
         value * (SETTINGS_CONTENT_WIDTH - (SETTINGS_SLIDER_FILL_OFFSET * 2)),
         SETTINGS_SLIDER_HEIGHT - (SETTINGS_SLIDER_FILL_OFFSET * 2),
-        green
+        bodyColor
     );
 }
 
@@ -96,12 +106,12 @@ static void handle_locked() {
             break;
     }
 
-    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
-        float_change(ptr, -1);
+    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_LEFT)) {
+        float_change(ptr, 5);
     }
 
-    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
-        float_change(ptr, 1);
+    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_RIGHT)) {
+        float_change(ptr, -5);
     }
 }
 
