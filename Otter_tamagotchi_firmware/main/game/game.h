@@ -15,7 +15,7 @@
 
 #define ID_CONSTIEM_OVERLAY 9
 
-#define RESET_SETTINGS_ID 8
+#define RESET_SETTINGS_ID 9
 
 typedef double game_state_val;
 
@@ -64,6 +64,8 @@ typedef struct {
 
     // backpack
     bool backpack_opened;
+    int backpack_eat_count;
+    int backpack_water_count;
 
     // states
     bool states_opened;

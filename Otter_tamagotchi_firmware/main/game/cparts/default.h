@@ -12,5 +12,8 @@ static const Game_state default_state = {
     .states_hunger = 0,
     .states_thirst = 0,
     .states_caress = 50,
-    .states_sadness = 40
+    .states_sadness = 40,
+
+    .backpack_eat_count = 10,
+    .backpack_water_count = 10
 };
