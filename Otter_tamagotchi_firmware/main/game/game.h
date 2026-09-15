@@ -111,3 +111,4 @@ void game_stopActionTimer();
 void game_sleepIn();
 void game_updateActiveIcons();
 bool game_isAnyOverlayOpened();
+void game_updateParameters();

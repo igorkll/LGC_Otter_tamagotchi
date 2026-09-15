@@ -21,7 +21,7 @@
 #define SETTINGS_GAP 2
 #define SETTINGS_COUNT 2
 
-static uint8_t current_setting = 0;
+static int8_t current_setting = 0;
 static bool setting_lock = false;
 
 static tsgl_print_settings printsettings = {
@@ -95,6 +95,55 @@ void game_settings_open() {
     game_updateActiveIcons();
 }
 
+static void float_change(float* ptr, float delta) {
+    *ptr += delta / 100;
+    if (*ptr < 0) *ptr = 0;
+    if (*ptr > 1) *ptr = 1;
+    game_updateParameters();
+}
+
+static void handle_locked() {
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
+        setting_lock = false;
+        return;
+    }
+
+    float* ptr;
+    switch (current_setting) {
+        case 0:
+            ptr = &current_state.settings_master_volume;
+            break;
+
+        case 1:
+            ptr = &current_state.settings_master_volume;
+            break;
+    }
+
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
+        float_change(ptr, -1);
+    }
+
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
+        float_change(ptr, 1);
+    }
+}
+
+static void handle_menu() {
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
+        current_setting--;
+        if (current_setting < 0) current_setting = SETTINGS_COUNT - 1;
+    }
+
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
+        setting_lock = true;
+    }
+
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
+        current_setting++;
+        if (current_setting >= SETTINGS_COUNT) current_setting = 0;
+    }
+}
+
 void game_settings_close() {
     if (setting_lock) {
         setting_lock = false;
@@ -104,6 +153,12 @@ void game_settings_close() {
     pushsound_play("/firmware/sounds/bp_close.pcm", 16000, EFFECTS_SOUND_VOLUME);
     current_state.settings_opened = false;
     game_updateActiveIcons();
+
+    if (setting_lock) {
+        handle_locked();
+    } else {
+        handle_menu();
+    }
 }
 
 void game_settings_toggle() {
