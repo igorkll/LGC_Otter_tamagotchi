@@ -108,7 +108,6 @@ static void reload_room_sound() {
         if (musicSampleRate == 0) musicSampleRate = 16000;
 
         room_music = pushsound_loop(path, musicSampleRate, room->musicVolume);
-        tsgl_sound_setLoop(room_music, true);
     }
 }
 
