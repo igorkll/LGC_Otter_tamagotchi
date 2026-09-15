@@ -48,12 +48,11 @@ static void raw_draw_slider(tsgl_pos x, tsgl_pos y, game_state_val value, bool s
     tsgl_rawcolor bodyColor = green;
 
     if (selected) {
+        rectColor = tsgl_color_raw(tsgl_color_pack(255, 40, 40), colormode);
         if (setting_lock) {
-            rectColor = tsgl_color_raw(tsgl_color_pack(100, 100, 255), colormode);
-            bodyColor = tsgl_color_raw(tsgl_color_pack(100, 255, 100), colormode);
+            bodyColor = tsgl_color_raw(tsgl_color_pack(64, 255, 64), colormode);
         } else {
-            rectColor = tsgl_color_raw(tsgl_color_pack(150, 150, 255), colormode);
-            bodyColor = tsgl_color_raw(tsgl_color_pack(150, 255, 150), colormode);
+            bodyColor = tsgl_color_raw(tsgl_color_pack(64, 255, 255), colormode);
         }
     }
 
@@ -95,14 +94,14 @@ static void handle_locked() {
         return;
     }
 
-    float* ptr;
+    float* ptr = 0;
     switch (current_setting) {
         case 0:
             ptr = &current_state.settings_master_volume;
             break;
 
         case 1:
-            ptr = &current_state.settings_master_volume;
+            ptr = &current_state.settings_music_volume;
             break;
     }
 
