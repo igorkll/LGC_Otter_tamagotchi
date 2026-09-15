@@ -137,7 +137,7 @@ void game_selectRoom(int index) {
 }
 
 bool game_isAnyOverlayOpened() {
-    return current_state.combinemenu_opened || current_state.backpack_opened || current_state.states_opened;
+    return current_state.combinemenu_opened || current_state.backpack_opened || current_state.states_opened || current_state.settings_opened;
 }
 
 // ------------------------------------ process
