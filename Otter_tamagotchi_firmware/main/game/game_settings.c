@@ -1,66 +1,85 @@
-#include "game_backpack.h"
+#include "game_states.h"
 #include "game.h"
-#include "gfx.h"
 #include "../pushsound.h"
+#include "../funcs.h"
 
-#define BACKPACK_WIDTH (WIDTH - 20)
-#define BACKPACK_HEIGHT (WIDTH - 20)
-#define BACKPACK_BORDER_SIZE 2
+#define SETTINGS_MARGIN_LEFT_RIGHT 10
+#define SETTINGS_MARGIN_TOP_BOTTOM 20
+#define SETTINGS_WIDTH (WIDTH - (SETTINGS_MARGIN_LEFT_RIGHT * 2))
+#define SETTINGS_HEIGHT (HEIGHT - (SETTINGS_MARGIN_TOP_BOTTOM * 2))
+#define SETTINGS_BORDER_SIZE 2
+#define SETTINGS_CONTENT_OFFSET (SETTINGS_BORDER_SIZE + 2)
+#define SETTINGS_CONTENT_WIDTH (SETTINGS_WIDTH - (SETTINGS_CONTENT_OFFSET * 2))
 
-#define BACKPACK_ICON_SIZE 24
-#define BACKPACK_ICON_TEXT_WIDTH 8
-#define BACKPACK_ICON_TEXT_HEIGHT 8
-#define BACKPACK_ICON_OFFSET (BACKPACK_ICON_SIZE * 1.5)
-#define BACKPACK_ICON_TEXT_OFFSET ((BACKPACK_ICON_SIZE / 2) + (BACKPACK_ICON_TEXT_HEIGHT / 2) + 1)
-#define BACKPACK_ICON_BORDER_SIZE 1
+#define SETTINGS_FONT_TARGET_WIDTH 8
+#define SETTINGS_FONT_TARGET_HEIGHT 8
 
-tsgl_print_settings printsettings = {
+#define SETTINGS_SLIDER_HEIGHT 6
+#define SETTINGS_SLIDER_BORDER_SIZE 1
+#define SETTINGS_SLIDER_FILL_OFFSET (SETTINGS_SLIDER_BORDER_SIZE + 1)
+
+#define SETTINGS_GAP 2
+
+static tsgl_print_settings printsettings = {
     .locationMode = tsgl_print_start_top,
-
+    
     // font
     .font = DejaVuSerif,
-    .localLocationMode = tsgl_print_localLocationMode_center,
-    .targetWidth = BACKPACK_ICON_TEXT_WIDTH,
-    .targetHeight = BACKPACK_ICON_TEXT_HEIGHT,
+    .localLocationMode = tsgl_print_localLocationMode_bottom,
+    .targetWidth = SETTINGS_FONT_TARGET_WIDTH,
+    .targetHeight = SETTINGS_FONT_TARGET_HEIGHT,
 
     .fill = TSGL_INVALID_RAWCOLOR,
-    .bg = TSGL_INVALID_RAWCOLOR,
-    .stroke_thickness = 1,
-    .stroke_no_clamp = true
+    .bg = TSGL_INVALID_RAWCOLOR
 };
 
-static void draw_icon(tsgl_pos ox, tsgl_pos oy, const char* icon, int count) {
-    tsgl_pos x = (WIDTH / 2) + (ox * BACKPACK_ICON_OFFSET);
-    tsgl_pos y = (HEIGHT / 2) + (oy * BACKPACK_ICON_OFFSET);
-    tsgl_pos cornerX = x - (BACKPACK_ICON_SIZE / 2);
-    tsgl_pos cornerY = y - (BACKPACK_ICON_SIZE / 2);
+static tsgl_pos drawstate_str(tsgl_pos x, tsgl_pos y, const char* text) {
+    printsettings.fg = green;
+    tsgl_framebuffer_text(&framebuffer, x, y, printsettings, text);
+    return y + SETTINGS_FONT_TARGET_HEIGHT + SETTINGS_GAP;
+}
 
-    char path[MAX_PATH_LEN];
-    path[0] = '\0';
-    TSGL_funcs_slnprintf(path, MAX_PATH_LEN, "/firmware/icons/backpack/%s.bmp", icon);
+static void raw_draw_slider(tsgl_pos x, tsgl_pos y, game_state_val value) {
+    game_state_val floatValue = (game_state_val)value / 100.0;
 
-    char text[MAX_PATH_LEN];
-    text[0] = '\0';
-    TSGL_funcs_slnprintf(text, MAX_PATH_LEN, "%i", count);
+    tsgl_framebuffer_rect(&framebuffer, 
+        x,
+        y,
+        SETTINGS_CONTENT_WIDTH,
+        SETTINGS_SLIDER_HEIGHT,
+        blue,
+        SETTINGS_SLIDER_BORDER_SIZE
+    );
+    
+    tsgl_framebuffer_fill(&framebuffer,
+        x + SETTINGS_SLIDER_FILL_OFFSET,
+        y + SETTINGS_SLIDER_FILL_OFFSET,
+        floatValue * (SETTINGS_CONTENT_WIDTH - (SETTINGS_SLIDER_FILL_OFFSET * 2)),
+        SETTINGS_SLIDER_HEIGHT - (SETTINGS_SLIDER_FILL_OFFSET * 2),
+        green
+    );
+}
 
-    gfx_drawCenteredImageWithTransparentSupport(x, y, path);
-    tsgl_framebuffer_rect(&framebuffer, cornerX, cornerY, BACKPACK_ICON_SIZE, BACKPACK_ICON_SIZE, white, BACKPACK_ICON_BORDER_SIZE);
-
-    printsettings.fg = white;
-    tsgl_framebuffer_text(&framebuffer, x - (BACKPACK_ICON_TEXT_WIDTH / 2), y + BACKPACK_ICON_TEXT_OFFSET, printsettings, text);
+static tsgl_pos drawstate_slider(tsgl_pos x, tsgl_pos y, const char* title, game_state_val value) {
+    drawstate_str(x, y, title);
+    tsgl_pos slider_pos = y + SETTINGS_FONT_TARGET_HEIGHT + SETTINGS_GAP;
+    raw_draw_slider(x, slider_pos, value);
+    return slider_pos + SETTINGS_SLIDER_HEIGHT + SETTINGS_GAP;
 }
 
 void game_settings_draw() {
     if (!current_state.settings_opened) return;
 
-    tsgl_pos x = (WIDTH / 2) - (BACKPACK_WIDTH / 2);
-    tsgl_pos y = (HEIGHT / 2) - (BACKPACK_HEIGHT / 2);
+    tsgl_pos x = (WIDTH / 2) - (SETTINGS_WIDTH / 2);
+    tsgl_pos y = (HEIGHT / 2) - (SETTINGS_HEIGHT / 2);
     
-    tsgl_framebuffer_fill(&framebuffer, x, y, BACKPACK_WIDTH, BACKPACK_HEIGHT, black);
-    tsgl_framebuffer_rect(&framebuffer, x, y, BACKPACK_WIDTH, BACKPACK_HEIGHT, white, BACKPACK_BORDER_SIZE);
+    tsgl_framebuffer_fill(&framebuffer, x, y, SETTINGS_WIDTH, SETTINGS_HEIGHT, black);
+    tsgl_framebuffer_rect(&framebuffer, x, y, SETTINGS_WIDTH, SETTINGS_HEIGHT, white, SETTINGS_BORDER_SIZE);
 
-    draw_icon(-1, -1, "eat", current_state.backpack_eat_count);
-    draw_icon(0, -1, "water", current_state.backpack_water_count);
+    tsgl_pos x2 = SETTINGS_CONTENT_OFFSET + x;
+    tsgl_pos y2 = SETTINGS_CONTENT_OFFSET + y;
+    y2 = drawstate_slider(x2, y2, "1", current_state.settings_master_volume);
+    y2 = drawstate_slider(x2, y2, "2", current_state.settings_music_volume);
 }
 
 void game_settings_open() {
@@ -77,8 +96,8 @@ void game_settings_close() {
 
 void game_settings_toggle() {
     if (current_state.settings_opened) {
-        game_settings_close();
-    } else {
         game_settings_open();
+    } else {
+        game_settings_close();
     }
 }

@@ -14,7 +14,7 @@
 #define BACKPACK_ICON_TEXT_OFFSET ((BACKPACK_ICON_SIZE / 2) + (BACKPACK_ICON_TEXT_HEIGHT / 2) + 1)
 #define BACKPACK_ICON_BORDER_SIZE 1
 
-tsgl_print_settings printsettings = {
+static tsgl_print_settings printsettings = {
     .locationMode = tsgl_print_start_top,
 
     // font

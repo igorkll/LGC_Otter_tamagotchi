@@ -8,6 +8,7 @@
 #include "game_funcs.h"
 #include "game_backpack.h"
 #include "game_states.h"
+#include "game_settings.h"
 #include "game_combinemenu.h"
 
 // ------------------------------------ consts
@@ -353,6 +354,11 @@ static void processControl() {
             return;
         }
 
+        if (current_state.settings_opened) {
+            game_settings_close();
+            return;
+        }
+
         if (current_state.actionTimer > 0 && current_state.actionTimer_allowCancel) {
             game_stopActionTimer();
             return;
@@ -437,6 +443,7 @@ static void render() {
     drawActionTimer();
     game_upmenu_draw();
     game_combinemenu_draw();
+    game_settings_draw();
     game_states_draw();
     game_backpack_draw();
 }

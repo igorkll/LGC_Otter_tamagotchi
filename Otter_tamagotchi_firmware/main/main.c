@@ -28,7 +28,7 @@ tsgl_rawcolor magenta;
 tsgl_rawcolor transparent;
 tsgl_rawcolor black;
 
-tsgl_print_settings printsettings_title = {
+static tsgl_print_settings printsettings_title = {
     .multiline = true,
     .locationMode = tsgl_print_start_top,
     .width = WIDTH - (TITLE_MARGIN * 2),

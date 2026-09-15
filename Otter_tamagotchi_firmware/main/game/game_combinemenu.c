@@ -4,6 +4,7 @@
 #include "../funcs.h"
 #include "game_backpack.h"
 #include "game_states.h"
+#include "game_settings.h"
 
 #define COMBINEMENU_MARGIN_LEFT_RIGHT 20
 #define COMBINEMENU_MARGIN_TOP_BOTTOM 40
@@ -54,6 +55,10 @@ static void selectPoint(int index) {
 
         case 1:
             game_states_open();
+            break;
+
+        case 2:
+            game_settings_open();
             break;
     }
 }
