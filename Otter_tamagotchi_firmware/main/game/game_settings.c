@@ -50,8 +50,6 @@ static void raw_draw_slider(tsgl_pos x, tsgl_pos y, game_state_val value, bool s
     if (selected) {
         rectColor = tsgl_color_raw(tsgl_color_pack(255, 40, 40), colormode);
         if (setting_lock) {
-            bodyColor = tsgl_color_raw(tsgl_color_pack(64, 255, 64), colormode);
-        } else {
             bodyColor = tsgl_color_raw(tsgl_color_pack(64, 255, 255), colormode);
         }
     }
