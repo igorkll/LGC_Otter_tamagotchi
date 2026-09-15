@@ -502,3 +502,7 @@ void game_stopActionTimer() {
         game_updateActiveIcons();
     }
 }
+
+void game_protectDoublePressOkay() {
+    tsgl_keyboard_findButton(&keyboard, KEY_INDEX_OKAY)->whenPressed = false;
+}

@@ -99,6 +99,7 @@ void game_combinemenu_draw()
     }
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
+        game_protectDoublePressOkay();
         selectPoint(current_state.combinemenu_index);
     }
 
