@@ -96,6 +96,11 @@ void game_settings_open() {
 }
 
 void game_settings_close() {
+    if (setting_lock) {
+        setting_lock = false;
+        return;
+    }
+
     pushsound_play("/firmware/sounds/bp_close.pcm", 16000, EFFECTS_SOUND_VOLUME);
     current_state.settings_opened = false;
     game_updateActiveIcons();
