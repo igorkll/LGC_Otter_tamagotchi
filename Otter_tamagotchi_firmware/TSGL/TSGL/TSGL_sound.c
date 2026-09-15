@@ -212,6 +212,10 @@ static void IRAM_ATTR _addOutputsValues(tsgl_sound* sound) {
     }
 }
 
+static bool IRAM_ATTR isSoundPlaying(tsgl_sound* sound) {
+    return !sound->mute && sound->playing;
+}
+
 static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* edata, void* user_ctx) {
     portENTER_CRITICAL_ISR(&global_sounds_lock);
     for (size_t i = 0; i < global_sounds_index; i++) {
@@ -224,7 +228,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
                 _math_current_block(sound);
             }
 
-            if (!sound->mute) {
+            if (isSoundPlaying(sound)) {
                 _addOutputsValues(sound);
             }
 
@@ -288,7 +292,7 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
 
     _math_current_block(sound);
 
-    if (!sound->mute) {
+    if (isSoundPlaying(sound)) {
         _addOutputsValues(sound);
 
         for (size_t i = 0; i < sound->outputsCount; i++) {
