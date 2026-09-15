@@ -50,8 +50,8 @@ static void draw_icon(tsgl_pos ox, tsgl_pos oy, const char* icon, int count) {
     tsgl_framebuffer_text(&framebuffer, x - (BACKPACK_ICON_TEXT_WIDTH / 2), y + BACKPACK_ICON_TEXT_OFFSET, printsettings, text);
 }
 
-void game_backpack_draw() {
-    if (!current_state.backpack_opened) return;
+void game_settings_draw() {
+    if (!current_state.settings_opened) return;
 
     tsgl_pos x = (WIDTH / 2) - (BACKPACK_WIDTH / 2);
     tsgl_pos y = (HEIGHT / 2) - (BACKPACK_HEIGHT / 2);
@@ -63,22 +63,22 @@ void game_backpack_draw() {
     draw_icon(0, -1, "water", current_state.backpack_water_count);
 }
 
-void game_backpack_open() {
+void game_settings_open() {
     pushsound_play("/firmware/sounds/bp_open.pcm", 16000, EFFECTS_SOUND_VOLUME);
-    current_state.backpack_opened = true;
+    current_state.settings_opened = true;
     game_updateActiveIcons();
 }
 
-void game_backpack_close() {
+void game_settings_close() {
     pushsound_play("/firmware/sounds/bp_close.pcm", 16000, EFFECTS_SOUND_VOLUME);
-    current_state.backpack_opened = false;
+    current_state.settings_opened = false;
     game_updateActiveIcons();
 }
 
-void game_backpack_toggle() {
-    if (current_state.backpack_opened) {
-        game_backpack_close();
+void game_settings_toggle() {
+    if (current_state.settings_opened) {
+        game_settings_close();
     } else {
-        game_backpack_open();
+        game_settings_open();
     }
 }

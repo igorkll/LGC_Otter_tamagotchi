@@ -1,4 +1,5 @@
 #include "hctl.h"
+#include "pushsound.h"
 
 static int16_t currentBackgroundValue = 0;
 static uint8_t targetBackgroundValue = 0;
@@ -46,6 +47,7 @@ void hctl_init() {
     // sound
     if (USE_SOUND_GLOBAL_TIMER) tsgl_sound_enableGlobalTimer(SOUND_GLOBAL_TIMER_FREQ, MAX_SOUNDS_COUNT);
     sound_output = tsgl_sound_newLedcOutput(SPEAKER_PIN);
+    pushsound_updateVolumeSettings(1, 1);
 
     // backlight
     change_backlight_timer_handle = xTimerCreate(

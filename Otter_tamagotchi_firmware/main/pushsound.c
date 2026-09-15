@@ -3,6 +3,9 @@
 static tsgl_sound sounds[MAX_SOUNDS_COUNT] = {0};
 static uint8_t current_sound_index = 0;
 
+static float master_volume = 0;
+static float music_volume = 0;
+
 tsgl_sound* pushsound_getFreeSlot() {
     tsgl_sound* current_sound = &sounds[current_sound_index];
 
@@ -61,8 +64,9 @@ tsgl_sound* pushsound_play(const char* path, int sample_rate, float volume) {
     tsgl_sound_output* sound_outputs[] = {sound_output};
     tsgl_sound_enableFreeOnEnd(current_sound, true);
     tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
-    tsgl_sound_setVolume(current_sound, VOLUME_MUL * volume);
+    tsgl_sound_setVolume(current_sound, VOLUME_MUL * volume * master_volume);
     tsgl_sound_play(current_sound);
+    current_sound->userData_float = volume;
 
     return current_sound;
 }
@@ -73,8 +77,23 @@ tsgl_sound* pushsound_loop(const char* path, int sample_rate, float volume) {
     tsgl_sound_output* sound_outputs[] = {sound_output};
     tsgl_sound_setLoop(current_sound, true);
     tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
-    tsgl_sound_setVolume(current_sound, VOLUME_MUL * volume);
+    tsgl_sound_setVolume(current_sound, VOLUME_MUL * volume * master_volume * music_volume);
     tsgl_sound_play(current_sound);
+    current_sound->userData_float = volume;
 
     return current_sound;
+}
+
+void pushsound_updateVolumeSettings(float _master_volume, float _music_volume) {
+    master_volume = _master_volume;
+    music_volume = _music_volume;
+    
+    for (size_t i = 0; i < MAX_SOUNDS_COUNT; i++) {
+        tsgl_sound* current_sound = &sounds[i];
+
+        float newVolume = VOLUME_MUL * current_sound->userData_float * master_volume;
+        if (current_sound->loop) newVolume *= music_volume;
+
+        tsgl_sound_setVolume(current_sound, newVolume);
+    }
 }

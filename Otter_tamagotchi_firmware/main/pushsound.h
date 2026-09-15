@@ -6,3 +6,4 @@ void pushsound_incrementSlot();
 tsgl_sound* pushsound_load(const char* path, int sample_rate);
 tsgl_sound* pushsound_play(const char* path, int sample_rate, float volume);
 tsgl_sound* pushsound_loop(const char* path, int sample_rate, float volume);
+void pushsound_updateVolumeSettings(float master_volume, float music_volume);

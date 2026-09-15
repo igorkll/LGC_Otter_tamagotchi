@@ -75,6 +75,11 @@ typedef struct {
     game_state_val states_thirst;
     game_state_val states_caress;
     game_state_val states_sadness;
+
+    // settings
+    bool settings_opened;
+    float settings_master_volume;
+    float settings_music_volume;
 } Game_state;
 
 typedef struct {

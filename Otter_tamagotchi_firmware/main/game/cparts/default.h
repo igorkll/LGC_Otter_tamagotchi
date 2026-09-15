@@ -15,5 +15,8 @@ static const Game_state default_state = {
     .states_sadness = 40,
 
     .backpack_eat_count = 10,
-    .backpack_water_count = 10
+    .backpack_water_count = 10,
+
+    .settings_master_volume = 1,
+    .settings_music_volume = 1
 };

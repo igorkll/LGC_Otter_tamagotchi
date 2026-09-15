@@ -445,6 +445,7 @@ void game_start() {
     ESP_LOGI(TAG, "game started!");
     tsgl_benchmark_reset(&benchmark);
     game_load();
+    pushsound_updateVolumeSettings(current_state.settings_master_volume, current_state.settings_music_volume);
 
     game_upmenu_init();
     start();
