@@ -49,10 +49,11 @@
 
 // --------------------------- volume
 
-#define VOLUME_MUL 0.2
-#define MYAAAA_SOUND_VOLUME 1.5
+#define VOLUME_MUL 1
+#define MYAAAA_SOUND_VOLUME 1
 #define EFFECTS_SOUND_VOLUME 1
-#define STARTUP_SOUND_VOLUME 1
+#define STARTUP_SOUND_VOLUME 0.2
+#define MUSIC_SOUND_VOLUME 1
 
 #define TRIGGER_SOUND_VOLUME 0.3
 #define SADNESS_SOUND_VOLUME 1.2
