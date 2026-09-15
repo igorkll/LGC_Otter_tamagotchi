@@ -5,9 +5,28 @@
 #include "game_backpack.h"
 #include "game_states.h"
 #include "game_combinemenu.h"
+#include "../pushsound.h"
 
 // начало второй линии кнопок
 #define L2 5
+
+static tsgl_sound* room_music;
+
+static void stopRoomMusic() {
+    if (room_music) {
+        tsgl_sound_free(room_music);
+        room_music = NULL;
+    }
+}
+
+static void startRoomMusic(int musicSampleRate, const char* str, float volume) {
+    stopRoomMusic();
+
+    char path[MAX_PATH_LEN];
+    TSGL_funcs_slnprintf(path, MAX_PATH_LEN, "/firmware/music/%s.dpw", str);
+    room_music = pushsound_loop(path, musicSampleRate, volume);
+    tsgl_sound_setLoop(room_music, false); // запускаю музыку как loop а потом выключаю loop. чтобы она была привязана к переменной громкости музыки
+}
 
 static void car_roomSelect(game_room room) {
     current_state.next_car_icon = -1;
@@ -114,6 +133,14 @@ static void game_museum_roomAction(int action) {
         case 0:
             game_selectRoom(ID_CAR);
             break;
+
+        case 5:
+            startRoomMusic(16000, "gmp0", 1);
+            break;
+
+        case 6:
+            startRoomMusic(16000, "gmp1", 1);
+            break;
     }
 }
 
@@ -163,4 +190,8 @@ void game_roomSelected(game_room selected) {
             car_roomSelect(current_state.old_car_room);
             break;
     }
+}
+
+void game_stopGameActionRoomMusic() {
+    stopRoomMusic();
 }

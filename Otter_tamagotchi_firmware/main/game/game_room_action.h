@@ -4,3 +4,4 @@
 
 void game_roomAction(int action);
 void game_roomSelected(game_room selected);
+void game_stopGameActionRoomMusic();

@@ -133,6 +133,7 @@ void game_selectRoom(int index) {
     game_upmenu_redrawTitle();
     game_upmenu_reloadIcons();
     game_roomSelected(index);
+    game_stopGameActionRoomMusic();
 }
 
 bool game_isAnyOverlayOpened() {

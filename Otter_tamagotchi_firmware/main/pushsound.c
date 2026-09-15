@@ -67,6 +67,7 @@ tsgl_sound* pushsound_play(const char* path, int sample_rate, float volume) {
     tsgl_sound_setVolume(current_sound, VOLUME_MUL * volume * master_volume);
     tsgl_sound_play(current_sound);
     current_sound->userData_float = volume;
+    current_sound->userData_int = 0;
 
     return current_sound;
 }
@@ -80,6 +81,7 @@ tsgl_sound* pushsound_loop(const char* path, int sample_rate, float volume) {
     tsgl_sound_setVolume(current_sound, VOLUME_MUL * MUSIC_SOUND_VOLUME * volume * master_volume * music_volume);
     tsgl_sound_play(current_sound);
     current_sound->userData_float = volume;
+    current_sound->userData_int = 1;
 
     return current_sound;
 }
@@ -92,7 +94,7 @@ void pushsound_updateVolumeSettings(float _master_volume, float _music_volume) {
         tsgl_sound* current_sound = &sounds[i];
 
         float newVolume = VOLUME_MUL * current_sound->userData_float * master_volume;
-        if (current_sound->loop) newVolume = newVolume * MUSIC_SOUND_VOLUME * music_volume;
+        if (current_sound->userData_int) newVolume = newVolume * MUSIC_SOUND_VOLUME * music_volume;
 
         tsgl_sound_setVolume(current_sound, newVolume);
     }
