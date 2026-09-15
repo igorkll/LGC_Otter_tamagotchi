@@ -10,11 +10,11 @@
 #define BACKPACK_BORDER_SIZE 2
 
 #define BACKPACK_ICON_SIZE 20
-#define BACKPACK_ICON_OFFSET (BACKPACK_ICON_SIZE * 1.5)
-#define BACKPACK_ICON_TEXT_OFFSET (BACKPACK_ICON_SIZE + 10)
-#define BACKPACK_ICON_BORDER_SIZE 1
 #define BACKPACK_ICON_TEXT_WIDTH 8
 #define BACKPACK_ICON_TEXT_HEIGHT 8
+#define BACKPACK_ICON_OFFSET (BACKPACK_ICON_SIZE * 1.5)
+#define BACKPACK_ICON_TEXT_OFFSET ((BACKPACK_ICON_SIZE / 2) + (BACKPACK_ICON_TEXT_HEIGHT / 2) + 2)
+#define BACKPACK_ICON_BORDER_SIZE 1
 
 tsgl_print_settings printsettings = {
     .locationMode = tsgl_print_start_top,
@@ -47,6 +47,8 @@ static void draw_icon(tsgl_pos ox, tsgl_pos oy, const char* icon, int count) {
 
     gfx_drawCenteredImageWithTransparentSupport(x, y, path);
     tsgl_framebuffer_rect(&framebuffer, cornerX, cornerY, BACKPACK_ICON_SIZE, BACKPACK_ICON_SIZE, white, BACKPACK_ICON_BORDER_SIZE);
+
+    printsettings.fg = white;
     tsgl_framebuffer_text(&framebuffer, x - (BACKPACK_ICON_TEXT_WIDTH / 2), y + BACKPACK_ICON_TEXT_OFFSET, printsettings, text);
 }
 
@@ -60,6 +62,7 @@ void game_backpack_draw() {
     tsgl_framebuffer_rect(&framebuffer, x, y, BACKPACK_WIDTH, BACKPACK_HEIGHT, white, BACKPACK_BORDER_SIZE);
 
     draw_icon(-1, -1, "eat", current_state.backpack_eat_count);
+    draw_icon(0, -1, "water", current_state.backpack_water_count);
 }
 
 void game_backpack_open() {
