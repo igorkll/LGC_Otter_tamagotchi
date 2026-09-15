@@ -15,7 +15,7 @@
 
 #define ID_CONSTIEM_OVERLAY 9
 
-#define RESET_SETTINGS_ID 10
+#define RESET_SETTINGS_ID 11
 
 typedef double game_state_val;
 
