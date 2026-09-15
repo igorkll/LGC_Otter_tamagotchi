@@ -44,8 +44,6 @@ static tsgl_pos drawstate_str(tsgl_pos x, tsgl_pos y, const char* text) {
 }
 
 static void raw_draw_slider(tsgl_pos x, tsgl_pos y, game_state_val value, bool selected) {
-    game_state_val floatValue = (game_state_val)value / 100.0;
-
     tsgl_rawcolor col = blue;
     if (selected) col = setting_lock ? red : magenta;
 
@@ -61,7 +59,7 @@ static void raw_draw_slider(tsgl_pos x, tsgl_pos y, game_state_val value, bool s
     tsgl_framebuffer_fill(&framebuffer,
         x + SETTINGS_SLIDER_FILL_OFFSET,
         y + SETTINGS_SLIDER_FILL_OFFSET,
-        floatValue * (SETTINGS_CONTENT_WIDTH - (SETTINGS_SLIDER_FILL_OFFSET * 2)),
+        value * (SETTINGS_CONTENT_WIDTH - (SETTINGS_SLIDER_FILL_OFFSET * 2)),
         SETTINGS_SLIDER_HEIGHT - (SETTINGS_SLIDER_FILL_OFFSET * 2),
         green
     );
@@ -72,27 +70,6 @@ static tsgl_pos drawstate_slider(tsgl_pos x, tsgl_pos y, const char* title, game
     tsgl_pos slider_pos = y + SETTINGS_FONT_TARGET_HEIGHT + SETTINGS_GAP;
     raw_draw_slider(x, slider_pos, value, selected);
     return slider_pos + SETTINGS_SLIDER_HEIGHT + SETTINGS_GAP;
-}
-
-void game_settings_draw() {
-    if (!current_state.settings_opened) return;
-
-    tsgl_pos x = (WIDTH / 2) - (SETTINGS_WIDTH / 2);
-    tsgl_pos y = (HEIGHT / 2) - (SETTINGS_HEIGHT / 2);
-    
-    tsgl_framebuffer_fill(&framebuffer, x, y, SETTINGS_WIDTH, SETTINGS_HEIGHT, black);
-    tsgl_framebuffer_rect(&framebuffer, x, y, SETTINGS_WIDTH, SETTINGS_HEIGHT, white, SETTINGS_BORDER_SIZE);
-
-    tsgl_pos x2 = SETTINGS_CONTENT_OFFSET + x;
-    tsgl_pos y2 = SETTINGS_CONTENT_OFFSET + y;
-    y2 = drawstate_slider(x2, y2, "\xCE\xE1\xF9\xE0\xFF\x20\xE3\xF0\xEE\xEC\xEA\xEE\xF1\xF2\xFC", current_state.settings_master_volume, current_setting == 0);
-    y2 = drawstate_slider(x2, y2, "\xC3\xF0\xEE\xEC\xEA\xEE\xF1\xF2\xFC\x20\xEC\xF3\xE7\xFB\xEA\xE8", current_state.settings_music_volume, current_setting == 1);
-}
-
-void game_settings_open() {
-    pushsound_play("/firmware/sounds/bp_open.pcm", 16000, EFFECTS_SOUND_VOLUME);
-    current_state.settings_opened = true;
-    game_updateActiveIcons();
 }
 
 static void float_change(float* ptr, float delta) {
@@ -144,6 +121,33 @@ static void handle_menu() {
     }
 }
 
+void game_settings_draw() {
+    if (!current_state.settings_opened) return;
+
+    tsgl_pos x = (WIDTH / 2) - (SETTINGS_WIDTH / 2);
+    tsgl_pos y = (HEIGHT / 2) - (SETTINGS_HEIGHT / 2);
+    
+    tsgl_framebuffer_fill(&framebuffer, x, y, SETTINGS_WIDTH, SETTINGS_HEIGHT, black);
+    tsgl_framebuffer_rect(&framebuffer, x, y, SETTINGS_WIDTH, SETTINGS_HEIGHT, white, SETTINGS_BORDER_SIZE);
+
+    tsgl_pos x2 = SETTINGS_CONTENT_OFFSET + x;
+    tsgl_pos y2 = SETTINGS_CONTENT_OFFSET + y;
+    y2 = drawstate_slider(x2, y2, "\xCE\xE1\xF9\xE0\xFF\x20\xE3\xF0\xEE\xEC\xEA\xEE\xF1\xF2\xFC", current_state.settings_master_volume, current_setting == 0);
+    y2 = drawstate_slider(x2, y2, "\xC3\xF0\xEE\xEC\xEA\xEE\xF1\xF2\xFC\x20\xEC\xF3\xE7\xFB\xEA\xE8", current_state.settings_music_volume, current_setting == 1);
+
+    if (setting_lock) {
+        handle_locked();
+    } else {
+        handle_menu();
+    }
+}
+
+void game_settings_open() {
+    pushsound_play("/firmware/sounds/bp_open.pcm", 16000, EFFECTS_SOUND_VOLUME);
+    current_state.settings_opened = true;
+    game_updateActiveIcons();
+}
+
 void game_settings_close() {
     if (setting_lock) {
         setting_lock = false;
@@ -153,12 +157,6 @@ void game_settings_close() {
     pushsound_play("/firmware/sounds/bp_close.pcm", 16000, EFFECTS_SOUND_VOLUME);
     current_state.settings_opened = false;
     game_updateActiveIcons();
-
-    if (setting_lock) {
-        handle_locked();
-    } else {
-        handle_menu();
-    }
 }
 
 void game_settings_toggle() {
