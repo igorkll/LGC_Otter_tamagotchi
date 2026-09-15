@@ -18,7 +18,7 @@
 #define SETTINGS_SLIDER_BORDER_SIZE 1
 #define SETTINGS_SLIDER_FILL_OFFSET (SETTINGS_SLIDER_BORDER_SIZE + 1)
 
-#define SETTINGS_GAP 2
+#define SETTINGS_GAP 4
 #define SETTINGS_COUNT 2
 
 static int8_t current_setting = 0;
