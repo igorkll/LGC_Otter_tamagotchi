@@ -81,7 +81,7 @@ const Room rooms[] = {
     {
         .background = "museum",
 
-        .music = "gmp0",
+        .music = "gmp1",
         .musicVolume = 1,
         .musicSampleRate = 16000,
 
