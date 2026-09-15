@@ -14,11 +14,15 @@
 #define SETTINGS_FONT_TARGET_WIDTH 8
 #define SETTINGS_FONT_TARGET_HEIGHT 8
 
-#define SETTINGS_SLIDER_HEIGHT 6
+#define SETTINGS_SLIDER_HEIGHT 8
 #define SETTINGS_SLIDER_BORDER_SIZE 1
 #define SETTINGS_SLIDER_FILL_OFFSET (SETTINGS_SLIDER_BORDER_SIZE + 1)
 
 #define SETTINGS_GAP 2
+#define SETTINGS_COUNT 2
+
+static uint8_t current_setting = 0;
+static bool setting_lock = false;
 
 static tsgl_print_settings printsettings = {
     .locationMode = tsgl_print_start_top,
@@ -39,15 +43,18 @@ static tsgl_pos drawstate_str(tsgl_pos x, tsgl_pos y, const char* text) {
     return y + SETTINGS_FONT_TARGET_HEIGHT + SETTINGS_GAP;
 }
 
-static void raw_draw_slider(tsgl_pos x, tsgl_pos y, game_state_val value) {
+static void raw_draw_slider(tsgl_pos x, tsgl_pos y, game_state_val value, bool selected) {
     game_state_val floatValue = (game_state_val)value / 100.0;
+
+    tsgl_rawcolor col = blue;
+    if (selected) col = setting_lock ? red : magenta;
 
     tsgl_framebuffer_rect(&framebuffer, 
         x,
         y,
         SETTINGS_CONTENT_WIDTH,
         SETTINGS_SLIDER_HEIGHT,
-        blue,
+        col,
         SETTINGS_SLIDER_BORDER_SIZE
     );
     
@@ -60,10 +67,10 @@ static void raw_draw_slider(tsgl_pos x, tsgl_pos y, game_state_val value) {
     );
 }
 
-static tsgl_pos drawstate_slider(tsgl_pos x, tsgl_pos y, const char* title, game_state_val value) {
+static tsgl_pos drawstate_slider(tsgl_pos x, tsgl_pos y, const char* title, game_state_val value, bool selected) {
     drawstate_str(x, y, title);
     tsgl_pos slider_pos = y + SETTINGS_FONT_TARGET_HEIGHT + SETTINGS_GAP;
-    raw_draw_slider(x, slider_pos, value);
+    raw_draw_slider(x, slider_pos, value, selected);
     return slider_pos + SETTINGS_SLIDER_HEIGHT + SETTINGS_GAP;
 }
 
@@ -78,8 +85,8 @@ void game_settings_draw() {
 
     tsgl_pos x2 = SETTINGS_CONTENT_OFFSET + x;
     tsgl_pos y2 = SETTINGS_CONTENT_OFFSET + y;
-    y2 = drawstate_slider(x2, y2, "1", current_state.settings_master_volume);
-    y2 = drawstate_slider(x2, y2, "2", current_state.settings_music_volume);
+    y2 = drawstate_slider(x2, y2, "\xCE\xE1\xF9\xE0\xFF\x20\xE3\xF0\xEE\xEC\xEA\xEE\xF1\xF2\xFC", current_state.settings_master_volume, current_setting == 0);
+    y2 = drawstate_slider(x2, y2, "\xC3\xF0\xEE\xEC\xEA\xEE\xF1\xF2\xFC\x20\xEC\xF3\xE7\xFB\xEA\xE8", current_state.settings_music_volume, current_setting == 1);
 }
 
 void game_settings_open() {

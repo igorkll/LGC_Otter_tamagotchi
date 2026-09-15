@@ -70,7 +70,7 @@ static void game_load() {
     game_loadDefaultSettings();
     
     if (tsgl_filesystem_exists(game_state_path)) {
-        if (tsgl_filesystem_readFile(game_state_path, &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
+        if (tsgl_filesystem_readFile(game_state_path, &current_state, sizeof(Game_state)) >= sizeof(Game_state)) {
             ESP_LOGI(TAG, "game loaded");
 
             if (current_state.resetSettingsId != RESET_SETTINGS_ID) {
