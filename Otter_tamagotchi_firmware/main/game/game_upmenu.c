@@ -46,6 +46,10 @@ void game_upmenu_init() {
 }
 
 int game_upmenu_process() {
+    if (DONT_SHOW_EMPTY_ICONS && current_selected >= 0) {
+        if (!sprites[current_selected]) current_selected = -1;
+    }
+    
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
         do {
             current_selected--;
