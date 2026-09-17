@@ -22,6 +22,9 @@
 #define ROOM_OVERLAY_START_X ROOM_OVERLAY_MARGIN
 #define ROOM_OVERLAY_START_Y (ROOM_OVERLAY_MARGIN + ROOM_OVERLAY_Y_BASE)
 
+// начало второй линии кнопок
+#define L2 5
+
 typedef double game_state_val;
 
 typedef enum {

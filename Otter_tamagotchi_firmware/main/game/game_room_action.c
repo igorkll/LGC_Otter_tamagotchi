@@ -7,9 +7,6 @@
 #include "game_combinemenu.h"
 #include "../pushsound.h"
 
-// начало второй линии кнопок
-#define L2 5
-
 static tsgl_sound* room_music;
 
 static void stopRoomMusic() {
@@ -121,6 +118,12 @@ static void game_shop_roomAction(int action) {
         case 0:
             game_selectRoom(ID_CAR);
             break;
+
+        case L2:
+            shop_buy(shop_getItemPtr(0), shop_getItemPrice(0));
+
+        case L2 + 1:
+            shop_buy(shop_getItemPtr(1), shop_getItemPrice(1));
     }
 }
 
