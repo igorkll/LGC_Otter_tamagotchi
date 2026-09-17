@@ -56,7 +56,7 @@
 #define MUSIC_SOUND_VOLUME 1
 
 #define TRIGGER_SOUND_VOLUME 0.5
-#define QUESTION_SOUND_VOLUME 1
+#define QUESTION_SOUND_VOLUME 3
 #define SADNESS_SOUND_VOLUME 1.8
 
 // --------------------------- debug

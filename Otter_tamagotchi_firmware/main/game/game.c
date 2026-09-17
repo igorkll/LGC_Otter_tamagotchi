@@ -10,6 +10,7 @@
 #include "game_states.h"
 #include "game_settings.h"
 #include "game_combinemenu.h"
+#include "game_room_overlays.h"
 
 // ------------------------------------ consts
 
@@ -440,6 +441,7 @@ static void render() {
 
     gfx_drawCenteredScreenImageSprite(room_sprite);
     drawPerson();
+    game_roomOverlay();
     drawActionTimer();
     game_upmenu_draw();
     game_combinemenu_draw();
