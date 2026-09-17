@@ -47,17 +47,21 @@ void game_upmenu_init() {
 
 int game_upmenu_process() {
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
-        current_selected--;
-        if (current_selected < 0) {
-            current_selected = GAME_UPMENU_COUNT - 1;
-        }
+        do {
+            current_selected--;
+            if (current_selected < 0) {
+                current_selected = GAME_UPMENU_COUNT - 1;
+            }
+        } while (DONT_SHOW_EMPTY_ICONS && !sprites[current_selected]);
     }
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
-        current_selected++;
-        if (current_selected >= GAME_UPMENU_COUNT) {
-            current_selected = 0;
-        }
+        do {
+            current_selected++;
+            if (current_selected >= GAME_UPMENU_COUNT) {
+                current_selected = 0;
+            }
+        } while (DONT_SHOW_EMPTY_ICONS && !sprites[current_selected]);
     }
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
@@ -137,6 +141,10 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
     time_t uptime = tsgl_time();
     for (size_t i = 0; i < GAME_UPMENU_LINE_COUNT; i++) {
         size_t i2 = i + offsetIndex;
+        tsgl_sprite* sprite = sprites[i2];
+        if (DONT_SHOW_EMPTY_ICONS && !sprite) {
+            continue;
+        }
 
         int x = ((width / 2) - (iconWidth / 2)) + ((i - (GAME_UPMENU_LINE_COUNT / 2)) * (width / 5));
         int y = offsetHeight + ((lineHeight / 2) - (iconHeight / 2));
@@ -159,7 +167,6 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
         tsgl_framebuffer_fill(&framebuffer, posX, posY, fillSizeX, fillSizeY, black);
 
         // icon
-        tsgl_sprite* sprite = sprites[i2];
         if (sprite) PUSH_FUNC_TRANS(&framebuffer, x, y, sprite);
 
         // main border
