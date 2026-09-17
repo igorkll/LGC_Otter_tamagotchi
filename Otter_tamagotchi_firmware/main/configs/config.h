@@ -50,14 +50,17 @@
 // --------------------------- volume
 
 #define VOLUME_MUL 0.5
-#define STARTUP_SOUND_VOLUME 0.5
-#define MYAAAA_SOUND_VOLUME 1
 #define EFFECTS_SOUND_VOLUME 1
 #define MUSIC_SOUND_VOLUME 1
+
+#define STARTUP_SOUND_VOLUME 0.5
+#define MYAAAA_SOUND_VOLUME 1
 
 #define TRIGGER_SOUND_VOLUME 0.6
 #define QUESTION_SOUND_VOLUME 2.5
 #define SADNESS_SOUND_VOLUME 2.2
+
+#define BUY_SOUND_VOLUME 1
 
 // --------------------------- debug
 

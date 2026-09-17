@@ -1,5 +1,6 @@
 #include "game_shop.h"
 #include "game_upmenu.h"
+#include "../pushsound.h"
 
 #define SHOPOVERLAY_TEXT_TARGET_WIDTH 9
 #define SHOPOVERLAY_TEXT_TARGET_HEIGHT 9
@@ -80,6 +81,7 @@ void shop_draw_overlay() {
 
 bool shop_buy(int* countvar, int price) {
     if (price > current_state.states_money) return false;
+    pushsound_play("/firmware/sounds/buy.pcm", 16000, EFFECTS_SOUND_VOLUME * BUY_SOUND_VOLUME);
     (*countvar)++;
     current_state.states_money -= price;
     return true;
