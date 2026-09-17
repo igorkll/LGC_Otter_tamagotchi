@@ -17,6 +17,11 @@
 
 #define RESET_SETTINGS_ID 13
 
+#define ROOM_OVERLAY_Y_BASE 26
+#define ROOM_OVERLAY_MARGIN 4
+#define ROOM_OVERLAY_START_X ROOM_OVERLAY_MARGIN
+#define ROOM_OVERLAY_START_Y (ROOM_OVERLAY_MARGIN + ROOM_OVERLAY_Y_BASE)
+
 typedef double game_state_val;
 
 typedef enum {
