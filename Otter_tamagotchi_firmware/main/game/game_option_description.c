@@ -38,7 +38,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
 
             "\xD1\xEF\xE0\xF2\xFC",
-            NULL,
+            "\xC3\xEB\xE0\xE4\xE8\xF2\xFC",
             NULL,
             NULL,
             NULL
@@ -157,8 +157,8 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             
-            NULL,
-            NULL,
+            "\xCB\xE8\xEC\xEE\xED\xF7\xE8\xEA\xE8",
+            "\xD2\xFE\xF5\x2D\xF2\xFE\xF5",
             NULL,
             NULL,
             NULL

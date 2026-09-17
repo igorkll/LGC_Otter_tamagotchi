@@ -67,7 +67,11 @@ static void car_selectRoom(game_room moveTo) {
 static void game_bedroom_roomAction(int action) {
     switch (action) {
         case L2:
-            game_actions_sleep(60);
+            game_actions_sleep(GAMECFG_FULL_SLEEP_TIME);
+            break;
+
+        case L2 + 1:
+            game_actions_patPat();
             break;
     }
 }

@@ -25,3 +25,9 @@ void game_actions_drink() {
     pushsound_play("/firmware/sounds/drinking.pcm", 16000, EFFECTS_SOUND_VOLUME);
     game_states_change(&current_state.states_thirst, -(100.0 / 3.0));
 }
+
+void game_actions_patPat() {
+    pushsound_play("/firmware/sounds/question.pcm", 16000, EFFECTS_SOUND_VOLUME * QUESTION_SOUND_VOLUME);
+    game_states_change(&current_state.states_caress, -(100.0 / 3.0));
+    game_states_change(&current_state.states_sadness, -(100.0 / 7.0));
+}

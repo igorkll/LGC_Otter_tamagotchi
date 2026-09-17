@@ -104,11 +104,11 @@ static void handle_locked() {
     }
 
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_LEFT)) {
-        float_change(ptr, 5);
+        float_change(ptr, -5);
     }
 
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_RIGHT)) {
-        float_change(ptr, -5);
+        float_change(ptr, 5);
     }
 }
 
