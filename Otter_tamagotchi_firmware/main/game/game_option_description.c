@@ -52,8 +52,8 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
 
-            "\xCA\xF3\xF8\xE0\xF6",
-            "\xCF\xE8\xF2\xFC",
+            "\xCA\xF3\xF8\xE0\xF6", //Кушац
+            "\xCF\xE8\xF2\xFC", //Пить
             NULL,
             NULL,
             NULL
@@ -127,8 +127,8 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             
-            NULL,
-            NULL,
+            "\xC5\xE4\xE0", //Еда
+            "\xC2\xEE\xE4\xE0", //Вода
             NULL,
             NULL,
             NULL
@@ -157,8 +157,8 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             
-            "\xCB\xE8\xEC\xEE\xED\xF7\xE8\xEA\xE8",
-            "\xD2\xFE\xF5\x2D\xF2\xFE\xF5",
+            "\xCB\xE8\xEC\xEE\xED\xF7\xE8\xEA\xE8", //Лимончики
+            "\xD2\xFE\xF5\x2D\xF2\xFE\xF5", //Тюх-тюх
             NULL,
             NULL,
             NULL

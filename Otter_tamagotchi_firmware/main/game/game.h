@@ -15,7 +15,7 @@
 
 #define ID_CONSTIEM_OVERLAY 9
 
-#define RESET_SETTINGS_ID 12
+#define RESET_SETTINGS_ID 13
 
 typedef double game_state_val;
 
@@ -69,7 +69,7 @@ typedef struct {
 
     // states
     bool states_opened;
-    int16_t states_money;
+    int states_money;
     game_state_val states_fatigue;
     game_state_val states_hunger;
     game_state_val states_thirst;
