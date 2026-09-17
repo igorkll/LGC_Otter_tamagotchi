@@ -3,14 +3,17 @@
 #include "gfx.h"
 #include "../pushsound.h"
 
-#define BACKPACK_WIDTH (WIDTH - 20)
-#define BACKPACK_HEIGHT (WIDTH - 20)
+#define BACKPACK_WIDTH (WIDTH - 10)
+#define BACKPACK_HEIGHT (HEIGHT - 10)
 #define BACKPACK_BORDER_SIZE 2
 
 #define BACKPACK_ICON_SIZE 24
-#define BACKPACK_ICON_TEXT_WIDTH 12
-#define BACKPACK_ICON_TEXT_HEIGHT 12
-#define BACKPACK_ICON_OFFSET (BACKPACK_ICON_SIZE * 1.5)
+#define BACKPACK_ICON_TEXT_WIDTH 10
+#define BACKPACK_ICON_TEXT_HEIGHT 10
+#define BACKPACK_ICON_ABS_OFFSET_X 0
+#define BACKPACK_ICON_ABS_OFFSET_Y -10
+#define BACKPACK_ICON_OFFSET_X (BACKPACK_ICON_SIZE * 1.5)
+#define BACKPACK_ICON_OFFSET_Y (BACKPACK_ICON_SIZE * 1.85)
 #define BACKPACK_ICON_TEXT_OFFSET ((BACKPACK_ICON_SIZE / 2) + (BACKPACK_ICON_TEXT_HEIGHT / 2) + 1)
 #define BACKPACK_ICON_BORDER_SIZE 1
 
@@ -30,8 +33,8 @@ static tsgl_print_settings printsettings = {
 };
 
 static void draw_icon(tsgl_pos ox, tsgl_pos oy, const char* icon, int count) {
-    tsgl_pos x = (WIDTH / 2) + (ox * BACKPACK_ICON_OFFSET);
-    tsgl_pos y = (HEIGHT / 2) + (oy * BACKPACK_ICON_OFFSET);
+    tsgl_pos x = ((WIDTH / 2) + (ox * BACKPACK_ICON_OFFSET_X)) - BACKPACK_ICON_ABS_OFFSET_X;
+    tsgl_pos y = ((HEIGHT / 2) + (oy * BACKPACK_ICON_OFFSET_Y)) - BACKPACK_ICON_ABS_OFFSET_Y;
     tsgl_pos cornerX = x - (BACKPACK_ICON_SIZE / 2);
     tsgl_pos cornerY = y - (BACKPACK_ICON_SIZE / 2);
 
@@ -61,6 +64,13 @@ void game_backpack_draw() {
 
     draw_icon(-1, -1, "eat", current_state.backpack_eat_count);
     draw_icon(0, -1, "water", current_state.backpack_water_count);
+
+    draw_icon(-1, 0, "eat", current_state.backpack_eat_count);
+    draw_icon(0, 0, "water", current_state.backpack_water_count);
+    draw_icon(1, 0, "water", current_state.backpack_water_count);
+    draw_icon(-1, 1, "eat", current_state.backpack_eat_count);
+    draw_icon(0, 1, "water", current_state.backpack_water_count);
+    draw_icon(1, 1, "eat", current_state.backpack_eat_count);
 }
 
 void game_backpack_open() {
