@@ -1,4 +1,5 @@
 #include "game_shop.h"
+#include "game_upmenu.h"
 
 #define SHOPOVERLAY_TEXT_TARGET_WIDTH 8
 #define SHOPOVERLAY_TEXT_TARGET_HEIGHT 8
@@ -21,7 +22,7 @@ static tsgl_print_settings printsettings = {
 };
 
 int shop_getCurrentItem() {
-    switch (action) {
+    switch (game_upmenu_currentSelected()) {
         case L2:
             return 0;
 
@@ -33,7 +34,7 @@ int shop_getCurrentItem() {
 }
 
 int shop_getItemPrice(int itemNum) {
-    switch (action) {
+    switch (itemNum) {
         case 0:
             return 15;
 
@@ -45,7 +46,7 @@ int shop_getItemPrice(int itemNum) {
 }
 
 int* shop_getItemPtr(int itemNum) {
-    switch (action) {
+    switch (itemNum) {
         case 0:
             return &current_state.backpack_eat_count;
 

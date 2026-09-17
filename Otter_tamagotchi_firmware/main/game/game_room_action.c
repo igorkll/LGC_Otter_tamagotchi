@@ -5,6 +5,7 @@
 #include "game_backpack.h"
 #include "game_states.h"
 #include "game_combinemenu.h"
+#include "game_shop.h"
 #include "../pushsound.h"
 
 static tsgl_sound* room_music;
@@ -121,9 +122,11 @@ static void game_shop_roomAction(int action) {
 
         case L2:
             shop_buy(shop_getItemPtr(0), shop_getItemPrice(0));
+            break;
 
         case L2 + 1:
             shop_buy(shop_getItemPtr(1), shop_getItemPrice(1));
+            break;
     }
 }
 
