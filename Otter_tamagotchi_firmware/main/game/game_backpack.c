@@ -27,9 +27,7 @@ static tsgl_print_settings printsettings = {
     .targetHeight = BACKPACK_ICON_TEXT_HEIGHT,
 
     .fill = TSGL_INVALID_RAWCOLOR,
-    .bg = TSGL_INVALID_RAWCOLOR,
-    .stroke_thickness = 1,
-    .stroke_no_clamp = true
+    .bg = TSGL_INVALID_RAWCOLOR
 };
 
 static void draw_icon(tsgl_pos ox, tsgl_pos oy, const char* icon, int count) {
