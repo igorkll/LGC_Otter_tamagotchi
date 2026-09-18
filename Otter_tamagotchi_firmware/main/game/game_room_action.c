@@ -8,6 +8,8 @@
 #include "game_shop.h"
 #include "../pushsound.h"
 
+#include "../subgames/racing.h"
+
 static tsgl_sound* room_music;
 
 static void stopRoomMusic() {
@@ -82,6 +84,15 @@ static void game_kitchen_roomAction(int action) {
 
         case L2 + 1:
             game_actions_drink();
+            break;
+    }
+}
+
+static void game_gaming_roomAction(int action) {
+    switch (action) {
+        case L2:
+            subgame_racing_start();
+            game_alt_handle = subgame_racing_handle;
             break;
     }
 }
@@ -162,6 +173,10 @@ void game_roomAction(int action) {
 
         case ID_KITCHEN:
             game_kitchen_roomAction(action);
+            break;
+
+        case ID_GAMING:
+            game_gaming_roomAction(action);
             break;
 
         case ID_YARD:

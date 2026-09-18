@@ -37,6 +37,8 @@ static tsgl_sprite* room_sprite = NULL;
 static tsgl_sprite* person_sprite = NULL;
 static tsgl_sound* room_music;
 
+void(*game_alt_handle)() = NULL;
+
 // ------------------------------------ functions
 
 const Room* game_getCurrentRoom() {
@@ -434,6 +436,11 @@ static void drawSleep() {
 static void render() {
     if (current_state.sleepTimer > 0) {
         drawSleep();
+        return;
+    }
+
+    if (game_alt_handle != NULL) {
+        game_alt_handle();
         return;
     }
 

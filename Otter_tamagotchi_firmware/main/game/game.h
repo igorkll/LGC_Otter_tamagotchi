@@ -27,6 +27,8 @@
 
 typedef double game_state_val;
 
+extern void(*game_alt_handle)();
+
 typedef enum {
     game_room_bedroom = 0,
     game_room_kitchen
