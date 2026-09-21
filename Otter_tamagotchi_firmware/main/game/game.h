@@ -90,6 +90,9 @@ typedef struct {
     bool settings_opened;
     float settings_master_volume;
     float settings_music_volume;
+
+    // score table
+    int subgame_recing_max_score;
 } Game_state;
 
 typedef struct {

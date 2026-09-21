@@ -18,3 +18,19 @@ tsgl_print_settings printsettings_overlay = {
     .stroke_thickness = 1,
     .stroke_no_clamp = true
 };
+
+#define SUBGAMES_TEXT_TARGET_WIDTH 8
+#define SUBGAMES_TEXT_TARGET_HEIGHT 8
+
+tsgl_print_settings printsettings_subgames = {
+    .locationMode = tsgl_print_start_top,
+
+    // font
+    .font = DejaVuSerif,
+    .localLocationMode = tsgl_print_localLocationMode_center,
+    .targetWidth = SUBGAMES_TEXT_TARGET_WIDTH,
+    .targetHeight = SUBGAMES_TEXT_TARGET_HEIGHT,
+
+    .fill = TSGL_INVALID_RAWCOLOR,
+    .bg = TSGL_INVALID_RAWCOLOR
+};
