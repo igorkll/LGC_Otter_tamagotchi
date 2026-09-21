@@ -10,6 +10,9 @@
 //#define PUSH_FUNC tsgl_framebuffer_push_wtrans
 //#define PUSH_FUNC_TRANS tsgl_framebuffer_push
 
+#define CHECKPUSH_FUNC tsgl_framebuffer_push_wtrans
+#define CHECKPUSH_FUNC_TRANS tsgl_framebuffer_push
+
 // --------------------------- backlight
 
 #define BACKLIGHT_MAX 255
@@ -64,7 +67,7 @@
 
 // --------------------------- debug
 
-//#define DEBUG_FPS
+#define DEBUG_FPS
 //#define DEBUG_TITLE
 //#define DEBUG_PARAMS
 //#define DEBUG_DISABLE_STARTUP_SOUND

@@ -45,6 +45,10 @@ const Room* game_getCurrentRoom() {
     return &rooms[current_state.room];
 }
 
+tsgl_sprite* game_getPersonSprite() {
+    return person_sprite;
+}
+
 size_t game_getCurrentRoomIndex() {
     return current_state.room;
 }

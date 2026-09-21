@@ -114,6 +114,7 @@ extern Game_state current_state;
 
 void game_selectRoom(int index);
 const Room* game_getCurrentRoom();
+tsgl_sprite* game_getPersonSprite();
 size_t game_getCurrentRoomIndex();
 bool game_isLockedInRoom();
 const char* game_getCurrentPerson();

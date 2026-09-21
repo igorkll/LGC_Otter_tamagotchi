@@ -66,6 +66,7 @@ typedef struct {
     bool gameover;
 
     tsgl_sprite* car_sprite;
+    tsgl_sprite* person_sprite;
     tsgl_pos car_x;
     tsgl_pos car_y;
     tsgl_pos size_x;
@@ -91,6 +92,7 @@ void subgame_racing_start() {
     subgame_state->fuel = 20;
 
     subgame_state->car_sprite = gfx_loadSprite("/firmware/subgames/racing/gamecar.bmp");
+    subgame_state->person_sprite = game_getPersonSprite();
 
     subgame_state->size_x = subgame_state->car_sprite->sprite->width;
     subgame_state->size_y = subgame_state->car_sprite->sprite->height;
@@ -291,6 +293,8 @@ void subgame_racing_handle() {
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "FUEL\n%i", subgame_state->fuel);
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
+
+    gfx_drawCenteredImageSpriteWithTransparentSupport(GAME_ZONE + (STATUS_ZONE / 2), HEIGHT - (HEIGHT / 4) - 10, subgame_state->person_sprite);
 
     if (car_x >= 0 && car_y >= 0
         && car_x <= (GAME_ZONE - subgame_state->size_x)
