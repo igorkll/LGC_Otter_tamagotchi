@@ -489,7 +489,7 @@ void game_start() {
         #ifdef DEBUG_FPS
             tsgl_benchmark_print(&benchmark);
         #endif
-        tsgl_benchmark_wait(&benchmark, TARGET_FPS);
+        tsgl_benchmark_wait(&benchmark, game_alt_handle == NULL ? TARGET_FPS : TARGET_SUBGAME_FPS);
 
         if (firstFrame) {
             afterFirstFrame();

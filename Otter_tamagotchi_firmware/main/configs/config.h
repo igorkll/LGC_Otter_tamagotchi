@@ -1,6 +1,8 @@
 #pragma once
 
 #define TARGET_FPS 15
+#define TARGET_SUBGAME_FPS 10 //I bet less to avoid changing the speed when FPS drops due to lack of power.
+
 #define USE_HARDWARE_ROTATE false
 #define ROTATE 0
 
