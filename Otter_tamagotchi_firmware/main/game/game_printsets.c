@@ -25,6 +25,11 @@ tsgl_print_settings printsettings_overlay = {
 tsgl_print_settings printsettings_subgames = {
     .locationMode = tsgl_print_start_top,
 
+    // multiline
+    .multiline = true,
+    .globalAlignmentX = true,
+    .alignment = tsgl_print_alignment_center,
+
     // font
     .font = DejaVuSerif,
     .localLocationMode = tsgl_print_localLocationMode_center,

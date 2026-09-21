@@ -368,7 +368,7 @@ static void processControl() {
         }
     }
     
-    if (current_state.sleepTimer == 0 && !game_isAnyOverlayOpened()) {
+    if (current_state.sleepTimer == 0 && !game_isAnyOverlayOpened() && game_alt_handle == NULL) {
         int used = game_upmenu_process();
         if (used >= 0) {
             if (used < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT && !game_isLockedInRoom()) {
