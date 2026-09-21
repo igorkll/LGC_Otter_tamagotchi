@@ -8,6 +8,7 @@
 #define SEPARATOR_LINE_SIZE 2
 
 #define COLOR_GRASS tsgl_color_raw(tsgl_color_fromHex(0x166633), framebuffer.colormode)
+#define COLOR_ROAD_DOT tsgl_color_raw(tsgl_color_fromHex(0x777777), framebuffer.colormode)
 
 #define START_CAR_POS_X (GAME_ZONE / 2)
 
@@ -16,7 +17,13 @@
 
 #define TAXIING_SPEED 2
 
+#define ROAD_DOTS_COUNT 32
+
+
+
 typedef struct {
+    bool okay_unlocked;
+
     tsgl_sprite* car_sprite;
     tsgl_pos car_x;
     tsgl_pos car_y;
@@ -25,12 +32,18 @@ typedef struct {
     
     int score;
     tsgl_pos speed;
+    tsgl_pos scroll;
+
+    tsgl_pos road_dots_x[ROAD_DOTS_COUNT];
+    tsgl_pos road_dots_y[ROAD_DOTS_COUNT];
 } Subgame_state;
 
 Subgame_state* subgame_state = NULL;
 
 void subgame_racing_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
+
+    subgame_state->speed = 5;
 
     subgame_state->car_sprite = gfx_loadSprite("/firmware/images/gamecar.bmp");
 
@@ -39,6 +52,11 @@ void subgame_racing_start() {
 
     subgame_state->car_x = GAME_ZONE / 2;
     subgame_state->car_y = HEIGHT - (subgame_state->size_y / 2) - 10;
+
+    for (size_t i = 0; i < ROAD_DOTS_COUNT; i++) {
+        subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE);
+        subgame_state->road_dots_y[i] = tsgl_random(0, HEIGHT);
+    }
 }
 
 static void game_exit() {
@@ -64,7 +82,7 @@ void subgame_racing_handle() {
     if (subgame_state->score > current_state.subgame_recing_max_score)
         current_state.subgame_recing_max_score = subgame_state->score;
 
-    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY)) {
+    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_LEFT)) { //LEFT
         subgame_state->car_x -= TAXIING_SPEED;
 
         tsgl_pos car_x = subgame_state->car_x - (subgame_state->size_x / 2);
@@ -73,12 +91,19 @@ void subgame_racing_handle() {
         }
     }
 
+    tsgl_pos speed = subgame_state->speed;
+    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY) && subgame_state->okay_unlocked) { //BOOST
+        speed += 3;
+    } else {
+        subgame_state->okay_unlocked = true;
+    }
+
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
         game_exit();
         return;
     }
 
-    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_RIGHT)) {
+    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_RIGHT)) { //RIGHT
         subgame_state->car_x += TAXIING_SPEED;
         
         tsgl_pos car_x = subgame_state->car_x - (subgame_state->size_x / 2);
@@ -87,11 +112,26 @@ void subgame_racing_handle() {
         }
     }
 
+    subgame_state->scroll += speed;
+
     // ------------------------ draw
 
     tsgl_framebuffer_fill(&framebuffer, 0, 0, GAME_ZONE, HEIGHT, COLOR_GRASS);
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, STATUS_ZONE, HEIGHT, black);
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, SEPARATOR_LINE_SIZE, HEIGHT, white);
+
+    tsgl_rawcolor color_road_dot = COLOR_ROAD_DOT;
+    for (size_t i = 0; i < ROAD_DOTS_COUNT; i++) {
+        tsgl_pos x = subgame_state->road_dots_x[i];
+        tsgl_pos y = subgame_state->road_dots_y[i];
+        tsgl_framebuffer_set(&framebuffer, x, y, color_road_dot);
+
+        subgame_state->road_dots_y[i] += speed;
+        if (subgame_state->road_dots_y[i] >= HEIGHT) {
+            subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE);
+            subgame_state->road_dots_y[i] = 0;
+        }
+    }
 
     printsettings_subgames.fg = white;
     printsettings_subgames.width = STATUS_ZONE;
@@ -110,7 +150,6 @@ void subgame_racing_handle() {
 
     tsgl_pos car_x = subgame_state->car_x - (subgame_state->size_x / 2);
     tsgl_pos car_y = subgame_state->car_y - (subgame_state->size_y / 2);
-    printf("%i\n", car_x);
     if (car_x >= 0 && car_y >= 0
         && car_x <= (GAME_ZONE - subgame_state->size_x)
         && car_y <= (HEIGHT - subgame_state->size_y))
