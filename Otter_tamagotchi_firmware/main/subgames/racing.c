@@ -2,6 +2,7 @@
 #include "../gfx.h"
 #include "../pushsound.h"
 #include "../hctl.h"
+#include "../drawpresets.h"
 #include "../game/game_printsets.h"
 
 #define STATUS_ZONE 50
@@ -150,6 +151,8 @@ void subgame_racing_handle() {
 
     if (subgame_state->gameover) {
         if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) game_exit();
+
+        drawpresets_draw_gameover();
 
         return;
     }
