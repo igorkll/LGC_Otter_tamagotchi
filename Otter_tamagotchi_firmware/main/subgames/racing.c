@@ -24,10 +24,25 @@
 #define MAX_OBJECTS 8
 #define OBJECTS_TYPES_COUNT 3
 
-static const char* objects_paths[] = {
-    "/firmware/subgames/racing/stone0.bmp",
-    "/firmware/subgames/racing/stone1.bmp",
-    "/firmware/subgames/racing/stone2.bmp"
+typedef struct {
+    const char* path;
+    bool gameover;
+    int score_delta;
+} Gameobj;
+
+static const Gameobj objects[] = {
+    {
+        .path = "/firmware/subgames/racing/stone0.bmp",
+        .gameover = true
+    },
+    {
+        .path = "/firmware/subgames/racing/stone1.bmp",
+        .gameover = true
+    },
+    {
+        .path = "/firmware/subgames/racing/stone2.bmp",
+        .gameover = true
+    }
 };
 
 typedef int64_t global_pos;
@@ -43,6 +58,7 @@ typedef struct {
     tsgl_pos size_y;
     
     int score;
+    int fuel;
     tsgl_pos speed;
     global_pos scroll;
 
@@ -61,6 +77,7 @@ void subgame_racing_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
 
     subgame_state->speed = 5;
+    subgame_state->fuel = 20;
 
     subgame_state->car_sprite = gfx_loadSprite("/firmware/subgames/racing/gamecar.bmp");
 
@@ -95,7 +112,7 @@ static void game_exit() {
 static void obj_spawn(uint8_t type) {
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
         if (subgame_state->objs_type[i] < 0) {
-            tsgl_sprite* sprite = gfx_loadSprite(objects_paths[type]);
+            tsgl_sprite* sprite = gfx_loadSprite(objects[type].path);
 
             subgame_state->objs_type[i] = type;
             subgame_state->objs_sprite[i] = sprite;
@@ -113,7 +130,14 @@ static void gameover() {
 }
 
 static void obj_collision(size_t index) {
-    gameover();
+    Gameobj gameobj = objects[subgame_state->objs_type[index]];
+
+    if (gameobj.gameover) {
+        gameover();
+        return;
+    }
+
+    subgame_state->score += gameobj.score_delta;
 }
 
 static void spawn_random() {
@@ -133,7 +157,16 @@ void subgame_racing_handle() {
     time_t currentTime = tsgl_time();
     if (currentTime - oldTimerTickTime > 1000) {
         oldTimerTickTime = currentTime;
+
+        subgame_state->fuel--;
+        if (subgame_state->fuel < 0) {
+            subgame_state->fuel = 0;
+            gameover();
+            return;
+        }
+
         subgame_state->score++;
+
         spawn_random();
     }
     
@@ -223,6 +256,10 @@ void subgame_racing_handle() {
     draw_y += PRINT_GAP_Y;
 
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "HIGH\n%i", current_state.subgame_recing_max_score);
+    tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
+    draw_y += PRINT_GAP_Y;
+
+    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "FUEL\n%i", subgame_state->fuel);
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
 
