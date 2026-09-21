@@ -25,6 +25,7 @@
 #define MAX_OBJECTS 8
 
 #define SPEED_BOOST 3
+#define SPEED_BOOST_FUEL_DELTA 4
 
 typedef struct {
     const char* path;
@@ -190,11 +191,25 @@ void subgame_racing_handle() {
         return;
     }
 
+    bool boost = false;
+    tsgl_pos speed = subgame_state->speed;
+    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY) && subgame_state->okay_unlocked) { //BOOST
+        speed += SPEED_BOOST;
+        boost = true;
+    } else {
+        subgame_state->okay_unlocked = true;
+    }
+
     time_t currentTime = tsgl_time();
     if (currentTime - oldTimerTickTime > 1000) {
         oldTimerTickTime = currentTime;
 
         subgame_state->fuel--;
+
+        if (boost) {
+            subgame_state->fuel -= SPEED_BOOST_FUEL_DELTA;
+        }
+
         if (subgame_state->fuel < 0) {
             subgame_state->fuel = 0;
             gameover();
@@ -217,13 +232,7 @@ void subgame_racing_handle() {
             subgame_state->car_x = subgame_state->size_x / 2;
         }
     }
-
-    tsgl_pos speed = subgame_state->speed;
-    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY) && subgame_state->okay_unlocked) { //BOOST
-        speed += SPEED_BOOST;
-    } else {
-        subgame_state->okay_unlocked = true;
-    }
+    
 
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
         game_exit();
