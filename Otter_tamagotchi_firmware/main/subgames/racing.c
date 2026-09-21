@@ -247,24 +247,24 @@ void subgame_racing_handle() {
 
     tsgl_rawcolor color_road_dot = COLOR_ROAD_DOT;
     for (size_t i = 0; i < ROAD_DOTS_COUNT; i++) {
-        tsgl_pos x = subgame_state->road_dots_x[i];
-        tsgl_pos y = subgame_state->road_dots_y[i];
-        tsgl_framebuffer_fill(&framebuffer, x, y, ROAD_DOT_SIZE, ROAD_DOT_SIZE, color_road_dot);
-
         subgame_state->road_dots_y[i] += speed;
         if (subgame_state->road_dots_y[i] >= HEIGHT) {
             subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE - ROAD_DOT_SIZE);
             subgame_state->road_dots_y[i] = -ROAD_DOT_SIZE;
         }
+
+        tsgl_pos x = subgame_state->road_dots_x[i];
+        tsgl_pos y = subgame_state->road_dots_y[i];
+        tsgl_framebuffer_fill(&framebuffer, x, y, ROAD_DOT_SIZE, ROAD_DOT_SIZE, color_road_dot);
     }
 
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
         if (subgame_state->objs[i].type < 0) continue;
+        subgame_state->objs[i].y += speed;
 
         tsgl_sprite* sprite = subgame_state->objs[i].sprite;
         tsgl_framebuffer_push(&framebuffer, subgame_state->objs[i].x, subgame_state->objs[i].y, sprite);
 
-        subgame_state->objs[i].y += speed;
         if (subgame_state->objs[i].y >= HEIGHT) {
             subgame_state->objs[i].type = -1;
         } else if (tsgl_funcs_checkIntersection(
@@ -294,7 +294,11 @@ void subgame_racing_handle() {
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
 
-    gfx_drawCenteredImageSpriteWithTransparentSupport(GAME_ZONE + (STATUS_ZONE / 2), HEIGHT - (HEIGHT / 4) - 2, subgame_state->person_sprite);
+    PUSH_FUNC_TRANS(&framebuffer,
+        (GAME_ZONE + (STATUS_ZONE / 2)) - (subgame_state->person_sprite->sprite->width / 2),
+        HEIGHT - subgame_state->person_sprite->sprite->height - 2,
+        subgame_state->person_sprite
+    );
 
     if (car_x >= 0 && car_y >= 0
         && car_x <= (GAME_ZONE - subgame_state->size_x)
