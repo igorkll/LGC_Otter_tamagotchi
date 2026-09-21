@@ -31,7 +31,16 @@ typedef struct {
     const char* path;
     bool gameover;
     int score_delta;
+    int fuel_delta;
 } Gameobj;
+
+typedef struct {
+    tsgl_pos x;
+    tsgl_pos y;
+    int8_t type;
+    tsgl_sprite* sprite;
+    bool interacted;
+} Gameobj_state;
 
 static const Gameobj objects[] = {
     {
@@ -68,10 +77,7 @@ typedef struct {
     tsgl_pos road_dots_x[ROAD_DOTS_COUNT];
     tsgl_pos road_dots_y[ROAD_DOTS_COUNT];
 
-    tsgl_pos objs_x[MAX_OBJECTS];
-    tsgl_pos objs_y[MAX_OBJECTS];
-    int8_t objs_type[MAX_OBJECTS];
-    tsgl_sprite* objs_sprite[MAX_OBJECTS];
+    Gameobj_state objs[MAX_OBJECTS];
 } Subgame_state;
 
 static Subgame_state* subgame_state = NULL;
@@ -96,9 +102,7 @@ void subgame_racing_start() {
     }
 
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
-        subgame_state->objs_x[i] = -1;
-        subgame_state->objs_y[i] = -1;
-        subgame_state->objs_type[i] = -1;
+        subgame_state->objs[i].type = -1;
     }
 }
 
@@ -114,13 +118,14 @@ static void game_exit() {
 
 static void obj_spawn(uint8_t type) {
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
-        if (subgame_state->objs_type[i] < 0) {
+        if (subgame_state->objs[i].type < 0) {
             tsgl_sprite* sprite = gfx_loadSprite(objects[type].path);
 
-            subgame_state->objs_type[i] = type;
-            subgame_state->objs_sprite[i] = sprite;
-            subgame_state->objs_x[i] = tsgl_random(0, GAME_ZONE - sprite->sprite->width);
-            subgame_state->objs_y[i] = -sprite->sprite->height;
+            subgame_state->objs[i].type = type;
+            subgame_state->objs[i].sprite = sprite;
+            subgame_state->objs[i].x = tsgl_random(0, GAME_ZONE - sprite->sprite->width);
+            subgame_state->objs[i].y = -sprite->sprite->height;
+            subgame_state->objs[i].interacted = false;
             return;
         }
     }
@@ -133,7 +138,11 @@ static void gameover() {
 }
 
 static void obj_collision(size_t index) {
-    Gameobj gameobj = objects[subgame_state->objs_type[index]];
+    Gameobj_state* gameobj_state = &subgame_state->objs[index];
+    if (gameobj_state->interacted) return;
+    gameobj_state->interacted = true;
+
+    Gameobj gameobj = objects[gameobj_state->type];
 
     if (gameobj.gameover) {
         gameover();
@@ -141,6 +150,7 @@ static void obj_collision(size_t index) {
     }
 
     subgame_state->score += gameobj.score_delta;
+    subgame_state->fuel += gameobj.fuel_delta;
 }
 
 static void spawn_random() {
@@ -233,17 +243,17 @@ void subgame_racing_handle() {
     }
 
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
-        if (subgame_state->objs_type[i] < 0) continue;
+        if (subgame_state->objs[i].type < 0) continue;
 
-        tsgl_sprite* sprite = subgame_state->objs_sprite[i];
-        tsgl_framebuffer_push(&framebuffer, subgame_state->objs_x[i], subgame_state->objs_y[i], sprite);
+        tsgl_sprite* sprite = subgame_state->objs[i].sprite;
+        tsgl_framebuffer_push(&framebuffer, subgame_state->objs[i].x, subgame_state->objs[i].y, sprite);
 
-        subgame_state->objs_y[i] += speed;
-        if (subgame_state->objs_y[i] >= HEIGHT) {
-            subgame_state->objs_type[i] = -1;
+        subgame_state->objs[i].y += speed;
+        if (subgame_state->objs[i].y >= HEIGHT) {
+            subgame_state->objs[i].type = -1;
         } else if (tsgl_funcs_checkIntersection(
             car_x, car_y, subgame_state->size_x, subgame_state->size_y,
-            subgame_state->objs_x[i], subgame_state->objs_y[i], sprite->sprite->width, sprite->sprite->height
+            subgame_state->objs[i].x, subgame_state->objs[i].y, sprite->sprite->width, sprite->sprite->height
         )) {
             obj_collision(i);
         }
