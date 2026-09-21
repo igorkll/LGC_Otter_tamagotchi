@@ -57,6 +57,8 @@ static const Gameobj objects[] = {
     }
 };
 
+static tsgl_sprite* gameobj_sprites[OBJECTS_TYPES_COUNT];
+
 typedef int64_t global_pos;
 
 typedef struct {
@@ -104,9 +106,18 @@ void subgame_racing_start() {
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
         subgame_state->objs[i].type = -1;
     }
+
+    for (size_t i = 0; i < OBJECTS_TYPES_COUNT; i++) {
+        gameobj_sprites[i] = gfx_loadSprite(objects[i].path);
+    }
 }
 
 static void game_exit() {
+    for (size_t i = 0; i < OBJECTS_TYPES_COUNT; i++) {
+        tsgl_bmp_free(gameobj_sprites[i]);
+        gameobj_sprites[i] = NULL;
+    }
+
     tsgl_bmp_free(subgame_state->car_sprite);
     subgame_state->car_sprite = NULL;
 
@@ -119,7 +130,7 @@ static void game_exit() {
 static void obj_spawn(uint8_t type) {
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
         if (subgame_state->objs[i].type < 0) {
-            tsgl_sprite* sprite = gfx_loadSprite(objects[type].path);
+            tsgl_sprite* sprite = gameobj_sprites[type];
 
             subgame_state->objs[i].type = type;
             subgame_state->objs[i].sprite = sprite;
@@ -162,7 +173,10 @@ void subgame_racing_handle() {
     // ------------------------ process
 
     if (subgame_state->gameover) {
-        if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) game_exit();
+        if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
+            game_exit();
+            return;
+        }
 
         game_modal_draw_gameover(subgame_state->score, current_state.subgame_recing_max_score);
 
