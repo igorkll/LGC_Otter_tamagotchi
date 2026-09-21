@@ -20,6 +20,14 @@
 #define ROAD_DOTS_COUNT 32
 #define ROAD_DOT_SIZE 3
 
+#define MAX_OBJECTS 8
+
+static const char* objects_paths[] = {
+    "/firmware/images/gamecar.bmp"
+};
+
+typedef int64_t global_pos;
+
 typedef struct {
     bool okay_unlocked;
 
@@ -31,10 +39,15 @@ typedef struct {
     
     int score;
     tsgl_pos speed;
-    int64_t scroll;
+    global_pos scroll;
 
     tsgl_pos road_dots_x[ROAD_DOTS_COUNT];
     tsgl_pos road_dots_y[ROAD_DOTS_COUNT];
+
+    tsgl_pos objs_x[MAX_OBJECTS];
+    tsgl_pos objs_y[MAX_OBJECTS];
+    int8_t objs_type[MAX_OBJECTS];
+    tsgl_sprite* objs_sprite[MAX_OBJECTS];
 } Subgame_state;
 
 Subgame_state* subgame_state = NULL;
@@ -56,6 +69,12 @@ void subgame_racing_start() {
         subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE - ROAD_DOT_SIZE);
         subgame_state->road_dots_y[i] = tsgl_random(-ROAD_DOT_SIZE, HEIGHT);
     }
+
+    for (size_t i = 0; i < MAX_OBJECTS; i++) {
+        subgame_state->objs_x[i] = -1;
+        subgame_state->objs_y[i] = -1;
+        subgame_state->objs_type[i] = -1;
+    }
 }
 
 static void game_exit() {
@@ -66,6 +85,20 @@ static void game_exit() {
     subgame_state = NULL;
 
     game_alt_handle = NULL;
+}
+
+static void obj_spawn(uint8_t type) {
+    for (size_t i = 0; i < MAX_OBJECTS; i++) {
+        if (subgame_state->objs_type[i] < 0) {
+            tsgl_sprite* sprite = gfx_loadSprite(objects_paths[type]);
+
+            subgame_state->objs_type[i] = type;
+            subgame_state->objs_sprite[i] = sprite;
+            subgame_state->objs_x[i] = tsgl_random(0, GAME_ZONE - sprite->sprite->width);
+            subgame_state->objs_y[i] = -sprite->sprite->height;
+            return;
+        }
+    }
 }
 
 static time_t oldTimerTickTime = -9999;
@@ -129,6 +162,17 @@ void subgame_racing_handle() {
         if (subgame_state->road_dots_y[i] >= HEIGHT) {
             subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE - ROAD_DOT_SIZE);
             subgame_state->road_dots_y[i] = -ROAD_DOT_SIZE;
+        }
+    }
+
+    for (size_t i = 0; i < MAX_OBJECTS; i++) {
+        if (subgame_state->objs_type[i] < 0) continue;
+
+        tsgl_framebuffer_push(&framebuffer, subgame_state->objs_x[i], subgame_state->objs_y[i], subgame_state->objs_sprite[i]);
+
+        subgame_state->objs_y[i] += speed;
+        if (subgame_state->objs_y[i] >= HEIGHT) {
+            subgame_state->objs_type[i] = -1;
         }
     }
 
