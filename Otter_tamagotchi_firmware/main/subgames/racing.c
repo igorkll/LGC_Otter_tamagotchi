@@ -22,6 +22,7 @@
 #define ROAD_DOT_SIZE 3
 
 #define MAX_OBJECTS 8
+#define OBJECTS_TYPES_COUNT 3
 
 static const char* objects_paths[] = {
     "/firmware/subgames/racing/stone0.bmp",
@@ -116,7 +117,7 @@ static void obj_collision(size_t index) {
 }
 
 static void spawn_random() {
-    obj_spawn(0);
+    obj_spawn(tsgl_random(0, OBJECTS_TYPES_COUNT - 1));
 }
 
 static time_t oldTimerTickTime = -9999;
@@ -204,7 +205,7 @@ void subgame_racing_handle() {
             subgame_state->objs_type[i] = -1;
         } else if (tsgl_funcs_checkIntersection(
             car_x, car_y, subgame_state->size_x, subgame_state->size_y,
-            subgame_state->objs_x[i], subgame_state->objs_y[i], sprite->sprite->width, sprite->sprite->height,
+            subgame_state->objs_x[i], subgame_state->objs_y[i], sprite->sprite->width, sprite->sprite->height
         )) {
             obj_collision(i);
         }
