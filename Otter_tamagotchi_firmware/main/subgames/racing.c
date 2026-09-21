@@ -23,7 +23,6 @@
 #define ROAD_DOT_SIZE 3
 
 #define MAX_OBJECTS 8
-#define OBJECTS_TYPES_COUNT 3
 
 #define SPEED_BOOST 3
 
@@ -60,6 +59,8 @@ static const Gameobj objects[] = {
         .gameover = true
     }
 };
+
+#define OBJECTS_TYPES_COUNT TSGL_CALC_ARRSIZE(objects)
 
 static tsgl_sprite* gameobj_sprites[OBJECTS_TYPES_COUNT];
 
