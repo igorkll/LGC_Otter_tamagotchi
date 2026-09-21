@@ -40,7 +40,7 @@ tsgl_print_settings printsettings_subgames = {
     .bg = TSGL_INVALID_RAWCOLOR
 };
 
-#define GAMETITLE_TEXT_TARGET_WIDTH 16
+#define GAMETITLE_TEXT_TARGET_WIDTH 7
 #define GAMETITLE_TEXT_TARGET_HEIGHT 16
 
 tsgl_print_settings printsettings_gametitle = {
@@ -48,7 +48,7 @@ tsgl_print_settings printsettings_gametitle = {
 
     // multiline
     .multiline = true,
-    .globalAlignmentX = true,
+    .globalCentering = true,
     .alignment = tsgl_print_alignment_center,
 
     // font
@@ -56,6 +56,7 @@ tsgl_print_settings printsettings_gametitle = {
     .localLocationMode = tsgl_print_localLocationMode_center,
     .targetWidth = GAMETITLE_TEXT_TARGET_WIDTH,
     .targetHeight = GAMETITLE_TEXT_TARGET_HEIGHT,
+    .spacing = 3,
 
     .fill = TSGL_INVALID_RAWCOLOR,
     .bg = TSGL_INVALID_RAWCOLOR,

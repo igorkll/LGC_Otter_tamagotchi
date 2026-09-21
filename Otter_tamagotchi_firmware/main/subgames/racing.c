@@ -2,7 +2,7 @@
 #include "../gfx.h"
 #include "../pushsound.h"
 #include "../hctl.h"
-#include "../drawpresets.h"
+#include "../game/game_modal.h"
 #include "../game/game_printsets.h"
 
 #define STATUS_ZONE 50
@@ -24,6 +24,8 @@
 
 #define MAX_OBJECTS 8
 #define OBJECTS_TYPES_COUNT 3
+
+#define SPEED_BOOST 3
 
 typedef struct {
     const char* path;
@@ -152,7 +154,7 @@ void subgame_racing_handle() {
     if (subgame_state->gameover) {
         if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) game_exit();
 
-        drawpresets_draw_gameover();
+        game_modal_draw_gameover(subgame_state->score, current_state.subgame_recing_max_score);
 
         return;
     }
@@ -187,7 +189,7 @@ void subgame_racing_handle() {
 
     tsgl_pos speed = subgame_state->speed;
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY) && subgame_state->okay_unlocked) { //BOOST
-        speed += 3;
+        speed += SPEED_BOOST;
     } else {
         subgame_state->okay_unlocked = true;
     }
