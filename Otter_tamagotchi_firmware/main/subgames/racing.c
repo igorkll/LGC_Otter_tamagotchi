@@ -212,11 +212,9 @@ void subgame_racing_handle() {
 
         if (subgame_state->fuel < 0) {
             subgame_state->fuel = 0;
-            gameover();
-            return;
+        } else {
+            subgame_state->score++;
         }
-
-        subgame_state->score++;
 
         spawn_random();
     }
@@ -232,7 +230,6 @@ void subgame_racing_handle() {
             subgame_state->car_x = subgame_state->size_x / 2;
         }
     }
-    
 
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
         game_exit();
@@ -318,4 +315,8 @@ void subgame_racing_handle() {
         && car_x <= (GAME_ZONE - subgame_state->size_x)
         && car_y <= (HEIGHT - subgame_state->size_y))
         PUSH_FUNC_TRANS(&framebuffer, car_x, car_y, subgame_state->car_sprite);
+
+    if (subgame_state->fuel <= 0) {
+        gameover();
+    }
 }
