@@ -54,6 +54,10 @@ static const Gameobj objects[] = {
     {
         .path = "/firmware/subgames/racing/stone2.bmp",
         .gameover = true
+    },
+    {
+        .path = "/firmware/subgames/racing/enemycar.bmp",
+        .gameover = true
     }
 };
 
