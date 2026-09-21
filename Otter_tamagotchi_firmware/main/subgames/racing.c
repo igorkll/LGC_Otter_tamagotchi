@@ -294,7 +294,7 @@ void subgame_racing_handle() {
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
 
-    gfx_drawCenteredImageSpriteWithTransparentSupport(GAME_ZONE + (STATUS_ZONE / 2), HEIGHT - (HEIGHT / 4) - 5, subgame_state->person_sprite);
+    gfx_drawCenteredImageSpriteWithTransparentSupport(GAME_ZONE + (STATUS_ZONE / 2), HEIGHT - (HEIGHT / 4) - 2, subgame_state->person_sprite);
 
     if (car_x >= 0 && car_y >= 0
         && car_x <= (GAME_ZONE - subgame_state->size_x)
