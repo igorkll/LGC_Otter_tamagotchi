@@ -1,5 +1,6 @@
 #include "racing.h"
 #include "../gfx.h"
+#include "../pushsound.h"
 #include "../hctl.h"
 #include "../game/game_printsets.h"
 
@@ -23,13 +24,16 @@
 #define MAX_OBJECTS 8
 
 static const char* objects_paths[] = {
-    "/firmware/images/gamecar.bmp"
+    "/firmware/subgames/racing/stone0.bmp",
+    "/firmware/subgames/racing/stone1.bmp",
+    "/firmware/subgames/racing/stone2.bmp"
 };
 
 typedef int64_t global_pos;
 
 typedef struct {
     bool okay_unlocked;
+    bool gameover;
 
     tsgl_sprite* car_sprite;
     tsgl_pos car_x;
@@ -50,14 +54,14 @@ typedef struct {
     tsgl_sprite* objs_sprite[MAX_OBJECTS];
 } Subgame_state;
 
-Subgame_state* subgame_state = NULL;
+static Subgame_state* subgame_state = NULL;
 
 void subgame_racing_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
 
     subgame_state->speed = 5;
 
-    subgame_state->car_sprite = gfx_loadSprite("/firmware/images/gamecar.bmp");
+    subgame_state->car_sprite = gfx_loadSprite("/firmware/subgames/racing/gamecar.bmp");
 
     subgame_state->size_x = subgame_state->car_sprite->sprite->width;
     subgame_state->size_y = subgame_state->car_sprite->sprite->height;
@@ -101,14 +105,35 @@ static void obj_spawn(uint8_t type) {
     }
 }
 
+static void gameover() {
+    pushsound_play("/firmware/sounds/gameover.pcm", 16000, EFFECTS_SOUND_VOLUME);
+
+    subgame_state->gameover = true;
+}
+
+static void obj_collision(size_t index) {
+    gameover();
+}
+
+static void spawn_random() {
+    obj_spawn(0);
+}
+
 static time_t oldTimerTickTime = -9999;
 void subgame_racing_handle() {
     // ------------------------ process
+
+    if (subgame_state->gameover) {
+        if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) game_exit();
+
+        return;
+    }
 
     time_t currentTime = tsgl_time();
     if (currentTime - oldTimerTickTime > 1000) {
         oldTimerTickTime = currentTime;
         subgame_state->score++;
+        spawn_random();
     }
     
     if (subgame_state->score > current_state.subgame_recing_max_score)
@@ -148,6 +173,9 @@ void subgame_racing_handle() {
 
     // ------------------------ draw
 
+    tsgl_pos car_x = subgame_state->car_x - (subgame_state->size_x / 2);
+    tsgl_pos car_y = subgame_state->car_y - (subgame_state->size_y / 2);
+
     tsgl_framebuffer_fill(&framebuffer, 0, 0, GAME_ZONE, HEIGHT, COLOR_GRASS);
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, STATUS_ZONE, HEIGHT, black);
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, SEPARATOR_LINE_SIZE, HEIGHT, white);
@@ -168,11 +196,17 @@ void subgame_racing_handle() {
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
         if (subgame_state->objs_type[i] < 0) continue;
 
-        tsgl_framebuffer_push(&framebuffer, subgame_state->objs_x[i], subgame_state->objs_y[i], subgame_state->objs_sprite[i]);
+        tsgl_sprite* sprite = subgame_state->objs_sprite[i];
+        tsgl_framebuffer_push(&framebuffer, subgame_state->objs_x[i], subgame_state->objs_y[i], sprite);
 
         subgame_state->objs_y[i] += speed;
         if (subgame_state->objs_y[i] >= HEIGHT) {
             subgame_state->objs_type[i] = -1;
+        } else if (tsgl_funcs_checkIntersection(
+            car_x, car_y, subgame_state->size_x, subgame_state->size_y,
+            subgame_state->objs_x[i], subgame_state->objs_y[i], sprite->sprite->width, sprite->sprite->height,
+        )) {
+            obj_collision(i);
         }
     }
 
@@ -191,8 +225,6 @@ void subgame_racing_handle() {
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
 
-    tsgl_pos car_x = subgame_state->car_x - (subgame_state->size_x / 2);
-    tsgl_pos car_y = subgame_state->car_y - (subgame_state->size_y / 2);
     if (car_x >= 0 && car_y >= 0
         && car_x <= (GAME_ZONE - subgame_state->size_x)
         && car_y <= (HEIGHT - subgame_state->size_y))
