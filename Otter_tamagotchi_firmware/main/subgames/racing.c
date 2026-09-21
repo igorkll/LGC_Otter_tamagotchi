@@ -18,8 +18,7 @@
 #define TAXIING_SPEED 2
 
 #define ROAD_DOTS_COUNT 32
-
-
+#define ROAD_DOT_SIZE 3
 
 typedef struct {
     bool okay_unlocked;
@@ -32,7 +31,7 @@ typedef struct {
     
     int score;
     tsgl_pos speed;
-    tsgl_pos scroll;
+    int64_t scroll;
 
     tsgl_pos road_dots_x[ROAD_DOTS_COUNT];
     tsgl_pos road_dots_y[ROAD_DOTS_COUNT];
@@ -54,8 +53,8 @@ void subgame_racing_start() {
     subgame_state->car_y = HEIGHT - (subgame_state->size_y / 2) - 10;
 
     for (size_t i = 0; i < ROAD_DOTS_COUNT; i++) {
-        subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE);
-        subgame_state->road_dots_y[i] = tsgl_random(0, HEIGHT);
+        subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE - ROAD_DOT_SIZE);
+        subgame_state->road_dots_y[i] = tsgl_random(-ROAD_DOT_SIZE, HEIGHT);
     }
 }
 
@@ -124,12 +123,12 @@ void subgame_racing_handle() {
     for (size_t i = 0; i < ROAD_DOTS_COUNT; i++) {
         tsgl_pos x = subgame_state->road_dots_x[i];
         tsgl_pos y = subgame_state->road_dots_y[i];
-        tsgl_framebuffer_set(&framebuffer, x, y, color_road_dot);
+        tsgl_framebuffer_fill(&framebuffer, x, y, ROAD_DOT_SIZE, ROAD_DOT_SIZE, color_road_dot);
 
         subgame_state->road_dots_y[i] += speed;
         if (subgame_state->road_dots_y[i] >= HEIGHT) {
-            subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE);
-            subgame_state->road_dots_y[i] = 0;
+            subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE - ROAD_DOT_SIZE);
+            subgame_state->road_dots_y[i] = -ROAD_DOT_SIZE;
         }
     }
 
