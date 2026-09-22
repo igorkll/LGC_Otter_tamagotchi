@@ -17,8 +17,6 @@
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 25
 
-#define TAXIING_SPEED 2
-
 #define ROAD_DOTS_COUNT 32
 #define ROAD_DOT_SIZE 3
 
@@ -33,6 +31,7 @@
 #define DEFAULT_SPAWN_OBJECT_PER_SCROLL 30
 #define DEFAULT_SCORE_DELTA 1
 #define DEFAULT_SPAWN_PERCENT 50
+#define DEFAULT_TAXIING_SPEED 2
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
 #define MUSIC_SAMPLERATE 16000
@@ -44,6 +43,8 @@ typedef struct {
     bool delete;
     int score_delta;
     int score_delta_delta;
+    int speed_delta;
+    int taxiing_speed_delta;
     int fuel_delta;
 } Gameobj;
 
@@ -75,7 +76,24 @@ static const Gameobj objects[] = {
     {
         .path = "/firmware/subgames/racing/fuel.bmp",
         .fuel_delta = 60,
-        .score_delta = 30,
+        .score_delta = 10,
+        .delete = true
+    },
+    {
+        .path = "/firmware/subgames/racing/wheel.bmp",
+        .taxiing_speed_delta = 1,
+        .score_delta = 10,
+        .delete = true
+    },
+    {
+        .path = "/firmware/subgames/racing/engine.bmp",
+        .speed_delta = 1,
+        .score_delta = 10,
+        .delete = true
+    },
+    {
+        .path = "/firmware/subgames/racing/star.bmp",
+        .score_delta = 50,
         .delete = true
     }
 };
@@ -100,6 +118,7 @@ typedef struct {
     
     int score;
     int score_delta;
+    int taxiing_speed;
     int8_t spawn_percent;
     int fuel;
     tsgl_pos speed;
@@ -140,6 +159,7 @@ void subgame_racing_start() {
     subgame_state->spawn_object_per_scroll = DEFAULT_SPAWN_OBJECT_PER_SCROLL;
     subgame_state->score_delta = DEFAULT_SCORE_DELTA;
     subgame_state->spawn_percent = DEFAULT_SPAWN_PERCENT;
+    subgame_state->taxiing_speed = DEFAULT_TAXIING_SPEED;
 
     subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
 
@@ -219,6 +239,8 @@ static void obj_collision(size_t index) {
 
     subgame_state->score += gameobj.score_delta;
     subgame_state->score_delta += gameobj.score_delta_delta;
+    subgame_state->speed += gameobj.speed_delta;
+    subgame_state->taxiing_speed += taxiing_speed_delta;
     subgame_state->fuel += gameobj.fuel_delta;
 
     if (gameobj.delete) obj_delete(index);
@@ -285,7 +307,7 @@ void subgame_racing_handle() {
         current_state.subgame_recing_max_score = subgame_state->score;
 
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_LEFT)) { //LEFT
-        subgame_state->car_x -= TAXIING_SPEED + add_taxiing_speed;
+        subgame_state->car_x -= subgame_state->taxiing_speed + add_taxiing_speed;
 
         tsgl_pos car_x = subgame_state->car_x - (subgame_state->size_x / 2);
         if (car_x < 0) {
@@ -299,7 +321,7 @@ void subgame_racing_handle() {
     }
 
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_RIGHT)) { //RIGHT
-        subgame_state->car_x += TAXIING_SPEED + add_taxiing_speed;
+        subgame_state->car_x += subgame_state->taxiing_speed + add_taxiing_speed;
         
         tsgl_pos car_x = subgame_state->car_x - (subgame_state->size_x / 2);
         if (car_x > (GAME_ZONE - subgame_state->size_x)) {
