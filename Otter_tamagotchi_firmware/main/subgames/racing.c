@@ -295,7 +295,7 @@ void subgame_racing_handle() {
     bool boost = false;
     tsgl_pos speed = subgame_state->speed;
     tsgl_pos add_taxiing_speed = 0;
-    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY)) { //BOOST
+    if (tsgl_keyboard_getRawState(&keyboard, KEY_INDEX_OKAY)) { //BOOST
         if (subgame_state->okay_unlocked) {
             speed += subgame_state->speed_boost;
             add_taxiing_speed = subgame_state->speed_boost_taxiing_speed_add;
@@ -304,7 +304,9 @@ void subgame_racing_handle() {
                 subgame_state->fuel -= SPEED_BOOST_FUEL_DELTA;
             }
         }
-    } else {
+        
+        //да не гавнокодер я. так задумано. tsgl_keyboard_getRawState быстрее реагирует на изменения а дополнительный tsgl_keyboard_getState тут чтобы избежать дребезка
+    } else if (!tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY)) {
         subgame_state->okay_unlocked = true;
     }
     subgame_state->old_boost = boost;
@@ -332,7 +334,7 @@ void subgame_racing_handle() {
     if (subgame_state->score > current_state.subgame_recing_max_score)
         current_state.subgame_recing_max_score = subgame_state->score;
 
-    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_LEFT)) { //LEFT
+    if (tsgl_keyboard_getRawState(&keyboard, KEY_INDEX_LEFT)) { //LEFT
         subgame_state->car_x -= subgame_state->taxiing_speed + add_taxiing_speed;
 
         tsgl_pos car_x = subgame_state->car_x - (subgame_state->size_x / 2);
@@ -346,7 +348,7 @@ void subgame_racing_handle() {
         return;
     }
 
-    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_RIGHT)) { //RIGHT
+    if (tsgl_keyboard_getRawState(&keyboard, KEY_INDEX_RIGHT)) { //RIGHT
         subgame_state->car_x += subgame_state->taxiing_speed + add_taxiing_speed;
         
         tsgl_pos car_x = subgame_state->car_x - (subgame_state->size_x / 2);
