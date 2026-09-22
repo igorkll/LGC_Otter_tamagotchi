@@ -103,7 +103,7 @@ static Tetris_object get_random_object() {
         for (size_t iy = 0; iy < OBJECT_Y; iy++) {
             if (tetris_object.array[iy][ix] > 0) {
                 uint8_t color_offset = (ix + iy) % 2;
-                tetris_object.array[iy][ix] = random_color + color_offset;
+                tetris_object.array[iy][ix] = (random_color + color_offset) + 1;
             }
         }
     }
