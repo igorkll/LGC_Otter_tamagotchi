@@ -22,6 +22,7 @@ typedef uint8_t tsgl_colormode_raw;
 #define TSGL_RAM      0
 
 #define TSGL_CALC_ARRSIZE(arr) (sizeof(arr) / sizeof(*(arr)))
+#define tsgl_rgb(_r, _g, _b) ((tsgl_color){.r = _r, .g = _g, .b = _b, .invalid = false})
 
 extern const tsgl_colormode_raw tsgl_colormodeSizes[];
 extern const bool tsgl_floatColormodeSizes[];

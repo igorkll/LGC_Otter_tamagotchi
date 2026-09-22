@@ -29,6 +29,35 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 25
 
+#define BLOCKSIZE 4
+#define GAMEARRAY_X (GAME_ZONE / BLOCKSIZE)
+#define GAMEARRAY_Y (HEIGHT / BLOCKSIZE)
+
+#define rgb tsgl_rgb
+tsgl_color blockcolors[] = {
+    rgb(255, 89, 89),
+    rgb(143, 0, 0),
+
+    rgb(255, 153, 89),
+    rgb(143, 79, 0),
+
+    rgb(255, 238, 89),
+    rgb(170, 153, 0),
+
+    rgb(114, 255, 89),
+    rgb(12, 143, 0),
+
+    rgb(89, 225, 255),
+    rgb(0, 136, 143),
+
+    rgb(89, 106, 255),
+    rgb(0, 0, 143),
+
+    rgb(255, 113, 243),
+    rgb(143, 0, 122),
+};
+#define COLOR_COUNT TSGL_CALC_ARRSIZE(blockcolors)
+
 // ----------------------------------------------------------
 
 typedef struct {
@@ -40,6 +69,9 @@ typedef struct {
 
     tsgl_sound* music;
     tsgl_sprite* person_sprite;
+
+    uint8_t gamearray[GAMEARRAY_X][GAMEARRAY_Y];
+    tsgl_rawcolor blockcolors[COLOR_COUNT];
 } Subgame_state;
 
 static Subgame_state* subgame_state = NULL;
@@ -51,6 +83,16 @@ void subgame_tetris_start() {
     subgame_state->person_sprite = game_getPersonSprite();
     subgame_state->oldTimerTickTime = tsgl_time();
     subgame_state->score_delta = DEFAULT_SCORE_DELTA;
+
+    for (size_t i = 0; i < COLOR_COUNT; i++) {
+        subgame_state->blockcolors[i] = tsgl_color_raw(blockcolors[i], framebuffer.colormode);
+    }
+
+    for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
+        for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
+            subgame_state->gamearray[ix][iy] = ((ix + iy) % COLOR_COUNT) + 1;
+        }
+    }
 }
 
 static void stop_music() {
@@ -73,6 +115,17 @@ static void gameover() {
     stop_music();
     pushsound_play(sound_gameover_path, SOUND_GAMEOVER_SAMPLERATE, SOUND_GAMEOVER_VOLUME);
     subgame_state->gameover = true;
+}
+
+static void draw_array() {
+    for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
+        for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
+            uint8_t type = subgame_state->gamearray[ix][iy];
+            if (type > 0) {
+                tsgl_framebuffer_fill(&framebuffer, ix * BLOCKSIZE, iy * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE, subgame_state->blockcolors[type - 1]);
+            }
+        }
+    }
 }
 
 void subgame_tetris_handle() {
@@ -124,5 +177,5 @@ void subgame_tetris_handle() {
         subgame_state->person_sprite
     );
 
-    gameover();
+    draw_array();
 }
