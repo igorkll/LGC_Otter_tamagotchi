@@ -41,6 +41,7 @@ static const char* music_path = "/firmware/music/edmvselo.dpw";
 typedef struct {
     const char* path;
     bool gameover;
+    bool delete;
     int score_delta;
     int score_delta_delta;
     int fuel_delta;
@@ -74,7 +75,8 @@ static const Gameobj objects[] = {
     {
         .path = "/firmware/subgames/racing/fuel.bmp",
         .fuel_delta = 60,
-        .score_delta = 30
+        .score_delta = 30,
+        .delete = true
     }
 };
 
@@ -200,6 +202,10 @@ static void gameover() {
     subgame_state->gameover = true;
 }
 
+static void obj_delete(size_t index) {
+    subgame_state->objs[index].type = -1;
+}
+
 static void obj_collision(size_t index) {
     Gameobj_state* gameobj_state = &subgame_state->objs[index];
     if (gameobj_state->interacted) return;
@@ -209,12 +215,13 @@ static void obj_collision(size_t index) {
 
     if (gameobj.gameover) {
         gameover();
-        return;
     }
 
     subgame_state->score += gameobj.score_delta;
     subgame_state->score_delta += gameobj.score_delta_delta;
     subgame_state->fuel += gameobj.fuel_delta;
+
+    if (gameobj.delete) obj_delete(index);
 }
 
 static void spawn_random() {
