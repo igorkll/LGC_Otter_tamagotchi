@@ -114,7 +114,7 @@ void subgame_tetris_handle() {
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
 
-    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "HIGH\n%i", current_state.subgame_recing_max_score);
+    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "HIGH\n%i", current_state.subgame_tetris_max_score);
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
 

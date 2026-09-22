@@ -55,6 +55,7 @@ typedef struct {
     bool gameover;
     bool delete;
     bool collision_check;
+    bool dymanic_self_speed;
     int self_speed;
     int score_delta;
     int score_delta_delta;
@@ -91,6 +92,7 @@ static const Gameobj objects[] = {
         .path = "/firmware/subgames/racing/enemycar.bmp",
         .self_speed = 3,
         .collision_check = true,
+        .dymanic_self_speed = true,
         .gameover = true
     },
     {
@@ -399,9 +401,9 @@ void subgame_racing_handle() {
         const Gameobj* gameobj = &objects[gameobj_state->type];
         tsgl_sprite* sprite = gameobj_state->sprite;
 
-        int self_speed = gameobj->self_speed;
+        bool use_self_speed = true;
         if (gameobj_state->stopped) {
-            self_speed = 0;
+            use_self_speed = false;
         } else if (gameobj->collision_check) {
             for (size_t i2 = 0; i2 < MAX_OBJECTS; i2++) {
                 if (i == i2) continue;
@@ -414,13 +416,20 @@ void subgame_racing_handle() {
                     gameobj_state2->x, gameobj_state2->y, sprite2->sprite->width, sprite2->sprite->height
                 )) {
                     gameobj_state->stopped = true;
-                    self_speed = 0;
+                    use_self_speed = false;
                     break;
                 }
             }
             
         }
 
+        int self_speed = 0;
+        if (use_self_speed) {
+            self_speed = gameobj->self_speed;
+            if (gameobj->dymanic_self_speed) {
+                self_speed += subgame_state->speed;
+            }
+        }
         gameobj_state->y += speed + self_speed;
         tsgl_framebuffer_push(&framebuffer, gameobj_state->x, gameobj_state->y, sprite);
 
