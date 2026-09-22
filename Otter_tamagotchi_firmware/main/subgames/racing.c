@@ -155,11 +155,6 @@ typedef struct {
 
 static Subgame_state* subgame_state = NULL;
 
-static void randomize_dot(size_t i) {
-    subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE - ROAD_DOT_SIZE);
-    subgame_state->road_dots_y[i] = tsgl_random(-ROAD_DOT_SIZE, HEIGHT);
-}
-
 void subgame_racing_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
 
@@ -188,7 +183,8 @@ void subgame_racing_start() {
     subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
 
     for (size_t i = 0; i < ROAD_DOTS_COUNT; i++) {
-        randomize_dot(i);
+        subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE - ROAD_DOT_SIZE);
+        subgame_state->road_dots_y[i] = tsgl_random(-ROAD_DOT_SIZE, HEIGHT);
     }
 
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
@@ -374,7 +370,8 @@ void subgame_racing_handle() {
     for (size_t i = 0; i < ROAD_DOTS_COUNT; i++) {
         subgame_state->road_dots_y[i] += speed;
         if (subgame_state->road_dots_y[i] >= HEIGHT) {
-            randomize_dot(i);
+            subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE - ROAD_DOT_SIZE);
+            subgame_state->road_dots_y[i] = tsgl_random(-(ROAD_DOT_SIZE * 2), -ROAD_DOT_SIZE);
         }
 
         tsgl_pos x = subgame_state->road_dots_x[i];
