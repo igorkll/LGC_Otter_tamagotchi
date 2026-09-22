@@ -67,10 +67,10 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             
-            NULL,
-            NULL,
-            NULL,
-            NULL,
+            "\xC3\xEE\xED\xEA\xE0", //Гонка
+            "\xD2\xE5\xF2\xF0\xE8\xF1", //Тетрис
+            "\xCE\xF1\xF2\xF0\xEE\xE2", //Остров
+            "\xC7\xEC\xE5\xE9\xEA\xE0", //Змейка
             NULL
         }
     },
