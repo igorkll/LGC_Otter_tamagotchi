@@ -70,6 +70,11 @@ static const Gameobj objects[] = {
     {
         .path = "/firmware/subgames/racing/enemycar.bmp",
         .gameover = true
+    },
+    {
+        .path = "/firmware/subgames/racing/fuel.bmp",
+        .fuel_delta = 60,
+        .score_delta = 30
     }
 };
 
