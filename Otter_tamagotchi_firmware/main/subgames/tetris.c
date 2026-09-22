@@ -35,26 +35,26 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 
 #define rgb tsgl_rgb
 const tsgl_color blockcolors[] = {
-    rgb(255, 89, 89),
-    rgb(143, 0, 0),
+    rgb(253, 62, 62),
+    rgb(174, 0, 0),
 
-    rgb(255, 153, 89),
-    rgb(143, 79, 0),
+    rgb(255, 133, 58),
+    rgb(181, 99, 0),
 
-    rgb(255, 238, 89),
-    rgb(170, 153, 0),
+    rgb(251, 232, 58),
+    rgb(186, 167, 0),
 
-    rgb(114, 255, 89),
-    rgb(12, 143, 0),
+    rgb(93, 255, 64),
+    rgb(14, 170, 0),
 
-    rgb(89, 225, 255),
-    rgb(0, 136, 143),
+    rgb(64, 220, 255),
+    rgb(0, 168, 176),
 
-    rgb(89, 106, 255),
-    rgb(0, 0, 143),
+    rgb(64, 83, 255),
+    rgb(0, 0, 162),
 
-    rgb(255, 113, 243),
-    rgb(143, 0, 122),
+    rgb(255, 66, 239),
+    rgb(167, 0, 142),
 };
 #define COLOR_COUNT TSGL_CALC_ARRSIZE(blockcolors)
 
@@ -262,4 +262,5 @@ void subgame_tetris_handle() {
     draw_tetris_object(20, 50, subgame_state->current_object);
     draw_tetris_object(50, 50, subgame_state->next_object);
     draw_tetris_object(50, 20, get_random_object());
+    tsgl_delay(1000);
 }
