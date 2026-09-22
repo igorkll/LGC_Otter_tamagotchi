@@ -34,7 +34,7 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define GAMEARRAY_Y (HEIGHT / BLOCKSIZE)
 
 #define rgb tsgl_rgb
-tsgl_color blockcolors[] = {
+const tsgl_color blockcolors[] = {
     rgb(255, 89, 89),
     rgb(143, 0, 0),
 
@@ -60,6 +60,83 @@ tsgl_color blockcolors[] = {
 
 // ----------------------------------------------------------
 
+#define OBJECT_X 4
+#define OBJECT_Y 4
+
+typedef struct {
+    uint8_t index;
+    uint8_t array[OBJECT_Y][OBJECT_X];
+} Tetris_object;
+
+const Tetris_object base_objects[] = {
+    {
+        .index = 0,
+        .array = [
+            [1, 0, 0, 0],
+            [1, 0, 0, 0],
+            [1, 0, 0, 0],
+            [1, 0, 0, 0]
+        ]
+    },
+    {
+        .index = 1,
+        .array = [
+            [1, 0, 0, 0],
+            [1, 0, 0, 0],
+            [1, 1, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+    {
+        .index = 2,
+        .array = [
+            [0, 1, 0, 0],
+            [0, 1, 0, 0],
+            [1, 1, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+    {
+        .index = 3,
+        .array = [
+            [1, 0, 0, 0],
+            [1, 1, 0, 0],
+            [1, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+    {
+        .index = 4,
+        .array = [
+            [0, 1, 0, 0],
+            [1, 1, 0, 0],
+            [1, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+    {
+        .index = 5,
+        .array = [
+            [1, 0, 0, 0],
+            [1, 1, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+    {
+        .index = 6,
+        .array = [
+            [0, 0, 0, 0],
+            [1, 1, 0, 0],
+            [1, 1, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    }
+};
+#define BASE_OBJECTS_COUNT TSGL_CALC_ARRSIZE(base_objects)
+
+// ----------------------------------------------------------
+
 typedef struct {
     bool gameover;
     time_t oldTimerTickTime;
@@ -72,9 +149,49 @@ typedef struct {
 
     uint8_t gamearray[GAMEARRAY_X][GAMEARRAY_Y];
     tsgl_rawcolor blockcolors[COLOR_COUNT];
+    Tetris_object current_object;
+    Tetris_object next_object;
 } Subgame_state;
 
 static Subgame_state* subgame_state = NULL;
+
+static Tetris_object get_random_object() {
+    const Tetris_object base_object = base_objects[tsgl_random(0, BASE_OBJECTS_COUNT - 1)];
+    uint8_t random_color = tsgl_random(0, (COLOR_COUNT / 2) - 1);
+
+    Tetris_object tetris_object;
+    memcpy(&tetris_object, &base_object, sizeof(Tetris_object));
+
+    for (size_t ix = 0; ix < OBJECT_X; ix++) {
+        for (size_t iy = 0; iy < OBJECT_Y; iy++) {
+            if (tetris_object.array[iy][ix] > 0) {
+                uint8_t color_offset = (ix + iy) % 2;
+                tetris_object.array[iy][ix] = random_color + color_offset;
+            }
+        }
+    }
+
+    return tetris_object;
+}
+
+static Tetris_object rotate_object(Tetris_object object) {
+    
+}
+
+static void print_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) {
+    for (size_t ix = 0; ix < OBJECT_X; ix++) {
+        for (size_t iy = 0; iy < OBJECT_Y; iy++) {
+            uint8_t val = tetris_object.array[iy][ix];
+            if (val > 0) {
+                subgame_state->gamearray[x + ix][y + iy] = val;
+            }
+        }
+    }
+}
+
+static void draw_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object, ) {
+
+}
 
 void subgame_tetris_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
@@ -86,12 +203,6 @@ void subgame_tetris_start() {
 
     for (size_t i = 0; i < COLOR_COUNT; i++) {
         subgame_state->blockcolors[i] = tsgl_color_raw(blockcolors[i], framebuffer.colormode);
-    }
-
-    for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
-        for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
-            subgame_state->gamearray[ix][iy] = ((ix + iy) % COLOR_COUNT) + 1;
-        }
     }
 }
 
