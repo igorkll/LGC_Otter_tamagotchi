@@ -29,7 +29,7 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 25
 
-#define BLOCKSIZE 4
+#define BLOCKSIZE 8
 #define GAMEARRAY_X (GAME_ZONE / BLOCKSIZE)
 #define GAMEARRAY_Y (HEIGHT / BLOCKSIZE)
 
@@ -94,7 +94,7 @@ static Subgame_state* subgame_state = NULL;
 
 static Tetris_object get_random_object() {
     const Tetris_object base_object = base_objects[tsgl_random(0, BASE_OBJECTS_COUNT - 1)];
-    uint8_t random_color = tsgl_random(0, (COLOR_COUNT / 2) - 1);
+    uint8_t random_color = tsgl_random(0, (COLOR_COUNT / 2) - 1) * 2;
 
     Tetris_object tetris_object;
     memcpy(&tetris_object, &base_object, sizeof(Tetris_object));
@@ -150,6 +150,20 @@ static void draw_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_obje
             uint8_t type = tetris_object.array[iy][ix];
             if (type > 0) {
                 tsgl_framebuffer_fill(&framebuffer, x + (ix * BLOCKSIZE), y + (iy * BLOCKSIZE), BLOCKSIZE, BLOCKSIZE, subgame_state->blockcolors[type - 1]);
+            }
+        }
+    }
+}
+
+static void get_tetris_object_size(Tetris_object tetris_object, tsgl_pos* sizeX, tsgl_pos* sizeY) {
+    for (size_t ix = 0; ix < OBJECT_X; ix++) {
+        for (size_t iy = 0; iy < OBJECT_Y; iy++) {
+            uint8_t type = tetris_object.array[iy][ix];
+            if (type > 0) {
+                tsgl_pos sx = ix + 1;
+                tsgl_pos sy = iy + 1;
+                if (sx > *sizeX) *sizeX = sx;
+                if (sy > *sizeY) *sizeY = sy;
             }
         }
     }
