@@ -106,7 +106,7 @@ typedef struct {
 
     time_t oldTimerTickTime;
 
-    tsgl_sound* sound;
+    tsgl_sound* music;
 } Subgame_state;
 
 static Subgame_state* subgame_state = NULL;
