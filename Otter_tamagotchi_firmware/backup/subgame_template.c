@@ -90,8 +90,8 @@ void subgame_tetris_handle() {
     if (currentTime - subgame_state->oldTimerTickTime > 1000) {
         subgame_state->oldTimerTickTime = currentTime;
 
-        game_states_change(&current_state.states_fatigue, FATIGUE_DELTA);
-        game_states_change(&current_state.states_sadness, SADNESS_DELTA);
+        game_states_change(&current_state.states_fatigue, FATIGUE_DELTA * GAMECFG_PARAMS_SPEED_MUL);
+        game_states_change(&current_state.states_sadness, SADNESS_DELTA * GAMECFG_PARAMS_SPEED_MUL);
 
         subgame_state->score += subgame_state->score_delta;
     }

@@ -33,19 +33,19 @@ static void car_roomSelect(game_room room) {
     current_state.next_car_icon = -1;
     
     switch (room) {
-        case ID_YARD:
+        case game_room_yard:
             current_state.next_car_icon = 0;
             break;
 
-        case ID_SHOP:
+        case game_room_shop:
             current_state.next_car_icon = 1;
             break;
 
-        case ID_CLUB:
+        case game_room_club:
             current_state.next_car_icon = 2;
             break;
 
-        case ID_MUSEUM:
+        case game_room_museum:
             current_state.next_car_icon = 3;
             break;
     }
@@ -106,7 +106,7 @@ static void game_gaming_roomAction(int action) {
 static void game_yard_roomAction(int action) {
     switch (action) {
         case L2:
-            game_selectRoom(ID_CAR);
+            game_selectRoom(game_room_car);
             break;
     }
 }
@@ -114,19 +114,19 @@ static void game_yard_roomAction(int action) {
 static void game_car_roomAction(int action) {
     switch (action) {
         case 0:
-            car_selectRoom(ID_YARD);
+            car_selectRoom(game_room_yard);
             break;
         
         case 1:
-            car_selectRoom(ID_SHOP);
+            car_selectRoom(game_room_shop);
             break;
 
         case 2:
-            car_selectRoom(ID_CLUB);
+            car_selectRoom(game_room_club);
             break;
 
         case 3:
-            car_selectRoom(ID_MUSEUM);
+            car_selectRoom(game_room_museum);
             break;
     }
 }
@@ -134,7 +134,7 @@ static void game_car_roomAction(int action) {
 static void game_shop_roomAction(int action) {
     switch (action) {
         case 0:
-            game_selectRoom(ID_CAR);
+            game_selectRoom(game_room_car);
             break;
 
         case L2:
@@ -150,7 +150,7 @@ static void game_shop_roomAction(int action) {
 static void game_club_roomAction(int action) {
     switch (action) {
         case 0:
-            game_selectRoom(ID_CAR);
+            game_selectRoom(game_room_car);
             break;
     }
 }
@@ -158,7 +158,7 @@ static void game_club_roomAction(int action) {
 static void game_museum_roomAction(int action) {
     switch (action) {
         case 0:
-            game_selectRoom(ID_CAR);
+            game_selectRoom(game_room_car);
             break;
 
         case 5:
@@ -173,35 +173,35 @@ static void game_museum_roomAction(int action) {
 
 void game_roomAction(int action) {
     switch (game_getCurrentRoomIndex()) {
-        case ID_BEDROOM:
+        case game_room_bedroom:
             game_bedroom_roomAction(action);
             break;
 
-        case ID_KITCHEN:
+        case game_room_kitchen:
             game_kitchen_roomAction(action);
             break;
 
-        case ID_GAMING:
+        case game_room_gaming:
             game_gaming_roomAction(action);
             break;
 
-        case ID_YARD:
+        case game_room_yard:
             game_yard_roomAction(action);
             break;
 
-        case ID_CAR:
+        case game_room_car:
             game_car_roomAction(action);
             break;
 
-        case ID_SHOP:
+        case game_room_shop:
             game_shop_roomAction(action);
             break;
 
-        case ID_CLUB:
+        case game_room_club:
             game_club_roomAction(action);
             break;
 
-        case ID_MUSEUM:
+        case game_room_museum:
             game_museum_roomAction(action);
             break;
     }
@@ -214,10 +214,10 @@ void game_roomAction(int action) {
 }
 
 void game_roomSelected(game_room selected) {
-    if (selected != ID_CAR) current_state.old_car_room = selected;
+    if (selected != game_room_car) current_state.old_car_room = selected;
 
     switch (selected) {
-        case ID_CAR:
+        case game_room_car:
             car_roomSelect(current_state.old_car_room);
             break;
     }

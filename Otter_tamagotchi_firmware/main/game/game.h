@@ -3,19 +3,9 @@
 
 #define ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT 5
 
-#define ID_BEDROOM 0
-#define ID_KITCHEN 1
-#define ID_GAMING 2
-#define ID_TOILET 3
-#define ID_YARD 4
-#define ID_CAR 5
-#define ID_SHOP 6
-#define ID_CLUB 7
-#define ID_MUSEUM 8
-
 #define ID_CONSTIEM_OVERLAY 9
 
-#define RESET_SETTINGS_ID 15
+#define RESET_SETTINGS_ID 16
 
 #define ROOM_OVERLAY_Y_BASE 26
 #define ROOM_OVERLAY_MARGIN 4
@@ -29,10 +19,7 @@ typedef double game_state_val;
 
 extern void(*game_alt_handle)();
 
-typedef enum {
-    game_room_bedroom = 0,
-    game_room_kitchen
-} game_room;
+#include "cparts/rooms_enum.h"
 #define game_room int8_t
 
 typedef enum {

@@ -127,7 +127,7 @@ void game_updateActiveIcons() {
         game_upmenu_setActivate(i, false);
     }
 
-    if (current_state.room == ID_CAR && current_state.next_car_icon >= 0) game_upmenu_setActivate(current_state.next_car_icon, true);
+    if (current_state.room == game_room_car && current_state.next_car_icon >= 0) game_upmenu_setActivate(current_state.next_car_icon, true);
     
     game_upmenu_setActivate(ID_CONSTIEM_OVERLAY, game_isAnyOverlayOpened());
 }
@@ -510,7 +510,7 @@ void game_startActionTimer(int actionTimer, const char* str, game_action action,
 void game_stopActionTimer() {
     current_state.actionTimer = 0;
 
-    if (current_state.room == ID_CAR) {
+    if (current_state.room == game_room_car) {
         current_state.next_car_icon = -1;
         game_updateActiveIcons();
     }

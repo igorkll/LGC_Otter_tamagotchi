@@ -19,11 +19,11 @@ void kitchen_draw_overlay() {
 
 void game_roomOverlay() {
     switch (game_getCurrentRoomIndex()) {
-        case ID_KITCHEN:
+        case game_room_kitchen:
             kitchen_draw_overlay();
             break;
         
-        case ID_SHOP:
+        case game_room_shop:
             shop_draw_overlay();
             break;
     }
