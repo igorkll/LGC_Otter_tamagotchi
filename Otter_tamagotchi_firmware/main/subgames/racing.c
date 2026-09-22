@@ -39,6 +39,8 @@ static const char* music_path = "/firmware/music/edmvselo.dpw";
 #define MUSIC_SAMPLERATE 16000
 #define MUSIC_VOLUME 0.6
 
+#define SADNESS_DELTA -1.1
+
 typedef struct {
     const char* path;
     bool gameover;
@@ -308,6 +310,8 @@ void subgame_racing_handle() {
     time_t currentTime = tsgl_time();
     if (currentTime - subgame_state->oldTimerTickTime > 1000) {
         subgame_state->oldTimerTickTime = currentTime;
+
+        game_states_change(&current_state.states_sadness, SADNESS_DELTA);
 
         subgame_state->fuel--;
 
