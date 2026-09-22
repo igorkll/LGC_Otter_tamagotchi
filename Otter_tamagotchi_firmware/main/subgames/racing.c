@@ -32,6 +32,7 @@
 #define DEFAULT_FUEL 60
 #define DEFAULT_SPAWN_OBJECT_PER_SCROLL 30
 #define DEFAULT_SCORE_DELTA 1
+#define DEFAULT_SPAWN_PERCENT 50
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
 #define MUSIC_SAMPLERATE 16000
@@ -92,6 +93,7 @@ typedef struct {
     
     int score;
     int score_delta;
+    int8_t spawn_percent;
     int fuel;
     tsgl_pos speed;
     global_pos scroll;
@@ -130,6 +132,7 @@ void subgame_racing_start() {
 
     subgame_state->spawn_object_per_scroll = DEFAULT_SPAWN_OBJECT_PER_SCROLL;
     subgame_state->score_delta = DEFAULT_SCORE_DELTA;
+    subgame_state->spawn_percent = DEFAULT_SPAWN_PERCENT;
 
     subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
 
@@ -212,7 +215,7 @@ static void obj_collision(size_t index) {
 static void spawn_random() {
     if (subgame_state->scroll - subgame_state->old_spawn_scroll > subgame_state->spawn_object_per_scroll) {
         subgame_state->old_spawn_scroll = subgame_state->scroll;
-        if (true) {
+        if (tsgl_random(0, 99) < subgame_state->spawn_percent) {
             obj_spawn(tsgl_random(0, OBJECTS_TYPES_COUNT - 1));
         }
     }
