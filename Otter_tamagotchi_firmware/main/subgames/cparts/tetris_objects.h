@@ -1,4 +1,5 @@
 const Tetris_object base_objects[] = {
+    // ---------------------------
     {
         .local_index = 0,
         .object_index = 0,
@@ -10,6 +11,18 @@ const Tetris_object base_objects[] = {
         ]
     },
     {
+        .local_index = 1,
+        .object_index = 0,
+        .array = [
+            [1, 1, 1, 1],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+
+    // ---------------------------
+    {
         .local_index = 0,
         .object_index = 1,
         .array = [
@@ -19,6 +32,38 @@ const Tetris_object base_objects[] = {
             [0, 0, 0, 0]
         ]
     },
+    {
+        .local_index = 1,
+        .object_index = 1,
+        .array = [
+            [1, 1, 1, 0],
+            [1, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+    {
+        .local_index = 2,
+        .object_index = 1,
+        .array = [
+            [1, 1, 0, 0],
+            [0, 1, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+    {
+        .local_index = 3,
+        .object_index = 1,
+        .array = [
+            [0, 0, 1, 0],
+            [1, 1, 1, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+
+    // ---------------------------
     {
         .local_index = 0,
         .object_index = 2,
@@ -30,6 +75,38 @@ const Tetris_object base_objects[] = {
         ]
     },
     {
+        .local_index = 1,
+        .object_index = 2,
+        .array = [
+            [1, 0, 0, 0],
+            [1, 1, 1, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+    {
+        .local_index = 2,
+        .object_index = 2,
+        .array = [
+            [1, 1, 0, 0],
+            [1, 0, 0, 0],
+            [1, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+    {
+        .local_index = 3,
+        .object_index = 2,
+        .array = [
+            [1, 1, 1, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+
+    // ---------------------------
+    {
         .local_index = 0,
         .object_index = 3,
         .array = [
@@ -39,6 +116,38 @@ const Tetris_object base_objects[] = {
             [0, 0, 0, 0]
         ]
     },
+    {
+        .local_index = 1,
+        .object_index = 3,
+        .array = [
+            [1, 1, 1, 0],
+            [0, 1, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+    {
+        .local_index = 2,
+        .object_index = 3,
+        .array = [
+            [0, 1, 0, 0],
+            [1, 1, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+    {
+        .local_index = 3,
+        .object_index = 3,
+        .array = [
+            [0, 1, 0, 0],
+            [1, 1, 1, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+
+    // ---------------------------
     {
         .local_index = 0,
         .object_index = 4,
@@ -50,6 +159,18 @@ const Tetris_object base_objects[] = {
         ]
     },
     {
+        .local_index = 1,
+        .object_index = 4,
+        .array = [
+            [1, 1, 0, 0],
+            [0, 1, 1, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+
+    // ---------------------------
+    {
         .local_index = 0,
         .object_index = 5,
         .array = [
@@ -60,12 +181,24 @@ const Tetris_object base_objects[] = {
         ]
     },
     {
+        .local_index = 1,
+        .object_index = 5,
+        .array = [
+            [0, 1, 1, 0],
+            [1, 1, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    },
+
+    // ---------------------------
+    {
         .local_index = 0,
         .object_index = 6,
         .array = [
+            [1, 1, 0, 0],
+            [1, 1, 0, 0],
             [0, 0, 0, 0],
-            [1, 1, 0, 0],
-            [1, 1, 0, 0],
             [0, 0, 0, 0]
         ]
     }
