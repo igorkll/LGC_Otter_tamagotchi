@@ -33,6 +33,8 @@
 #define DEFAULT_SPAWN_PERCENT 50
 #define DEFAULT_TAXIING_SPEED 2
 
+#define MUSIC_CHANGE_SPEED_FACTOR 0.2
+
 static const char* music_path = "/firmware/music/edmvselo.dpw";
 #define MUSIC_SAMPLERATE 16000
 #define MUSIC_VOLUME 0.6
@@ -330,6 +332,12 @@ void subgame_racing_handle() {
     }
 
     subgame_state->scroll += speed;
+    
+    float music_speed = (((((float)speed) / ((float)DEFAULT_SPEED)) - 1.0) * MUSIC_CHANGE_SPEED_FACTOR) + 1.0;
+    printf("%f\n", music_speed);
+    if (subgame_state->music->speed != music_speed) {
+        tsgl_sound_setSpeed(subgame_state->music, music_speed);
+    }
 
     spawn_random();
 
