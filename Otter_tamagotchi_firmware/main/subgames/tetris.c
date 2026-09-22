@@ -181,8 +181,8 @@ static void draw_wireframe(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) 
     tsgl_pos sizeY = 0;
     get_tetris_object_size(tetris_object, &sizeX, &sizeY);
 
-    tsgl_pos blockOffsetX = sizeX / 2;
-    tsgl_pos blockOffsetY = sizeY / 2;
+    tsgl_pos blockOffsetX = (OBJECT_X / 2) - (sizeX / 2);
+    tsgl_pos blockOffsetY = (OBJECT_Y / 2) - (sizeY / 2);
     draw_tetris_object(x + (blockOffsetX * BLOCKSIZE), y + (blockOffsetY * BLOCKSIZE), tetris_object);
 }
 
