@@ -29,10 +29,15 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 25
 
-#define WIREFRAME_STOKE_SIZE 2
+#define WIREFRAME_STOKE_SIZE 1
 #define BLOCKSIZE 8
 #define GAMEARRAY_X (GAME_ZONE / BLOCKSIZE)
 #define GAMEARRAY_Y (HEIGHT / BLOCKSIZE)
+
+#define OBJECT_X 4
+#define OBJECT_Y 4
+
+#define WIREFRAME_SIZE_X (BLOCKSIZE * OBJECT_X)
 
 #define rgb tsgl_rgb
 const tsgl_color blockcolors[] = {
@@ -60,9 +65,6 @@ const tsgl_color blockcolors[] = {
 #define COLOR_COUNT TSGL_CALC_ARRSIZE(blockcolors)
 
 // ----------------------------------------------------------
-
-#define OBJECT_X 4
-#define OBJECT_Y 4
 
 typedef struct {
     uint8_t object_index;
@@ -268,6 +270,8 @@ void subgame_tetris_handle() {
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, STATUS_ZONE, HEIGHT, black);
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, SEPARATOR_LINE_SIZE, HEIGHT, white);
 
+    draw_array();
+
     printsettings_subgames.fg = white;
     printsettings_subgames.width = STATUS_ZONE;
     printsettings_subgames.height = PRINT_GAP_Y;
@@ -289,10 +293,12 @@ void subgame_tetris_handle() {
         subgame_state->person_sprite
     );
 
-    draw_array();
+    draw_wireframe((GAME_ZONE + (STATUS_ZONE / 2)) - (WIREFRAME_SIZE_X / 2), draw_y, get_random_object());
+
+    
     draw_tetris_object(20, 50, subgame_state->current_object);
     draw_tetris_object(50, 50, subgame_state->next_object);
     draw_tetris_object(50, 20, get_random_object());
-    draw_wireframe(20, 80, subgame_state->next_object);
+    
     tsgl_delay(1000);
 }
