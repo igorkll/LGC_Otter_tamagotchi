@@ -33,7 +33,7 @@
 #define DEFAULT_SPAWN_PERCENT 50
 #define DEFAULT_TAXIING_SPEED 2
 
-#define MUSIC_CHANGE_SPEED_FACTOR 0.2
+#define MUSIC_CHANGE_SPEED_FACTOR 0.1
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
 #define MUSIC_SAMPLERATE 16000
@@ -43,6 +43,7 @@ typedef struct {
     const char* path;
     bool gameover;
     bool delete;
+    int self_speed;
     int score_delta;
     int score_delta_delta;
     int speed_delta;
@@ -73,6 +74,7 @@ static const Gameobj objects[] = {
     },
     {
         .path = "/firmware/subgames/racing/enemycar.bmp",
+        .self_speed = 3,
         .gameover = true
     },
     {
@@ -334,7 +336,6 @@ void subgame_racing_handle() {
     subgame_state->scroll += speed;
     
     float music_speed = (((((float)speed) / ((float)DEFAULT_SPEED)) - 1.0) * MUSIC_CHANGE_SPEED_FACTOR) + 1.0;
-    printf("%f\n", music_speed);
     if (subgame_state->music->speed != music_speed) {
         tsgl_sound_setSpeed(subgame_state->music, music_speed);
     }
@@ -364,17 +365,20 @@ void subgame_racing_handle() {
     }
 
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
-        if (subgame_state->objs[i].type < 0) continue;
-        subgame_state->objs[i].y += speed;
+        Gameobj_state* gameobj_state = &subgame_state->objs[i];
+        if (gameobj_state->type < 0) continue;
+        const Gameobj* gameobj = &objects[gameobj_state->type];
 
-        tsgl_sprite* sprite = subgame_state->objs[i].sprite;
-        tsgl_framebuffer_push(&framebuffer, subgame_state->objs[i].x, subgame_state->objs[i].y, sprite);
+        gameobj_state->y += speed + gameobj->self_speed;
 
-        if (subgame_state->objs[i].y >= HEIGHT) {
-            subgame_state->objs[i].type = -1;
+        tsgl_sprite* sprite = gameobj_state->sprite;
+        tsgl_framebuffer_push(&framebuffer, gameobj_state->x, gameobj_state->y, sprite);
+
+        if (gameobj_state->y >= HEIGHT) {
+            gameobj_state->type = -1;
         } else if (tsgl_funcs_checkIntersection(
             car_x, car_y, subgame_state->size_x, subgame_state->size_y,
-            subgame_state->objs[i].x, subgame_state->objs[i].y, sprite->sprite->width, sprite->sprite->height
+            gameobj_state->x, gameobj_state->y, sprite->sprite->width, sprite->sprite->height
         )) {
             obj_collision(i);
         }
