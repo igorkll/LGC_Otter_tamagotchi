@@ -9,6 +9,7 @@
 #include "../pushsound.h"
 
 #include "../subgames/racing.h"
+#include "../subgames/tetris.h"
 
 static tsgl_sound* room_music;
 
@@ -93,6 +94,11 @@ static void game_gaming_roomAction(int action) {
         case L2:
             subgame_racing_start();
             game_alt_handle = subgame_racing_handle;
+            break;
+
+        case L2 + 1:
+            subgame_tetris_start();
+            game_alt_handle = subgame_tetris_handle;
             break;
     }
 }

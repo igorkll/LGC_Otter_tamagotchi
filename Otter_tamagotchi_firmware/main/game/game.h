@@ -93,6 +93,7 @@ typedef struct {
 
     // score table
     int subgame_recing_max_score;
+    int subgame_tetris_max_score;
 } Game_state;
 
 typedef struct {

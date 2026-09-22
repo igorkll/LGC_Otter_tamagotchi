@@ -1,10 +1,11 @@
 #include "racing.h"
 #include "../gfx.h"
 #include "../pushsound.h"
-#include "../hctl.h"
 #include "../game/game_modal.h"
 #include "../game/game_printsets.h"
 #include "../game/game_states.h"
+
+// ----------------------------------------------------------
 
 #define STATUS_ZONE 50
 #define GAME_ZONE (WIDTH - STATUS_ZONE)
@@ -40,13 +41,20 @@ static const char* music_path = "/firmware/music/edmvselo.dpw";
 #define MUSIC_SAMPLERATE 16000
 #define MUSIC_VOLUME 0.6
 
+static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
+#define SOUND_GAMEOVER_SAMPLERATE 16000
+#define SOUND_GAMEOVER_VOLUME 1
+
 #define FATIGUE_DELTA 0.05
 #define SADNESS_DELTA -1.1
+
+// ----------------------------------------------------------
 
 typedef struct {
     const char* path;
     bool gameover;
     bool delete;
+    bool collision_check;
     int self_speed;
     int score_delta;
     int score_delta_delta;
@@ -63,6 +71,7 @@ typedef struct {
     int8_t type;
     tsgl_sprite* sprite;
     bool interacted;
+    bool stopped;
 } Gameobj_state;
 
 static const Gameobj objects[] = {
@@ -81,6 +90,7 @@ static const Gameobj objects[] = {
     {
         .path = "/firmware/subgames/racing/enemycar.bmp",
         .self_speed = 3,
+        .collision_check = true,
         .gameover = true
     },
     {
@@ -234,6 +244,7 @@ static void obj_spawn(uint8_t type) {
             subgame_state->objs[i].x = tsgl_random(0, GAME_ZONE - sprite->sprite->width);
             subgame_state->objs[i].y = -sprite->sprite->height;
             subgame_state->objs[i].interacted = false;
+            subgame_state->objs[i].stopped = false;
             return;
         }
     }
@@ -241,7 +252,7 @@ static void obj_spawn(uint8_t type) {
 
 static void gameover() {
     stop_music();
-    pushsound_play("/firmware/sounds/gameover.pcm", 16000, 1);
+    pushsound_play(sound_gameover_path, SOUND_GAMEOVER_SAMPLERATE, SOUND_GAMEOVER_VOLUME);
     subgame_state->gameover = true;
 }
 
@@ -281,14 +292,13 @@ static void spawn_random() {
 void subgame_racing_handle() {
     // ------------------------ process
 
+    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
+        game_exit();
+        return;
+    }
+
     if (subgame_state->gameover) {
-        if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
-            game_exit();
-            return;
-        }
-
         game_modal_draw_gameover(subgame_state->score, current_state.subgame_recing_max_score);
-
         return;
     }
 
@@ -304,7 +314,7 @@ void subgame_racing_handle() {
                 subgame_state->fuel -= SPEED_BOOST_FUEL_DELTA;
             }
         }
-        
+
         //да не гавнокодер я. так задумано. tsgl_keyboard_getRawState быстрее реагирует на изменения а дополнительный tsgl_keyboard_getState тут чтобы избежать дребезка
     } else if (!tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY)) {
         subgame_state->okay_unlocked = true;
@@ -341,11 +351,6 @@ void subgame_racing_handle() {
         if (car_x < 0) {
             subgame_state->car_x = subgame_state->size_x / 2;
         }
-    }
-
-    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
-        game_exit();
-        return;
     }
 
     if (tsgl_keyboard_getRawState(&keyboard, KEY_INDEX_RIGHT)) { //RIGHT
@@ -392,10 +397,31 @@ void subgame_racing_handle() {
         Gameobj_state* gameobj_state = &subgame_state->objs[i];
         if (gameobj_state->type < 0) continue;
         const Gameobj* gameobj = &objects[gameobj_state->type];
-
-        gameobj_state->y += speed + gameobj->self_speed;
-
         tsgl_sprite* sprite = gameobj_state->sprite;
+
+        int self_speed = gameobj->self_speed;
+        if (gameobj_state->stopped) {
+            self_speed = 0;
+        } else if (gameobj->collision_check) {
+            for (size_t i2 = 0; i2 < MAX_OBJECTS; i2++) {
+                if (i == i2) continue;
+                Gameobj_state* gameobj_state2 = &subgame_state->objs[i2];
+                if (gameobj_state2->type < 0) continue;
+                tsgl_sprite* sprite2 = gameobj_state2->sprite;
+                
+                if (tsgl_funcs_checkIntersection(
+                    gameobj_state->x, gameobj_state->y + (speed + gameobj->self_speed), sprite->sprite->width, sprite->sprite->height,
+                    gameobj_state2->x, gameobj_state2->y, sprite2->sprite->width, sprite2->sprite->height
+                )) {
+                    gameobj_state->stopped = true;
+                    self_speed = 0;
+                    break;
+                }
+            }
+            
+        }
+
+        gameobj_state->y += speed + self_speed;
         tsgl_framebuffer_push(&framebuffer, gameobj_state->x, gameobj_state->y, sprite);
 
         if (gameobj_state->y >= HEIGHT) {
