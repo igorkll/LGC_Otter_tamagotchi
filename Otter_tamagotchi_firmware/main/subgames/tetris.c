@@ -112,22 +112,52 @@ static Tetris_object get_random_object() {
 }
 
 static Tetris_object rotate_object(Tetris_object object) {
-    
+    uint8_t variants_count = 0;
+    for (size_t i = 0; i < BASE_OBJECTS_COUNT; i++) {
+        Tetris_object obj = base_objects[i];
+        if (obj.object_index == object.object_index) {
+            if (obj.local_index > variants_count) variants_count = obj.local_index;
+        }
+    }
+    variants_count++;
+
+    uint8_t next_local_index = (object.local_index + 1) % variants_count;
+    for (size_t i = 0; i < BASE_OBJECTS_COUNT; i++) {
+        Tetris_object obj = base_objects[i];
+        if (obj.local_index == next_local_index && obj.object_index == object.object_index) {
+            return obj;
+        }
+    }
+
+    ESP_LOGE(TAG, "WTF!");
+    return object;
 }
 
 static void print_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) {
     for (size_t ix = 0; ix < OBJECT_X; ix++) {
         for (size_t iy = 0; iy < OBJECT_Y; iy++) {
-            uint8_t val = tetris_object.array[iy][ix];
-            if (val > 0) {
-                subgame_state->gamearray[x + ix][y + iy] = val;
+            uint8_t type = tetris_object.array[iy][ix];
+            if (type > 0) {
+                subgame_state->gamearray[x + ix][y + iy] = type;
             }
         }
     }
 }
 
-static void draw_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object, ) {
+static void draw_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) {
+    for (size_t ix = 0; ix < OBJECT_X; ix++) {
+        for (size_t iy = 0; iy < OBJECT_Y; iy++) {
+            uint8_t type = tetris_object.array[iy][ix];
+            if (type > 0) {
+                tsgl_framebuffer_fill(&framebuffer, x + (ix * BLOCKSIZE), y + (iy * BLOCKSIZE), BLOCKSIZE, BLOCKSIZE, subgame_state->blockcolors[type - 1]);
+            }
+        }
+    }
+}
 
+static void next_object() {
+    subgame_state->current_object = subgame_state->next_object;
+    subgame_state->next_object = get_random_object();
 }
 
 void subgame_tetris_start() {
@@ -137,6 +167,9 @@ void subgame_tetris_start() {
     subgame_state->person_sprite = game_getPersonSprite();
     subgame_state->oldTimerTickTime = tsgl_time();
     subgame_state->score_delta = DEFAULT_SCORE_DELTA;
+
+    subgame_state->current_object = get_random_object();
+    subgame_state->next_object = get_random_object();
 
     for (size_t i = 0; i < COLOR_COUNT; i++) {
         subgame_state->blockcolors[i] = tsgl_color_raw(blockcolors[i], framebuffer.colormode);
@@ -226,4 +259,7 @@ void subgame_tetris_handle() {
     );
 
     draw_array();
+    draw_tetris_object(20, 50, subgame_state->current_object);
+    draw_tetris_object(50, 50, subgame_state->next_object);
+    draw_tetris_object(50, 20, get_random_object());
 }
