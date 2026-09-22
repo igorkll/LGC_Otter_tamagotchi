@@ -22,9 +22,7 @@
 
 #define MAX_OBJECTS 8
 
-#define SPEED_BOOST 3
 #define SPEED_BOOST_FUEL_DELTA 4
-#define SPEED_BOOST_TAXIING_SPEED_ADD 5
 
 #define DEFAULT_SPEED 2
 #define DEFAULT_FUEL 60
@@ -32,6 +30,8 @@
 #define DEFAULT_SCORE_DELTA 1
 #define DEFAULT_SPAWN_PERCENT 50
 #define DEFAULT_TAXIING_SPEED 2
+#define DEFAULT_SPEED_BOOST 3
+#define DEFAULT_SPEED_BOOST_TAXIING_SPEED_ADD 5
 
 #define MUSIC_CHANGE_SPEED_FACTOR 0.1
 
@@ -49,6 +49,8 @@ typedef struct {
     int speed_delta;
     int taxiing_speed_delta;
     int fuel_delta;
+    int speed_boost_delta;
+    int speed_boost_taxiing_speed_add;
 } Gameobj;
 
 typedef struct {
@@ -96,6 +98,13 @@ static const Gameobj objects[] = {
         .delete = true
     },
     {
+        .path = "/firmware/subgames/racing/truster.bmp",
+        .score_delta = 10,
+        .speed_boost_delta = 1,
+        .speed_boost_taxiing_speed_add = 1,
+        .delete = true
+    },
+    {
         .path = "/firmware/subgames/racing/star.bmp",
         .score_delta = 50,
         .delete = true
@@ -128,6 +137,9 @@ typedef struct {
     tsgl_pos speed;
     global_pos scroll;
 
+    int speed_boost;
+    int speed_boost_taxiing_speed_add;
+
     global_pos old_spawn_scroll;
     global_pos spawn_object_per_scroll;
 
@@ -142,6 +154,11 @@ typedef struct {
 } Subgame_state;
 
 static Subgame_state* subgame_state = NULL;
+
+static void randomize_dot(size_t i) {
+    subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE - ROAD_DOT_SIZE);
+    subgame_state->road_dots_y[i] = tsgl_random(-ROAD_DOT_SIZE, HEIGHT);
+}
 
 void subgame_racing_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
@@ -165,11 +182,13 @@ void subgame_racing_start() {
     subgame_state->spawn_percent = DEFAULT_SPAWN_PERCENT;
     subgame_state->taxiing_speed = DEFAULT_TAXIING_SPEED;
 
+    subgame_state->speed_boost = DEFAULT_SPEED_BOOST;
+    subgame_state->speed_boost_taxiing_speed_add = DEFAULT_SPEED_BOOST_TAXIING_SPEED_ADD;
+
     subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
 
     for (size_t i = 0; i < ROAD_DOTS_COUNT; i++) {
-        subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE - ROAD_DOT_SIZE);
-        subgame_state->road_dots_y[i] = tsgl_random(-ROAD_DOT_SIZE, HEIGHT);
+        randomize_dot(i);
     }
 
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
@@ -278,8 +297,8 @@ void subgame_racing_handle() {
     tsgl_pos add_taxiing_speed = 0;
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY)) { //BOOST
         if (subgame_state->okay_unlocked) {
-            speed += SPEED_BOOST;
-            add_taxiing_speed = SPEED_BOOST_TAXIING_SPEED_ADD;
+            speed += subgame_state->speed_boost;
+            add_taxiing_speed = subgame_state->speed_boost_taxiing_speed_add;
             boost = true;
             if (!subgame_state->old_boost) {
                 subgame_state->fuel -= SPEED_BOOST_FUEL_DELTA;
@@ -355,8 +374,7 @@ void subgame_racing_handle() {
     for (size_t i = 0; i < ROAD_DOTS_COUNT; i++) {
         subgame_state->road_dots_y[i] += speed;
         if (subgame_state->road_dots_y[i] >= HEIGHT) {
-            subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE - ROAD_DOT_SIZE);
-            subgame_state->road_dots_y[i] = -ROAD_DOT_SIZE;
+            randomize_dot(i);
         }
 
         tsgl_pos x = subgame_state->road_dots_x[i];
