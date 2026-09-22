@@ -240,7 +240,7 @@ static void obj_collision(size_t index) {
     subgame_state->score += gameobj.score_delta;
     subgame_state->score_delta += gameobj.score_delta_delta;
     subgame_state->speed += gameobj.speed_delta;
-    subgame_state->taxiing_speed += taxiing_speed_delta;
+    subgame_state->taxiing_speed += gameobj.taxiing_speed_delta;
     subgame_state->fuel += gameobj.fuel_delta;
 
     if (gameobj.delete) obj_delete(index);
