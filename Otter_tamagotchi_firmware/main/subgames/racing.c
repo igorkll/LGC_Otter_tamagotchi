@@ -4,6 +4,7 @@
 #include "../hctl.h"
 #include "../game/game_modal.h"
 #include "../game/game_printsets.h"
+#include "../game/game_states.h"
 
 #define STATUS_ZONE 50
 #define GAME_ZONE (WIDTH - STATUS_ZONE)
