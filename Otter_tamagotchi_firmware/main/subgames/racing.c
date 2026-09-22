@@ -34,8 +34,8 @@
 #define DEFAULT_SCORE_DELTA 1
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
-#define MUSIC_SAMPLERATE 8000
-#define MUSIC_VOLUME 1
+#define MUSIC_SAMPLERATE 16000
+#define MUSIC_VOLUME 0.6
 
 typedef struct {
     const char* path;
@@ -147,9 +147,15 @@ void subgame_racing_start() {
     }
 }
 
+static void stop_music() {
+    if (subgame_state->music != NULL) {
+        tsgl_sound_free(subgame_state->music);
+        subgame_state->music = NULL;
+    }
+}
+
 static void game_exit() {
-    tsgl_sound_free(subgame_state->music);
-    subgame_state->music = NULL;
+    stop_music();
 
     for (size_t i = 0; i < OBJECTS_TYPES_COUNT; i++) {
         tsgl_bmp_free(gameobj_sprites[i]);
@@ -181,8 +187,8 @@ static void obj_spawn(uint8_t type) {
 }
 
 static void gameover() {
+    stop_music();
     pushsound_play("/firmware/sounds/gameover.pcm", 16000, 1);
-
     subgame_state->gameover = true;
 }
 
