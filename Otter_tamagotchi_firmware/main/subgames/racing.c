@@ -57,13 +57,15 @@ typedef struct {
     bool collision_check;
     bool dymanic_self_speed;
     int self_speed;
+    
     int score_delta;
     int score_delta_delta;
     int speed_delta;
     int taxiing_speed_delta;
     int fuel_delta;
     int speed_boost_delta;
-    int speed_boost_taxiing_speed_add;
+    int speed_boost_taxiing_speed_add_delta;
+    int maingame_money_delta;
 } Gameobj;
 
 typedef struct {
@@ -117,12 +119,18 @@ static const Gameobj objects[] = {
         .path = "/firmware/subgames/racing/truster.bmp",
         .score_delta = 10,
         .speed_boost_delta = 1,
-        .speed_boost_taxiing_speed_add = 1,
+        .speed_boost_taxiing_speed_add_delta = 1,
         .delete = true
     },
     {
         .path = "/firmware/subgames/racing/star.bmp",
         .score_delta = 50,
+        .delete = true
+    },
+    {
+        .path = "/firmware/subgames/racing/money.bmp",
+        .score_delta = 50,
+        .maingame_money_delta = 1,
         .delete = true
     }
 };
@@ -278,6 +286,10 @@ static void obj_collision(size_t index) {
     subgame_state->speed += gameobj.speed_delta;
     subgame_state->taxiing_speed += gameobj.taxiing_speed_delta;
     subgame_state->fuel += gameobj.fuel_delta;
+    subgame_state->speed_boost += gameobj.speed_boost_delta;
+    subgame_state->speed_boost_taxiing_speed_add += gameobj.speed_boost_taxiing_speed_add_delta;
+
+    current_state.states_money += gameobj.maingame_money_delta;
 
     if (gameobj.delete) obj_delete(index);
 }
