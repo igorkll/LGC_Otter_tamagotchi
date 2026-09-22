@@ -64,75 +64,12 @@ const tsgl_color blockcolors[] = {
 #define OBJECT_Y 4
 
 typedef struct {
-    uint8_t index;
+    uint8_t object_index;
+    uint8_t local_index;
     uint8_t array[OBJECT_Y][OBJECT_X];
 } Tetris_object;
 
-const Tetris_object base_objects[] = {
-    {
-        .index = 0,
-        .array = [
-            [1, 0, 0, 0],
-            [1, 0, 0, 0],
-            [1, 0, 0, 0],
-            [1, 0, 0, 0]
-        ]
-    },
-    {
-        .index = 1,
-        .array = [
-            [1, 0, 0, 0],
-            [1, 0, 0, 0],
-            [1, 1, 0, 0],
-            [0, 0, 0, 0]
-        ]
-    },
-    {
-        .index = 2,
-        .array = [
-            [0, 1, 0, 0],
-            [0, 1, 0, 0],
-            [1, 1, 0, 0],
-            [0, 0, 0, 0]
-        ]
-    },
-    {
-        .index = 3,
-        .array = [
-            [1, 0, 0, 0],
-            [1, 1, 0, 0],
-            [1, 0, 0, 0],
-            [0, 0, 0, 0]
-        ]
-    },
-    {
-        .index = 4,
-        .array = [
-            [0, 1, 0, 0],
-            [1, 1, 0, 0],
-            [1, 0, 0, 0],
-            [0, 0, 0, 0]
-        ]
-    },
-    {
-        .index = 5,
-        .array = [
-            [1, 0, 0, 0],
-            [1, 1, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, 0, 0]
-        ]
-    },
-    {
-        .index = 6,
-        .array = [
-            [0, 0, 0, 0],
-            [1, 1, 0, 0],
-            [1, 1, 0, 0],
-            [0, 0, 0, 0]
-        ]
-    }
-};
+#include "cparts/tetris_objects.h"
 #define BASE_OBJECTS_COUNT TSGL_CALC_ARRSIZE(base_objects)
 
 // ----------------------------------------------------------
