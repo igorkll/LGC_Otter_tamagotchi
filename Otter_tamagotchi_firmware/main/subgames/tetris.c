@@ -29,6 +29,7 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 25
 
+#define WIREFRAME_STOKE_SIZE 2
 #define BLOCKSIZE 8
 #define GAMEARRAY_X (GAME_ZONE / BLOCKSIZE)
 #define GAMEARRAY_Y (HEIGHT / BLOCKSIZE)
@@ -169,6 +170,22 @@ static void get_tetris_object_size(Tetris_object tetris_object, tsgl_pos* sizeX,
     }
 }
 
+static void draw_wireframe(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) {
+    for (size_t ix = 0; ix < OBJECT_X; ix++) {
+        for (size_t iy = 0; iy < OBJECT_Y; iy++) {
+            tsgl_framebuffer_rect(&framebuffer, x + (ix * BLOCKSIZE), y + (iy * BLOCKSIZE), BLOCKSIZE, BLOCKSIZE, white, WIREFRAME_STOKE_SIZE);
+        }
+    }
+
+    tsgl_pos sizeX = 0;
+    tsgl_pos sizeY = 0;
+    get_tetris_object_size(tetris_object, &sizeX, &sizeY);
+
+    tsgl_pos blockOffsetX = sizeX / 2;
+    tsgl_pos blockOffsetY = sizeY / 2;
+    draw_tetris_object(x + (blockOffsetX * BLOCKSIZE), y + (blockOffsetY * BLOCKSIZE), tetris_object);
+}
+
 static void next_object() {
     subgame_state->current_object = subgame_state->next_object;
     subgame_state->next_object = get_random_object();
@@ -276,5 +293,6 @@ void subgame_tetris_handle() {
     draw_tetris_object(20, 50, subgame_state->current_object);
     draw_tetris_object(50, 50, subgame_state->next_object);
     draw_tetris_object(50, 20, get_random_object());
+    draw_wireframe(20, 80, subgame_state->next_object);
     tsgl_delay(1000);
 }
