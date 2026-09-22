@@ -26,11 +26,22 @@
 
 #define SPEED_BOOST 3
 #define SPEED_BOOST_FUEL_DELTA 4
+#define SPEED_BOOST_TAXIING_SPEED_ADD 5
+
+#define DEFAULT_SPEED 2
+#define DEFAULT_FUEL 60
+#define DEFAULT_SPAWN_OBJECT_PER_SCROLL 30
+#define DEFAULT_SCORE_DELTA 1
+
+static const char* music_path = "/firmware/music/edmvselo.dpw";
+#define MUSIC_SAMPLERATE 8000
+#define MUSIC_VOLUME 1
 
 typedef struct {
     const char* path;
     bool gameover;
     int score_delta;
+    int score_delta_delta;
     int fuel_delta;
 } Gameobj;
 
@@ -70,6 +81,7 @@ typedef int64_t global_pos;
 typedef struct {
     bool okay_unlocked;
     bool gameover;
+    bool old_boost;
 
     tsgl_sprite* car_sprite;
     tsgl_sprite* person_sprite;
@@ -79,14 +91,22 @@ typedef struct {
     tsgl_pos size_y;
     
     int score;
+    int score_delta;
     int fuel;
     tsgl_pos speed;
     global_pos scroll;
+
+    global_pos old_spawn_scroll;
+    global_pos spawn_object_per_scroll;
 
     tsgl_pos road_dots_x[ROAD_DOTS_COUNT];
     tsgl_pos road_dots_y[ROAD_DOTS_COUNT];
 
     Gameobj_state objs[MAX_OBJECTS];
+
+    time_t oldTimerTickTime;
+
+    tsgl_sound* sound;
 } Subgame_state;
 
 static Subgame_state* subgame_state = NULL;
@@ -94,8 +114,8 @@ static Subgame_state* subgame_state = NULL;
 void subgame_racing_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
 
-    subgame_state->speed = 5;
-    subgame_state->fuel = 20;
+    subgame_state->speed = DEFAULT_SPEED;
+    subgame_state->fuel = DEFAULT_FUEL;
 
     subgame_state->car_sprite = gfx_loadSprite("/firmware/subgames/racing/gamecar.bmp");
     subgame_state->person_sprite = game_getPersonSprite();
@@ -105,6 +125,13 @@ void subgame_racing_start() {
 
     subgame_state->car_x = GAME_ZONE / 2;
     subgame_state->car_y = HEIGHT - (subgame_state->size_y / 2) - 10;
+
+    subgame_state->oldTimerTickTime = tsgl_time();
+
+    subgame_state->spawn_object_per_scroll = DEFAULT_SPAWN_OBJECT_PER_SCROLL;
+    subgame_state->score_delta = DEFAULT_SCORE_DELTA;
+
+    subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
 
     for (size_t i = 0; i < ROAD_DOTS_COUNT; i++) {
         subgame_state->road_dots_x[i] = tsgl_random(0, GAME_ZONE - ROAD_DOT_SIZE);
@@ -121,6 +148,9 @@ void subgame_racing_start() {
 }
 
 static void game_exit() {
+    tsgl_sound_free(subgame_state->music);
+    subgame_state->music = NULL;
+
     for (size_t i = 0; i < OBJECTS_TYPES_COUNT; i++) {
         tsgl_bmp_free(gameobj_sprites[i]);
         gameobj_sprites[i] = NULL;
@@ -151,7 +181,7 @@ static void obj_spawn(uint8_t type) {
 }
 
 static void gameover() {
-    pushsound_play("/firmware/sounds/gameover.pcm", 16000, EFFECTS_SOUND_VOLUME);
+    pushsound_play("/firmware/sounds/gameover.pcm", 16000, 1);
 
     subgame_state->gameover = true;
 }
@@ -169,14 +199,19 @@ static void obj_collision(size_t index) {
     }
 
     subgame_state->score += gameobj.score_delta;
+    subgame_state->score_delta += gameobj.score_delta_delta;
     subgame_state->fuel += gameobj.fuel_delta;
 }
 
 static void spawn_random() {
-    obj_spawn(tsgl_random(0, OBJECTS_TYPES_COUNT - 1));
+    if (subgame_state->scroll - subgame_state->old_spawn_scroll > subgame_state->spawn_object_per_scroll) {
+        subgame_state->old_spawn_scroll = subgame_state->scroll;
+        if (true) {
+            obj_spawn(tsgl_random(0, OBJECTS_TYPES_COUNT - 1));
+        }
+    }
 }
 
-static time_t oldTimerTickTime = -9999;
 void subgame_racing_handle() {
     // ------------------------ process
 
@@ -193,16 +228,24 @@ void subgame_racing_handle() {
 
     bool boost = false;
     tsgl_pos speed = subgame_state->speed;
-    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY) && subgame_state->okay_unlocked) { //BOOST
-        speed += SPEED_BOOST;
-        boost = true;
+    tsgl_pos add_taxiing_speed = 0;
+    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY)) { //BOOST
+        if (subgame_state->okay_unlocked) {
+            speed += SPEED_BOOST;
+            add_taxiing_speed = SPEED_BOOST_TAXIING_SPEED_ADD;
+            boost = true;
+            if (!subgame_state->old_boost) {
+                subgame_state->fuel -= SPEED_BOOST_FUEL_DELTA;
+            }
+        }
     } else {
         subgame_state->okay_unlocked = true;
     }
+    subgame_state->old_boost = boost;
 
     time_t currentTime = tsgl_time();
-    if (currentTime - oldTimerTickTime > 1000) {
-        oldTimerTickTime = currentTime;
+    if (currentTime - subgame_state->oldTimerTickTime > 1000) {
+        subgame_state->oldTimerTickTime = currentTime;
 
         subgame_state->fuel--;
 
@@ -213,17 +256,15 @@ void subgame_racing_handle() {
         if (subgame_state->fuel < 0) {
             subgame_state->fuel = 0;
         } else {
-            subgame_state->score++;
+            subgame_state->score += subgame_state->score_delta;
         }
-
-        spawn_random();
     }
     
     if (subgame_state->score > current_state.subgame_recing_max_score)
         current_state.subgame_recing_max_score = subgame_state->score;
 
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_LEFT)) { //LEFT
-        subgame_state->car_x -= TAXIING_SPEED;
+        subgame_state->car_x -= TAXIING_SPEED + add_taxiing_speed;
 
         tsgl_pos car_x = subgame_state->car_x - (subgame_state->size_x / 2);
         if (car_x < 0) {
@@ -237,7 +278,7 @@ void subgame_racing_handle() {
     }
 
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_RIGHT)) { //RIGHT
-        subgame_state->car_x += TAXIING_SPEED;
+        subgame_state->car_x += TAXIING_SPEED + add_taxiing_speed;
         
         tsgl_pos car_x = subgame_state->car_x - (subgame_state->size_x / 2);
         if (car_x > (GAME_ZONE - subgame_state->size_x)) {
@@ -246,6 +287,8 @@ void subgame_racing_handle() {
     }
 
     subgame_state->scroll += speed;
+
+    spawn_random();
 
     // ------------------------ draw
 

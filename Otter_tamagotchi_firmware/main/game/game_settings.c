@@ -104,11 +104,11 @@ static void handle_locked() {
     }
 
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_LEFT)) {
-        float_change(ptr, -5);
+        float_change(ptr, -1);
     }
 
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_RIGHT)) {
-        float_change(ptr, 5);
+        float_change(ptr, 1);
     }
 }
 
@@ -150,7 +150,7 @@ void game_settings_draw() {
 }
 
 void game_settings_open() {
-    pushsound_play("/firmware/sounds/bp_open.pcm", 16000, EFFECTS_SOUND_VOLUME);
+    pushsound_play("/firmware/sounds/bp_open.pcm", 16000, 1);
     current_state.settings_opened = true;
     game_updateActiveIcons();
 }
@@ -161,7 +161,7 @@ void game_settings_close() {
         return;
     }
 
-    pushsound_play("/firmware/sounds/bp_close.pcm", 16000, EFFECTS_SOUND_VOLUME);
+    pushsound_play("/firmware/sounds/bp_close.pcm", 16000, 1);
     current_state.settings_opened = false;
     game_updateActiveIcons();
 }

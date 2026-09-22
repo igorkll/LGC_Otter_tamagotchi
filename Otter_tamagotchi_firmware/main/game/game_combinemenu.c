@@ -111,14 +111,14 @@ void game_combinemenu_draw()
 
 void game_combinemenu_open()
 {
-    pushsound_play("/firmware/sounds/bp_open.pcm", 16000, EFFECTS_SOUND_VOLUME);
+    pushsound_play("/firmware/sounds/bp_open.pcm", 16000, 1);
     current_state.combinemenu_opened = true;
     game_updateActiveIcons();
 }
 
 void game_combinemenu_close()
 {
-    pushsound_play("/firmware/sounds/bp_close.pcm", 16000, EFFECTS_SOUND_VOLUME);
+    pushsound_play("/firmware/sounds/bp_close.pcm", 16000, 1);
     current_state.combinemenu_opened = false;
     game_updateActiveIcons();
 }

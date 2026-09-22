@@ -67,7 +67,7 @@ void shop_draw_overlay() {
 
 bool shop_buy(int* countvar, int price) {
     if (price > current_state.states_money) return false;
-    pushsound_play("/firmware/sounds/buy.pcm", 16000, EFFECTS_SOUND_VOLUME * BUY_SOUND_VOLUME);
+    pushsound_play("/firmware/sounds/buy.pcm", 16000, BUY_SOUND_VOLUME);
     (*countvar)++;
     current_state.states_money -= price;
     return true;
