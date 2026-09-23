@@ -529,7 +529,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
 }
 
 esp_err_t tsgl_sound_instance(tsgl_sound* sound, tsgl_sound* parent) {
-    if (parent->buffer != NULL) {
+    if (parent->task_used) {
         ESP_LOGE(TAG, "it is not possible to create an instance of a track with dynamic loading");
         return ESP_FAIL;
     }

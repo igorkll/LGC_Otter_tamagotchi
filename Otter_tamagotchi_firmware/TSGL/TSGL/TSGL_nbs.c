@@ -175,6 +175,7 @@ static void nbs_player_task(tsgl_nbs* nbs) {
                         tsgl_sound_setVolume(active_note, nbs->volume);
                         tsgl_sound_play(active_note);
                         active_note->userData_int = 0;
+                        printf("NBS %i %i %f %i\n", inst, note, nbs->volume, nbs->outputsCount);
                     }
                     break;
                 }
@@ -242,9 +243,7 @@ void tsgl_nbs_setVolume(tsgl_nbs* nbs, float volume) {
 
     for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
         tsgl_sound* active_note = &nbs->active_notes[i];
-        if (active_note->playing) {
-            tsgl_sound_setVolume(active_note, volume);
-        }
+        tsgl_sound_setVolume(active_note, volume);
     }
 }
 

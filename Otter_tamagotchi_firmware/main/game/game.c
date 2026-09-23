@@ -493,7 +493,14 @@ void game_start() {
     tsgl_benchmark_reset(&benchmark);
     game_load();
     game_updateParameters();
-    //pushsound_initNbs();
+    pushsound_initNbs();
+    
+    #ifdef DEBUG_NBS
+        pushsound_nbs_loop("/firmware/music/tetris.nbs", 1);
+        while (true) {
+            tsgl_delay(1000);
+        }
+    #endif
 
     game_upmenu_init();
     start();
