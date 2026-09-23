@@ -34,6 +34,8 @@ typedef enum {
     tsgl_sound_pcm_signed
 } tsgl_sound_pcm_format;
 
+extern bool tsgl_sound_force_enable_output;
+
 typedef struct tsgl_sound tsgl_sound;
 struct tsgl_sound {
     bool heap; //it will automatically call free when calling tsgl_sound_free
