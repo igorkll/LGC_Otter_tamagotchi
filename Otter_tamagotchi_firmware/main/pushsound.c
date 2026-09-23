@@ -122,9 +122,8 @@ tsgl_sound* pushsound_load(const char* path, int sample_rate) {
 tsgl_sound* pushsound_play(const char* path, int sample_rate, float volume) {
     tsgl_sound* current_sound = pushsound_load(path, sample_rate);
 
-    tsgl_sound_output* sound_outputs[] = {sound_output};
     tsgl_sound_enableFreeOnEnd(current_sound, true);
-    tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
+    tsgl_sound_setOutputs(current_sound, &sound_output, 1, false);
     tsgl_sound_setVolume(current_sound, calc_effect_volume(volume));
     tsgl_sound_play(current_sound);
     current_sound->userData_float = volume;
@@ -136,9 +135,8 @@ tsgl_sound* pushsound_play(const char* path, int sample_rate, float volume) {
 tsgl_sound* pushsound_loop(const char* path, int sample_rate, float volume) {
     tsgl_sound* current_sound = pushsound_load(path, sample_rate);
 
-    tsgl_sound_output* sound_outputs[] = {sound_output};
     tsgl_sound_setLoop(current_sound, true);
-    tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
+    tsgl_sound_setOutputs(current_sound, &sound_output, 1, false);
     tsgl_sound_setVolume(current_sound, calc_music_volume(volume));
     tsgl_sound_play(current_sound);
     current_sound->userData_float = volume;
@@ -161,8 +159,7 @@ tsgl_nbs* pushsound_nbs_load(const char* path) {
 tsgl_nbs* pushsound_nbs_play(const char* path, float volume) {
     tsgl_nbs* current_sound = pushsound_nbs_load(path);
 
-    tsgl_sound_output* sound_outputs[] = {sound_output};
-    tsgl_nbs_setOutputs(current_sound, sound_outputs, 1);
+    tsgl_nbs_setOutputs(current_sound, &sound_output, 1);
     tsgl_nbs_setVolume(current_sound, calc_effect_volume(volume));
     tsgl_nbs_play(current_sound);
     current_sound->userData_float = volume;
@@ -174,9 +171,9 @@ tsgl_nbs* pushsound_nbs_play(const char* path, float volume) {
 tsgl_nbs* pushsound_nbs_loop(const char* path, float volume) {
     tsgl_nbs* current_sound = pushsound_nbs_load(path);
 
-    tsgl_sound_output* sound_outputs[] = {sound_output};
-    tsgl_nbs_setOutputs(current_sound, sound_outputs, 1);
+    tsgl_nbs_setOutputs(current_sound, &sound_output, 1);
     tsgl_nbs_setVolume(current_sound, calc_music_volume(volume));
+    tsgl_nbs_setLoop(current_sound, true);
     tsgl_nbs_play(current_sound);
     current_sound->userData_float = volume;
     current_sound->userData_int = 1;
@@ -185,6 +182,9 @@ tsgl_nbs* pushsound_nbs_loop(const char* path, float volume) {
 }
 
 // -----------------------------------------
+
+void pushsound_init() {
+}
 
 void pushsound_updateVolumeSettings(float _master_volume, float _music_volume) {
     master_volume = _master_volume;

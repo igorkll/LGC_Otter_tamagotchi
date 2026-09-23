@@ -493,6 +493,7 @@ void game_start() {
     tsgl_benchmark_reset(&benchmark);
     game_load();
     game_updateParameters();
+    pushsound_init();
     pushsound_initNbs();
     
     #ifdef DEBUG_NBS

@@ -1,6 +1,7 @@
 #pragma once
 #include "hctl.h"
 
+void pushsound_init();
 void pushsound_initNbs();
 
 tsgl_sound* pushsound_getFreeSlot();

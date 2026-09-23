@@ -544,6 +544,7 @@ esp_err_t tsgl_sound_instance(tsgl_sound* sound, tsgl_sound* parent) {
 }
 
 void tsgl_sound_setOutputs(tsgl_sound* sound, tsgl_sound_output** outputs, size_t outputsCount, bool freeOutputs) {
+    while (atomic_flag_test_and_set(&global_sounds_lock));
     while (atomic_flag_test_and_set(&sound->lock));
 
     _freeOutputs(sound);
@@ -557,6 +558,7 @@ void tsgl_sound_setOutputs(tsgl_sound* sound, tsgl_sound_output** outputs, size_
     sound->freeOutputs = freeOutputs;
 
     atomic_flag_clear(&sound->lock);
+    atomic_flag_clear(&global_sounds_lock);
 }
 
 void tsgl_sound_setSpeed(tsgl_sound* sound, float speed) {
