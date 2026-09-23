@@ -4,6 +4,14 @@ static float master_volume = 0;
 static float effect_volume = 0;
 static float music_volume = 0;
 
+static float calc_effect_volume(float user_volume) {
+    return VOLUME_MUL * EFFECTS_SOUND_VOLUME * user_volume * master_volume * effect_volume;
+}
+
+static float calc_music_volume(float user_volume) {
+    return VOLUME_MUL * MUSIC_SOUND_VOLUME * user_volume * master_volume * music_volume;
+}
+
 // ----------------------------------------- sound
 
 static tsgl_sound sounds[MAX_SOUNDS_COUNT] = {0};
@@ -61,7 +69,7 @@ size_t pushsound_nbs_getFreeSlot() {
     tsgl_nbs* current_sound = nbs_sounds[current_nbs_index];
 
     int iterationLimit = MAX_NBS_COUNT;
-    while (current_sound) {
+    while (current_sound && current_sound->playing) {
         current_sound_index++;
         if (current_sound_index >= MAX_NBS_COUNT) current_sound_index = 0;
         current_sound = nbs_sounds[current_sound_index];
@@ -70,9 +78,9 @@ size_t pushsound_nbs_getFreeSlot() {
         if (iterationLimit <= 0) break;
     }
 
-    if (current_sound) {
+    if (current_sound && current_sound->playing) {
         iterationLimit = MAX_NBS_COUNT;
-        while (current_sound && current_sound->loop) {
+        while (current_sound && current_sound->playing && current_sound->loop) {
             current_sound_index++;
             if (current_sound_index >= MAX_NBS_COUNT) current_sound_index = 0;
             current_sound = nbs_sounds[current_sound_index];
@@ -84,7 +92,7 @@ size_t pushsound_nbs_getFreeSlot() {
         if (current_sound) tsgl_sound_free(current_sound);
     }
 
-    return current_sound;
+    return current_sound_index;
 }
 
 void pushsound_nbs_incrementSlot() {
@@ -109,14 +117,6 @@ tsgl_sound* pushsound_load(const char* path, int sample_rate) {
 
     pushsound_incrementSlot();
     return current_sound;
-}
-
-static float calc_effect_volume(float user_volume) {
-    return VOLUME_MUL * EFFECTS_SOUND_VOLUME * user_volume * master_volume * effect_volume;
-}
-
-static float calc_music_volume(float user_volume) {
-    return VOLUME_MUL * MUSIC_SOUND_VOLUME * user_volume * master_volume * music_volume;
 }
 
 tsgl_sound* pushsound_play(const char* path, int sample_rate, float volume) {
@@ -149,7 +149,32 @@ tsgl_sound* pushsound_loop(const char* path, int sample_rate, float volume) {
 
 // ----------------------------------------- push nbs
 
+tsgl_nbs* pushsound_nbs_load(const char* path) {
+    size_t free_slot = pushsound_nbs_getFreeSlot();
+    tsgl_nbs* nbs = tsgl_nbs_load(nbs_loadedSamples, path);
+    nbs_sounds[free_slot] = nbs;
 
+    pushsound_nbs_incrementSlot();
+    return nbs;
+}
+
+tsgl_nbs* pushsound_nbs_play(const char* path, float volume) {
+    tsgl_nbs* current_sound = pushsound_nbs_load(path);
+
+    tsgl_sound_output* sound_outputs[] = {sound_output};
+    tsgl_sound_enableFreeOnEnd(current_sound, true);
+    tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
+    tsgl_sound_setVolume(current_sound, calc_effect_volume(volume));
+    tsgl_sound_play(current_sound);
+    current_sound->userData_float = volume;
+    current_sound->userData_int = 0;
+
+    return current_sound;
+}
+
+tsgl_nbs* pushsound_nbs_loop(const char* path, float volume) {
+
+}
 
 // -----------------------------------------
 

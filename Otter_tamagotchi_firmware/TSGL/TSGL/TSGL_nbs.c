@@ -175,6 +175,13 @@ void tsgl_nbs_play(tsgl_nbs* nbs) {
 }
 
 void tsgl_nbs_stop(tsgl_nbs* nbs) {
+    for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
+        tsgl_sound* active_note = &nbs->active_notes[i];
+        if (active_note->playing) {
+            tsgl_sound_stop(active_note, false);
+        }
+    }
+
 	if (nbs->task_created) {
 		vTaskSuspend(nbs->task);
 		nbs->task_created = false;
@@ -204,6 +211,8 @@ void tsgl_nbs_setLoop(tsgl_nbs* nbs, float loop) {
 }
 
 void tsgl_nbs_free(tsgl_nbs* nbs) {
+    tsgl_nbs_stop(nbs);
+
     if (nbs->task_created) {
 		vTaskDelete(nbs->task);
 		nbs->task_created = false;
