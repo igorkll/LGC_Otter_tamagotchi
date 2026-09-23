@@ -383,9 +383,13 @@ static void _resetDfpwmDecoder(tsgl_sound* sound) {
 
     float cutoff_mul = sound->cutoff_mul > 0 ? sound->cutoff_mul : 0.35;
 
+    //блять, тут кароче надо взять по идеи минимальное из частот
+    //только по нормальному. все нахуй я спать
+    uint32_t scaled = TSGL_MATH_MIN(sound->scaled_sample_rate, global_timer_freq);
+
     sound->bit_pos = 0;
     for (size_t i = 0; i < sound->channels; i++) {
-        tsgl_dfpwm_reset(&sound->dfpwm_decode_state[i], sound->scaled_sample_rate, ((float)sound->scaled_sample_rate) * cutoff_mul);
+        tsgl_dfpwm_reset(&sound->dfpwm_decode_state[i], scaled, ((float)sound->scaled_sample_rate) * cutoff_mul);
     }
 }
 
