@@ -286,6 +286,15 @@ static void processParametersDelta() {
     states_delta_caress *= parameters_mul;
     states_delta_sadness *= parameters_mul;
 
+    #ifdef DEBUG_PARAMS_TIME
+        ESP_LOGI(TAG, "-------- minutes to end");
+        ESP_LOGI(TAG, "fatigue: %f", ((100 - current_state.states_fatigue) / states_delta_fatigue) / 60);
+        ESP_LOGI(TAG, "hunger: %f", ((100 - current_state.states_hunger) / states_delta_hunger) / 60);
+        ESP_LOGI(TAG, "thirst: %f", ((100 - current_state.states_thirst) / states_delta_thirst) / 60);
+        ESP_LOGI(TAG, "caress: %f", ((100 - current_state.states_caress) / states_delta_caress) / 60);
+        ESP_LOGI(TAG, "sadness: %f", ((100 - current_state.states_sadness) / states_delta_sadness) / 60);
+    #endif
+
     game_states_change(&current_state.states_fatigue, states_delta_fatigue);
     game_states_change(&current_state.states_hunger, states_delta_hunger);
     game_states_change(&current_state.states_thirst, states_delta_thirst);

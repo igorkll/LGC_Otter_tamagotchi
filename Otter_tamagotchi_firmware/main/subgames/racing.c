@@ -45,8 +45,7 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define SOUND_GAMEOVER_SAMPLERATE 16000
 #define SOUND_GAMEOVER_VOLUME 1
 
-#define FATIGUE_DELTA 0.05
-#define SADNESS_DELTA -1.1
+#define SADNESS_DELTA -0.1
 
 // ----------------------------------------------------------
 
@@ -339,8 +338,7 @@ void subgame_racing_handle() {
     if (currentTime - subgame_state->oldTimerTickTime > 1000) {
         subgame_state->oldTimerTickTime = currentTime;
 
-        game_states_change(&current_state.states_fatigue, FATIGUE_DELTA * GAMECFG_PARAMS_SPEED_MUL);
-        game_states_change(&current_state.states_sadness, SADNESS_DELTA * GAMECFG_PARAMS_SPEED_MUL);
+        game_states_change(&current_state.states_sadness, SADNESS_DELTA);
 
         subgame_state->fuel--;
 
