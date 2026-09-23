@@ -12,6 +12,7 @@
 #include <driver/gptimer.h>
 #include <driver/gpio.h>
 #include <freertos/portmacro.h>
+#include <stdatomic.h>
 
 //use this instead of the bufferSize to load the track immediately into RAM without loading on playing
 #define TSGL_SOUND_FULLBUFFER (2 ^ sizeof(size_t))
@@ -91,7 +92,7 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
 
     bool freeOnEnd;
 
-    portMUX_TYPE lock;
+    atomic_flag lock;
 
     // количество декодеров равно количеству каналов
     tsgl_dfpwm_decode_state* dfpwm_decode_state;
