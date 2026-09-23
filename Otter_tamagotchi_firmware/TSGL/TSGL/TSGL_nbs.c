@@ -165,7 +165,6 @@ static void nbs_player_task(tsgl_nbs* nbs) {
                 readShort(nbs->file);
             }
 
-            /*
             for (size_t i = 0; i < nbs->active_notes_max; i++) {
                 tsgl_sound* active_note = &nbs->active_notes[i];
                 if (!active_note->playing) {
@@ -182,8 +181,8 @@ static void nbs_player_task(tsgl_nbs* nbs) {
                     break;
                 }
             }
-            */
 
+            /*
             tsgl_sound* active_note = &nbs->loadedSamples->samples[0];
             if (!active_note->first_start) {
                 tsgl_sound_setOutputs(active_note, nbs->outputs, nbs->outputsCount, false);
@@ -198,6 +197,7 @@ static void nbs_player_task(tsgl_nbs* nbs) {
             }
             active_note->userData_int = 0;
             printf("NBS %i %i %f %i %i\n", inst, note, nbs->volume, nbs->outputsCount, nbs->active_notes_max);
+            */
         }
 
         TickType_t ticks = pdMS_TO_TICKS((TickType_t)(step_ms * step));

@@ -2,7 +2,7 @@
 * extended graphics library for the ESP 32 family controller
 * this library is written entirely in "C"
 * designed exclusively for use with ESP-IDF
-* the esp-idf version i use is v5.4.1
+* the esp-idf version i use is v5.4.4
 * also, this library has an APIs for working with other peripherals
 
 ## supported platforms
