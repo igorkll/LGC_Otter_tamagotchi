@@ -74,13 +74,13 @@ void game_backpack_draw() {
 }
 
 void game_backpack_open() {
-    pushsound_play("/firmware/sounds/bp_open.pcm", 16000, 1);
+    pushsound_play("/firmware/sounds/bp_open.pcm", 16000, BACKPACK_SOUND_VOLUME);
     current_state.backpack_opened = true;
     game_updateActiveIcons();
 }
 
 void game_backpack_close() {
-    pushsound_play("/firmware/sounds/bp_close.pcm", 16000, 1);
+    pushsound_play("/firmware/sounds/bp_close.pcm", 16000, BACKPACK_SOUND_VOLUME);
     current_state.backpack_opened = false;
     game_updateActiveIcons();
 }

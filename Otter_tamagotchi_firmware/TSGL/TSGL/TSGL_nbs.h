@@ -2,7 +2,6 @@
 #include "TSGL.h"
 #include "TSGL_sound.h"
 
-#define TSGL_NBS_MAX_ACTIVE_NOTES 32
 #define TSGL_NBS_STACK_SIZE (1024 * 8)
 
 typedef struct {
@@ -20,7 +19,8 @@ typedef struct {
     char* path;
     
     tsgl_nbs_loadedSamples* loadedSamples;
-    tsgl_sound active_notes[TSGL_NBS_MAX_ACTIVE_NOTES];
+    tsgl_sound* active_notes;
+    size_t active_notes_max;
 
     float volume;
     tsgl_sound_output** outputs;
@@ -37,7 +37,7 @@ typedef struct {
 tsgl_nbs_loadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, const char* suffix, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format);
 void tsgl_nbs_freeSamples(tsgl_nbs_loadedSamples* loadedSamples);
 
-tsgl_nbs* tsgl_nbs_load(tsgl_nbs_loadedSamples* loadedSamples, const char* path);
+tsgl_nbs* tsgl_nbs_load(tsgl_nbs_loadedSamples* loadedSamples, const char* path, size_t active_notes_max);
 void tsgl_nbs_play(tsgl_nbs* nbs);
 void tsgl_nbs_setOutputs(tsgl_nbs* nbs, tsgl_sound_output** outputs, size_t outputsCount);
 void tsgl_nbs_setVolume(tsgl_nbs* nbs, float volume);

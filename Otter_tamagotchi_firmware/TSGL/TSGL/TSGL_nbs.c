@@ -66,7 +66,7 @@ static void skipString(FILE* file) {
 // ---------------------------------------
 
 static void _stop(tsgl_nbs* nbs) {
-    for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
+    for (size_t i = 0; i < nbs->active_notes_max; i++) {
         tsgl_sound* active_note = &nbs->active_notes[i];
         if (active_note->playing) {
             tsgl_sound_stop(active_note);
@@ -78,7 +78,7 @@ static void _stop(tsgl_nbs* nbs) {
 }
 
 static void _resumeNotes(tsgl_nbs* nbs) {
-    for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
+    for (size_t i = 0; i < nbs->active_notes_max; i++) {
         tsgl_sound* active_note = &nbs->active_notes[i];
         if (active_note->userData_int) {
             tsgl_sound_play(active_note);
@@ -90,7 +90,7 @@ static void _resumeNotes(tsgl_nbs* nbs) {
 static void _waitActiveNotes(tsgl_nbs* nbs) {
     while (true) {
         bool finded_active_note = false;
-        for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
+        for (size_t i = 0; i < nbs->active_notes_max; i++) {
             tsgl_sound* active_note = &nbs->active_notes[i];
             if (active_note->playing) {
                 finded_active_note = true;
@@ -165,7 +165,7 @@ static void nbs_player_task(tsgl_nbs* nbs) {
                 readShort(nbs->file);
             }
 
-            for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
+            for (size_t i = 0; i < nbs->active_notes_max; i++) {
                 tsgl_sound* active_note = &nbs->active_notes[i];
                 if (!active_note->playing) {
                     if (active_note->inited) tsgl_sound_free_instance(active_note);
@@ -196,12 +196,14 @@ static void nbs_player_task(tsgl_nbs* nbs) {
 
 // ---------------------------------------
 
-tsgl_nbs* tsgl_nbs_load(tsgl_nbs_loadedSamples* loadedSamples, const char* path) {
+tsgl_nbs* tsgl_nbs_load(tsgl_nbs_loadedSamples* loadedSamples, const char* path, size_t active_notes_max) {
     tsgl_nbs* nbs = calloc(1, sizeof(tsgl_nbs));
     if (nbs == NULL) return NULL;
 
     nbs->loadedSamples = loadedSamples;
     nbs->path = strdup(path);
+    nbs->active_notes_max = active_notes_max;
+    nbs->active_notes = calloc(active_notes_max, sizeof(tsgl_sound));
 
     return nbs;
 }
@@ -242,7 +244,7 @@ void tsgl_nbs_setOutputs(tsgl_nbs* nbs, tsgl_sound_output** outputs, size_t outp
 void tsgl_nbs_setVolume(tsgl_nbs* nbs, float volume) {
     nbs->volume = volume;
 
-    for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
+    for (size_t i = 0; i < nbs->active_notes_max; i++) {
         tsgl_sound* active_note = &nbs->active_notes[i];
         tsgl_sound_setVolume(active_note, volume);
     }
@@ -260,7 +262,7 @@ void tsgl_nbs_free(tsgl_nbs* nbs) {
 		nbs->task_created = false;
 	}
 
-    for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
+    for (size_t i = 0; i < nbs->active_notes_max; i++) {
         tsgl_sound* active_note = &nbs->active_notes[i];
         if (active_note->inited) tsgl_sound_free_instance(active_note);
     }
@@ -272,6 +274,10 @@ void tsgl_nbs_free(tsgl_nbs* nbs) {
 
     if (nbs->path) {
         free(nbs->path);
+    }
+
+    if (nbs->active_notes) {
+        free(nbs->active_notes);
     }
 
     free(nbs);

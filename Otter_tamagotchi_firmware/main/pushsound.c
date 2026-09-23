@@ -151,7 +151,7 @@ tsgl_sound* pushsound_loop(const char* path, int sample_rate, float volume) {
 
 tsgl_nbs* pushsound_nbs_load(const char* path) {
     size_t free_slot = pushsound_nbs_getFreeSlot();
-    tsgl_nbs* nbs = tsgl_nbs_load(nbs_loadedSamples, path);
+    tsgl_nbs* nbs = tsgl_nbs_load(nbs_loadedSamples, path, NBS_MAX_NOTES_COUNT);
     nbs_sounds[free_slot] = nbs;
 
     pushsound_nbs_incrementSlot();
