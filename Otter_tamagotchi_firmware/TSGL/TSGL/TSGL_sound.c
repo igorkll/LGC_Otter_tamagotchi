@@ -449,6 +449,8 @@ static void afterUpdateSpeed(tsgl_sound* sound) {
 
 esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loadsize, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format, bool doubleSwapBuffer) {
     memset(sound, 0, sizeof(tsgl_sound));
+    sound->inited = true;
+
     sound->lock = (portMUX_TYPE)portMUX_INITIALIZER_UNLOCKED;
 
     sound->file = tsgl_filesystem_open(path, "rb");

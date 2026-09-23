@@ -168,7 +168,7 @@ static void nbs_player_task(tsgl_nbs* nbs) {
             for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
                 tsgl_sound* active_note = &nbs->active_notes[i];
                 if (!active_note->playing) {
-                    tsgl_sound_free_instance(active_note);
+                    if (active_note->inited) tsgl_sound_free_instance(active_note);
                     if (inst < nbs->loadedSamples->count) {
                         tsgl_sound_instance(active_note, &nbs->loadedSamples->samples[inst]);
                         tsgl_sound_setOutputs(active_note, nbs->outputs, nbs->outputsCount, false);
@@ -259,6 +259,11 @@ void tsgl_nbs_free(tsgl_nbs* nbs) {
 		vTaskDelete(nbs->task);
 		nbs->task_created = false;
 	}
+
+    for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
+        tsgl_sound* active_note = &nbs->active_notes[i];
+        if (active_note->inited) tsgl_sound_free_instance(active_note);
+    }
 
     if (nbs->file_opened) {
         fclose(nbs->file);
