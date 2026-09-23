@@ -21,7 +21,7 @@ static tsgl_sound** global_sounds;
 static size_t global_sounds_index = 0;
 static size_t global_sounds_max_count = 0;
 
-bool tsgl_sound_force_enable_output = false;
+bool tsgl_sound_force_enable_output = true;
 
 static int IRAM_ATTR _convertPcm(tsgl_sound* sound, void* source) {
     if (sound->bit_rate == 4) {
@@ -363,7 +363,7 @@ static void _resetOutputs(tsgl_sound* sound) {
     for (size_t i = 0; i < sound->outputsCount; i++) {
         tsgl_sound_output* output = sound->outputs[i];
         output->value = 0;
-        tsgl_sound_rawSetOutput(output, 0);
+        if (!tsgl_sound_force_enable_output) tsgl_sound_rawSetOutput(output, 0);
     }
 }
 
@@ -696,7 +696,7 @@ static void _stop(tsgl_sound* sound) {
         gptimer_disable(sound->timer);
         gptimer_del_timer(sound->timer);
         
-        if (!tsgl_sound_force_enable_output) _resetOutputs(sound);
+        _resetOutputs(sound);
     } else {
         bool found_playing = false;
         while (atomic_flag_test_and_set(&global_sounds_lock));
@@ -707,7 +707,7 @@ static void _stop(tsgl_sound* sound) {
             }
         }
         if (!found_playing && global_timer_enabled) {
-            if (!tsgl_sound_force_enable_output) _resetOutputs(sound);
+            _resetOutputs(sound);
             gptimer_stop(global_timer);
             global_timer_enabled = false;
         }
