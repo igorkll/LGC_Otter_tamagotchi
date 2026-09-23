@@ -53,8 +53,8 @@
 
 // --------------------------- nbs
 
-#define NBS_SAMPLES_COUNT 4
-#define NBS_MAX_NOTES_COUNT 1
+#define NBS_SAMPLES_COUNT 16
+#define NBS_MAX_NOTES_COUNT 4
 #define MAX_NBS_COUNT 1
 
 #define NBS_SAMPLES_PREFIX "/firmware/nbs/"

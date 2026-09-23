@@ -190,12 +190,14 @@ static void nbs_player_task(tsgl_nbs* nbs) {
                 tsgl_sound_setSpeed(active_note, pow(2, (note - 45) / 12.0));
                 tsgl_sound_setVolume(active_note, nbs->volume);
                 tsgl_sound_play(active_note);
-                active_note->userData_int = 0;
-                printf("NBS %i %i %f %i %i\n", inst, note, nbs->volume, nbs->outputsCount, nbs->active_notes_max);
             } else {
                 tsgl_sound_setPosition(active_note, 0);
+                tsgl_sound_setSpeed(active_note, pow(2, (note - 45) / 12.0));
+                tsgl_sound_setVolume(active_note, nbs->volume);
                 tsgl_sound_play(active_note);
             }
+            active_note->userData_int = 0;
+            printf("NBS %i %i %f %i %i\n", inst, note, nbs->volume, nbs->outputsCount, nbs->active_notes_max);
         }
 
         TickType_t ticks = pdMS_TO_TICKS((TickType_t)(step_ms * step));

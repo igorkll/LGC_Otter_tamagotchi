@@ -81,6 +81,7 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
 
     bool first_start;
     bool inited;
+    bool isInstance;
 
     bool mute;
     bool reload;

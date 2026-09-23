@@ -102,7 +102,11 @@ static void _soundServiceTask(void* _sound) {
             if (sound->callback_end != NULL) sound->callback_end(sound);
             if (sound->freeOnEnd) {
                 sound->task_service_used = false;
-                tsgl_sound_free(sound);
+                if (sound->isInstance) {
+                    tsgl_sound_free_instance(sound);
+                } else {
+                    tsgl_sound_free(sound);
+                }
                 vTaskDelete(NULL);
                 return;
             }
@@ -531,6 +535,7 @@ esp_err_t tsgl_sound_instance(tsgl_sound* sound, tsgl_sound* parent) {
 
     // ------------------- recreate
 
+    sound->isInstance = true;
     sound->playing = false;
     sound->task_service = NULL;
 
@@ -691,7 +696,6 @@ void tsgl_sound_free(tsgl_sound* sound) {
     if (sound->buffer != NULL) free(sound->buffer);
     if (sound->buffer2 != NULL) free(sound->buffer2);
     if (sound->dfpwm_decode_state != NULL) free(sound->dfpwm_decode_state);
-    _freeOutputs(sound);
     if (use_global_timer) {
         portENTER_CRITICAL(&global_sounds_lock);
         for (size_t i = 0; i < global_sounds_index; i++) {
@@ -704,6 +708,7 @@ void tsgl_sound_free(tsgl_sound* sound) {
         }
         portEXIT_CRITICAL(&global_sounds_lock);
     }
+    _freeOutputs(sound);
     portEXIT_CRITICAL(&sound->lock);
 
     if (sound->file != NULL) {
@@ -724,7 +729,6 @@ void tsgl_sound_free_instance(tsgl_sound* sound) {
         vTaskDelete(sound->task_service);
     }
     if (sound->dfpwm_decode_state != NULL) free(sound->dfpwm_decode_state);
-    _freeOutputs(sound);
     if (use_global_timer) {
         portENTER_CRITICAL(&global_sounds_lock);
         for (size_t i = 0; i < global_sounds_index; i++) {
@@ -737,6 +741,7 @@ void tsgl_sound_free_instance(tsgl_sound* sound) {
         }
         portEXIT_CRITICAL(&global_sounds_lock);
     }
+    _freeOutputs(sound);
     portEXIT_CRITICAL(&sound->lock);
 
     if (sound->file != NULL) {
