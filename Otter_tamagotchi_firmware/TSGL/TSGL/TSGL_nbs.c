@@ -7,6 +7,7 @@ const char* TAG = "TSGL_nbs";
 
 LoadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, const char* suffix, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format) {
     LoadedSamples* loadedSamples = malloc(sizeof(LoadedSamples));
+    if (loadedSamples == NULL) return NULL;
 
     loadedSamples->count = count;
     loadedSamples->samples = malloc(sizeof(tsgl_sound) * count);
@@ -21,12 +22,6 @@ LoadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, const char
     }
 
     return loadedSamples;
-}
-
-void tsgl_nbs_attachSamplesToOutputs(LoadedSamples* loadedSamples, tsgl_sound_output** outputs, size_t outputsCount, bool freeOutputs) {
-    for (size_t i = 0; i > loadedSamples->count; i++) {
-        tsgl_sound_setOutputs(&loadedSamples->samples[i], outputs, outputsCount, freeOutputs);
-    }
 }
 
 void tsgl_nbs_freeSamples(LoadedSamples* loadedSamples) {
@@ -61,4 +56,112 @@ static uint8_t readByte(FILE* file) {
 static void skipString(FILE* file) {
     uint32_t length = readInteger(file);
     fseek(file, length, SEEK_CUR);
+}
+
+// ---------------------------------------
+
+static void nbs_player_task(NBS* nbs) {
+	uint16_t length = readShort(nbs->file);
+	uint16_t tempo;
+    bool newFormat = length == 0;
+    if (newFormat) {
+        readByte(nbs->file); //version
+        readByte(nbs->file); //vanilla instrument count
+        readShort(nbs->file); //song_length
+        readShort(nbs->file); //layer_count
+        skipString(nbs->file);
+        skipString(nbs->file);
+        skipString(nbs->file);
+        skipString(nbs->file);
+        tempo = readShort(nbs->file);
+
+        for (size_t i = 1; i <= 3; i++) readByte(nbs->file);
+        for (size_t i = 1; i <= 5; i++) readInteger(nbs->file);
+        skipString(nbs->file);
+        for (size_t i = 1; i <= 3; i++) readByte(nbs->file);
+	} else {
+        readShort(nbs->file); //height
+        skipString(nbs->file);
+        skipString(nbs->file);
+        skipString(nbs->file);
+        skipString(nbs->file);
+        tempo = readShort(nbs->file);
+    
+        for (size_t i = 1; i <= 3; i++) readByte(nbs->file);
+        for (size_t i = 1; i <= 5; i++) readInteger(nbs->file);
+        skipString(nbs->file);
+    }
+
+	size_t dataStartPos = ftell(nbs->file);
+	uint32_t sleep = 1000.0 / (tempo / 100.0);
+
+	while (true) {
+		uint16_t step = readShort(nbs->file);
+        if (step == 0) {
+			fseek(nbs->file, dataStartPos, SEEK_SET);
+            continue;
+        }
+		if (newFormat) step /= 256;
+
+        while (true) {
+			uint16_t jump = readShort(nbs->file);
+			if (jump == 0) {
+				break;
+			}
+
+			if (newFormat) readByte(nbs->file);
+			uint8_t inst = readByte(nbs->file);
+			uint8_t note = readByte(nbs->file);
+			if (newFormat) {
+				readByte(nbs->file);
+				readShort(nbs->file);
+			}
+
+			for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
+                tsgl_sound* active_note = &nbs->active_notes[i];
+				if (!active_note->playing) {
+					nbs->notes[i] = (Note) {
+						.step = ,
+						.instrument = inst,
+						.play = true
+					};
+                    tsgl_sound_instance(active_note, nbs->loadedSamples->samples[]);
+                    tsgl_sound_setSpeed(active_note, pow(2, (note - 45) / 12.0));
+                    tsgl_sound_play(active_note);
+
+					break;
+				}
+			}
+		}
+
+		vTaskDelay((sleep*step) / portTICK_PERIOD_MS);
+	}
+
+	vTaskDelete(NULL);
+}
+
+// ---------------------------------------
+
+NBS* tsgl_nbs_load(LoadedSamples* loadedSamples, const char* path, tsgl_sound_output** outputs, size_t outputsCount) {
+    NBS* nbs = calloc(1, sizeof(NBS));
+    if (nbs == NULL) return NULL;
+
+    nbs->loadedSamples = loadedSamples;
+    nbs->file = tsgl_filesystem_open(path, "rb");
+
+    return nbs;
+}
+
+void tsgl_sound_play() {
+    xTaskCreate((TaskFunction_t)nbs_player_task, NULL, TSGL_NBS_STACK_SIZE, nbs, configMAX_PRIORITIES - 1, &nbs->task);
+}
+
+void tsgl_nbs_setOutputs(NBS* nbs, tsgl_sound_output** outputs, size_t outputsCount) {
+    nbs->outputs = outputs;
+    nbs->outputsCount = outputsCount;
+}
+
+void tsgl_nbs_free(NBS* nbs) {
+    fclose(nbs->file);
+    free(nbs);
 }
