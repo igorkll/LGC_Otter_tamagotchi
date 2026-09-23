@@ -3,7 +3,7 @@
 #include "TSGL_sound.h"
 
 #define TSGL_NBS_MAX_ACTIVE_NOTES 32
-#define TSGL_NBS_STACK_SIZE 4096
+#define TSGL_NBS_STACK_SIZE (1024 * 8)
 
 typedef struct {
     tsgl_sound* samples;

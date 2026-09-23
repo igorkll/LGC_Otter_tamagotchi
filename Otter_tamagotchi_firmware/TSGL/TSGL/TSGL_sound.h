@@ -16,6 +16,8 @@
 //use this instead of the bufferSize to load the track immediately into RAM without loading on playing
 #define TSGL_SOUND_FULLBUFFER (2 ^ sizeof(size_t))
 
+#define TSGL_SOUND_STACK_SIZE (1024 * 8)
+
 typedef struct {
     #ifdef HARDWARE_DAC
         dac_oneshot_handle_t* channel;
@@ -76,6 +78,7 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
 
     gptimer_handle_t timer;
     bool use_local_timer;
+    bool first_start;
 
     bool mute;
     bool reload;
@@ -130,6 +133,7 @@ void tsgl_sound_setPosition(tsgl_sound* sound, size_t position);
 void tsgl_sound_seek(tsgl_sound* sound, int offset);
 void tsgl_sound_play(tsgl_sound* sound);
 void tsgl_sound_stop(tsgl_sound* sound);
+void tsgl_sound_free_instance(tsgl_sound* sound);
 void tsgl_sound_free(tsgl_sound* sound);
 void tsgl_sound_enableFreeOnEnd(tsgl_sound* sound, bool freeOnEnd);
 

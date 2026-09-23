@@ -499,7 +499,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
             fread(sound->buffer2, sound->bit_rate, bufferSize, sound->file);
         }
 
-        xTaskCreate(_soundTask, NULL, 1024 * 8, sound, 1, &sound->task);
+        xTaskCreate(_soundTask, NULL, TSGL_SOUND_STACK_SIZE, sound, 1, &sound->task);
         sound->task_used = true;
     } else {
         sound->bufferSize = sound->len;
@@ -516,15 +516,6 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
         sound->file = NULL;
     }
 
-    xTaskCreate(_soundServiceTask, NULL, 1024 * 8, sound, 1, &sound->task_service);
-    sound->task_service_used = true;
-
-    if (use_global_timer && global_sounds_index < global_sounds_max_count) {
-        portENTER_CRITICAL(&global_sounds_lock);
-        global_sounds[global_sounds_index++] = sound;
-        portEXIT_CRITICAL(&global_sounds_lock);
-    }
-
     return ESP_OK;
 }
 
@@ -535,7 +526,12 @@ esp_err_t tsgl_sound_instance(tsgl_sound* sound, tsgl_sound* parent) {
     }
 
     memcpy(sound, parent, sizeof(tsgl_sound));
+
+    // ------------------- recreate
+
     sound->playing = false;
+    sound->task_service = NULL;
+
     return ESP_OK;
 }
 
@@ -623,6 +619,19 @@ void tsgl_sound_play(tsgl_sound* sound) {
         return;
     }
 
+    if (!sound->first_start) {
+        sound->first_start = true;
+
+        xTaskCreate(_soundServiceTask, NULL, TSGL_SOUND_STACK_SIZE, sound, 1, &sound->task_service);
+        sound->task_service_used = true;
+        
+        if (use_global_timer && global_sounds_index < global_sounds_max_count) {
+            portENTER_CRITICAL(&global_sounds_lock);
+            global_sounds[global_sounds_index++] = sound;
+            portEXIT_CRITICAL(&global_sounds_lock);
+        }
+    }
+
     portENTER_CRITICAL(&sound->lock);
     sound->playing = true;
     if (sound->use_local_timer) {
@@ -679,6 +688,39 @@ void tsgl_sound_free(tsgl_sound* sound) {
     }
     if (sound->buffer != NULL) free(sound->buffer);
     if (sound->buffer2 != NULL) free(sound->buffer2);
+    if (sound->dfpwm_decode_state != NULL) free(sound->dfpwm_decode_state);
+    _freeOutputs(sound);
+    if (use_global_timer) {
+        portENTER_CRITICAL(&global_sounds_lock);
+        for (size_t i = 0; i < global_sounds_index; i++) {
+            tsgl_sound* globalSound = global_sounds[i];
+            if (globalSound == sound) {
+                global_sounds[i] = global_sounds[global_sounds_index - 1];
+                global_sounds_index--;
+                break;
+            }
+        }
+        portEXIT_CRITICAL(&global_sounds_lock);
+    }
+    portEXIT_CRITICAL(&sound->lock);
+
+    if (sound->file != NULL) {
+        fclose(sound->file);
+    }
+    
+    memset(sound, 0, sizeof(tsgl_sound));
+    if (sound->heap) free(sound);
+}
+
+void tsgl_sound_free_instance(tsgl_sound* sound) {
+    portENTER_CRITICAL(&sound->lock);
+    if (sound->playing) _stop(sound);
+    if (sound->task_used) {
+        vTaskDelete(sound->task);
+    }
+    if (sound->task_service_used) {
+        vTaskDelete(sound->task_service);
+    }
     if (sound->dfpwm_decode_state != NULL) free(sound->dfpwm_decode_state);
     _freeOutputs(sound);
     if (use_global_timer) {
