@@ -330,7 +330,7 @@ static void checkActionTimer() {
             // усталость на 0
             // нежность на максимум (нужно погладить)
             // грусть на минимум
-            
+
             game_state_val step = (1.0 / GAMECFG_FULL_SLEEP_TIME) * 100.0;
             current_state.states_fatigue -= step;
             current_state.states_caress += step;
@@ -493,6 +493,7 @@ void game_start() {
     tsgl_benchmark_reset(&benchmark);
     game_load();
     game_updateParameters();
+    pushsound_initNbs();
 
     game_upmenu_init();
     start();

@@ -1,6 +1,8 @@
 #pragma once
 #include "hctl.h"
 
+void pushsound_initNbs();
+
 tsgl_sound* pushsound_getFreeSlot();
 void pushsound_incrementSlot();
 tsgl_sound* pushsound_load(const char* path, int sample_rate);

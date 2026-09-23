@@ -8,14 +8,14 @@
 typedef struct {
     tsgl_sound* samples;
     size_t count;
-} LoadedSamples;
+} tsgl_nbs_loadedSamples;
 
 typedef struct {
     FILE* file;
     TaskHandle_t task;
     bool task_created;
     
-    LoadedSamples* loadedSamples;
+    tsgl_nbs_loadedSamples* loadedSamples;
     tsgl_sound active_notes[TSGL_NBS_MAX_ACTIVE_NOTES];
 
     float volume;
@@ -27,13 +27,13 @@ typedef struct {
     void* userData;
     int userData_int;
     float userData_float;
-} NBS;
+} tsgl_nbs;
 
-LoadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, const char* suffix, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format);
-void tsgl_nbs_freeSamples(LoadedSamples* loadedSamples);
+tsgl_nbs_loadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, const char* suffix, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format);
+void tsgl_nbs_freeSamples(tsgl_nbs_loadedSamples* loadedSamples);
 
-NBS* tsgl_nbs_load(LoadedSamples* loadedSamples, const char* path);
-void tsgl_nbs_play(NBS* nbs);
-void tsgl_nbs_setOutputs(NBS* nbs, tsgl_sound_output** outputs, size_t outputsCount);
-void tsgl_nbs_setVolume(NBS* nbs, float volume);
-void tsgl_nbs_free(NBS* nbs);
+tsgl_nbs* tsgl_nbs_load(tsgl_nbs_loadedSamples* loadedSamples, const char* path);
+void tsgl_nbs_play(tsgl_nbs* nbs);
+void tsgl_nbs_setOutputs(tsgl_nbs* nbs, tsgl_sound_output** outputs, size_t outputsCount);
+void tsgl_nbs_setVolume(tsgl_nbs* nbs, float volume);
+void tsgl_nbs_free(tsgl_nbs* nbs);

@@ -45,9 +45,18 @@
 
 // --------------------------- sound
 
+#define NBS_SAMPLES_COUNT 16
+#define NBS_SAMPLES_PREFIX "/firmware/nbs/"
+#define NBS_SAMPLES_SUFFIX ".pcm"
+#define NBS_SAMPLES_SAMPLERATE 8000
+#define NBS_SAMPLES_BITRATE 1
+#define NBS_SAMPLES_CHANNELS 1
+#define NBS_SAMPLES_PCMFORMAT tsgl_sound_pcm_signed
+
 #define SOUND_GLOBAL_TIMER_FREQ 32000
 #define SOUND_BUFFER_SIZE (4 * 1024)
 #define MAX_SOUNDS_COUNT 16
+#define MAX_NBS_COUNT 4
 #define USE_SOUND_DOUBLE_BUFFER true
 #define USE_SOUND_GLOBAL_TIMER true
 

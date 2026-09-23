@@ -1,11 +1,13 @@
 #include "pushsound.h"
 
-static tsgl_sound sounds[MAX_SOUNDS_COUNT] = {0};
-static uint8_t current_sound_index = 0;
-
 static float master_volume = 0;
 static float effect_volume = 0;
 static float music_volume = 0;
+
+// ----------------------------------------- sound
+
+static tsgl_sound sounds[MAX_SOUNDS_COUNT] = {0};
+static uint8_t current_sound_index = 0;
 
 tsgl_sound* pushsound_getFreeSlot() {
     tsgl_sound* current_sound = &sounds[current_sound_index];
@@ -41,6 +43,18 @@ void pushsound_incrementSlot() {
     current_sound_index++;
     if (current_sound_index >= MAX_SOUNDS_COUNT) current_sound_index = 0;
 }
+
+// ----------------------------------------- nbs
+
+static tsgl_nbs_loadedSamples* nbs_loadedSamples = NULL;
+
+void pushsound_initNbs() {
+    if (nbs_loadedSamples != NULL) return;
+    
+    nbs_loadedSamples = tsgl_nbs_loadSamples(NBS_SAMPLES_COUNT, NBS_SAMPLES_PREFIX, NBS_SAMPLES_SUFFIX, NBS_SAMPLES_SAMPLERATE, NBS_SAMPLES_BITRATE, NBS_SAMPLES_CHANNELS, NBS_SAMPLES_PCMFORMAT);
+}
+
+// -----------------------------------------
 
 tsgl_sound* pushsound_load(const char* path, int sample_rate) {
     tsgl_sound* current_sound = pushsound_getFreeSlot();

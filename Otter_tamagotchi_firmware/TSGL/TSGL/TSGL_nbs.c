@@ -5,8 +5,8 @@
 
 const char* TAG = "TSGL_nbs";
 
-LoadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, const char* suffix, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format) {
-    LoadedSamples* loadedSamples = malloc(sizeof(LoadedSamples));
+tsgl_nbs_loadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, const char* suffix, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format) {
+    tsgl_nbs_loadedSamples* loadedSamples = malloc(sizeof(tsgl_nbs_loadedSamples));
     if (loadedSamples == NULL) return NULL;
 
     loadedSamples->count = count;
@@ -24,7 +24,7 @@ LoadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, const char
     return loadedSamples;
 }
 
-void tsgl_nbs_freeSamples(LoadedSamples* loadedSamples) {
+void tsgl_nbs_freeSamples(tsgl_nbs_loadedSamples* loadedSamples) {
     for (size_t i = 0; i > loadedSamples->count; i++) {
         tsgl_sound_free(&loadedSamples->samples[i]);
     }
@@ -60,7 +60,7 @@ static void skipString(FILE* file) {
 
 // ---------------------------------------
 
-static void nbs_player_task(NBS* nbs) {
+static void nbs_player_task(tsgl_nbs* nbs) {
     uint16_t length = readShort(nbs->file);
     uint16_t tempo;
     bool newFormat = length == 0;
@@ -140,8 +140,8 @@ static void nbs_player_task(NBS* nbs) {
 
 // ---------------------------------------
 
-NBS* tsgl_nbs_load(LoadedSamples* loadedSamples, const char* path) {
-    NBS* nbs = calloc(1, sizeof(NBS));
+tsgl_nbs* tsgl_nbs_load(tsgl_nbs_loadedSamples* loadedSamples, const char* path) {
+    tsgl_nbs* nbs = calloc(1, sizeof(tsgl_nbs));
     if (nbs == NULL) return NULL;
 
     nbs->loadedSamples = loadedSamples;
@@ -150,11 +150,11 @@ NBS* tsgl_nbs_load(LoadedSamples* loadedSamples, const char* path) {
     return nbs;
 }
 
-void tsgl_nbs_play(NBS* nbs) {
+void tsgl_nbs_play(tsgl_nbs* nbs) {
     nbs->playing = true;
 
     if (nbs->task_created) {
-        xTaskResume(nbs->task);
+        vTaskResume(nbs->task);
         return;
     }
     
@@ -162,21 +162,21 @@ void tsgl_nbs_play(NBS* nbs) {
     nbs->task_created = true;
 }
 
-void tsgl_nbs_stop(NBS* nbs) {
+void tsgl_nbs_stop(tsgl_nbs* nbs) {
 	if (nbs->task_created) {
 		vTaskSuspend(nbs->task);
 		nbs->task_created = false;
 	}
 
-    nbs->playing = false
+    nbs->playing = false;
 }
 
-void tsgl_nbs_setOutputs(NBS* nbs, tsgl_sound_output** outputs, size_t outputsCount) {
+void tsgl_nbs_setOutputs(tsgl_nbs* nbs, tsgl_sound_output** outputs, size_t outputsCount) {
     nbs->outputs = outputs;
     nbs->outputsCount = outputsCount;
 }
 
-void tsgl_nbs_setVolume(NBS* nbs, float volume) {
+void tsgl_nbs_setVolume(tsgl_nbs* nbs, float volume) {
     nbs->volume = volume;
 
     for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
@@ -187,7 +187,7 @@ void tsgl_nbs_setVolume(NBS* nbs, float volume) {
     }
 }
 
-void tsgl_nbs_free(NBS* nbs) {
+void tsgl_nbs_free(tsgl_nbs* nbs) {
     if (nbs->task_created) {
 		vTaskDelete(nbs->task);
 		nbs->task_created = false;
