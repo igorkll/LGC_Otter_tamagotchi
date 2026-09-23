@@ -13,12 +13,16 @@ typedef struct {
 typedef struct {
     FILE* file;
     TaskHandle_t task;
+    bool task_created;
     
     LoadedSamples* loadedSamples;
     tsgl_sound active_notes[TSGL_NBS_MAX_ACTIVE_NOTES];
 
+    float volume;
     tsgl_sound_output** outputs;
     size_t outputsCount;
+
+    bool playing;
 
     void* userData;
     int userData_int;
@@ -29,6 +33,7 @@ LoadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, const char
 void tsgl_nbs_freeSamples(LoadedSamples* loadedSamples);
 
 NBS* tsgl_nbs_load(LoadedSamples* loadedSamples, const char* path);
-void tsgl_nbs_start();
+void tsgl_nbs_play(NBS* nbs);
 void tsgl_nbs_setOutputs(NBS* nbs, tsgl_sound_output** outputs, size_t outputsCount);
+void tsgl_nbs_setVolume(NBS* nbs, float volume);
 void tsgl_nbs_free(NBS* nbs);
