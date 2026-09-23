@@ -54,7 +54,45 @@ void pushsound_initNbs() {
     nbs_loadedSamples = tsgl_nbs_loadSamples(NBS_SAMPLES_COUNT, NBS_SAMPLES_PREFIX, NBS_SAMPLES_SUFFIX, NBS_SAMPLES_SAMPLERATE, NBS_SAMPLES_BITRATE, NBS_SAMPLES_CHANNELS, NBS_SAMPLES_PCMFORMAT);
 }
 
-// -----------------------------------------
+static tsgl_nbs* nbs_sounds[MAX_NBS_COUNT] = {0};
+static uint8_t current_nbs_index = 0;
+
+size_t pushsound_nbs_getFreeSlot() {
+    tsgl_nbs* current_sound = nbs_sounds[current_nbs_index];
+
+    int iterationLimit = MAX_NBS_COUNT;
+    while (current_sound) {
+        current_sound_index++;
+        if (current_sound_index >= MAX_NBS_COUNT) current_sound_index = 0;
+        current_sound = nbs_sounds[current_sound_index];
+
+        iterationLimit--;
+        if (iterationLimit <= 0) break;
+    }
+
+    if (current_sound) {
+        iterationLimit = MAX_NBS_COUNT;
+        while (current_sound && current_sound->loop) {
+            current_sound_index++;
+            if (current_sound_index >= MAX_NBS_COUNT) current_sound_index = 0;
+            current_sound = nbs_sounds[current_sound_index];
+
+            iterationLimit--;
+            if (iterationLimit <= 0) break;
+        }
+        
+        if (current_sound) tsgl_sound_free(current_sound);
+    }
+
+    return current_sound;
+}
+
+void pushsound_nbs_incrementSlot() {
+    current_sound_index++;
+    if (current_sound_index >= MAX_SOUNDS_COUNT) current_sound_index = 0;
+}
+
+// ----------------------------------------- push sound
 
 tsgl_sound* pushsound_load(const char* path, int sample_rate) {
     tsgl_sound* current_sound = pushsound_getFreeSlot();
@@ -109,6 +147,12 @@ tsgl_sound* pushsound_loop(const char* path, int sample_rate, float volume) {
     return current_sound;
 }
 
+// ----------------------------------------- push nbs
+
+
+
+// -----------------------------------------
+
 void pushsound_updateVolumeSettings(float _master_volume, float _music_volume) {
     master_volume = _master_volume;
     effect_volume = 1;
@@ -125,5 +169,18 @@ void pushsound_updateVolumeSettings(float _master_volume, float _music_volume) {
         }
 
         tsgl_sound_setVolume(current_sound, newVolume);
+    }
+
+    for (size_t i = 0; i < MAX_NBS_COUNT; i++) {
+        tsgl_nbs* current_sound = nbs_sounds[i];
+
+        float newVolume = 0;
+        if (current_sound->userData_int) {
+            newVolume = calc_music_volume(current_sound->userData_float);
+        } else {
+            newVolume = calc_effect_volume(current_sound->userData_float);
+        }
+
+        tsgl_nbs_setVolume(current_sound, newVolume);
     }
 }

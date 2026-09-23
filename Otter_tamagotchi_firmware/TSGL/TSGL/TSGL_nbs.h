@@ -12,6 +12,8 @@ typedef struct {
 
 typedef struct {
     FILE* file;
+    bool file_opened;
+
     TaskHandle_t task;
     bool task_created;
     
@@ -23,6 +25,7 @@ typedef struct {
     size_t outputsCount;
 
     bool playing;
+    bool loop;
 
     void* userData;
     int userData_int;
@@ -36,4 +39,5 @@ tsgl_nbs* tsgl_nbs_load(tsgl_nbs_loadedSamples* loadedSamples, const char* path)
 void tsgl_nbs_play(tsgl_nbs* nbs);
 void tsgl_nbs_setOutputs(tsgl_nbs* nbs, tsgl_sound_output** outputs, size_t outputsCount);
 void tsgl_nbs_setVolume(tsgl_nbs* nbs, float volume);
+void tsgl_nbs_setLoop(tsgl_nbs* nbs, float loop);
 void tsgl_nbs_free(tsgl_nbs* nbs);

@@ -135,6 +135,14 @@ static void nbs_player_task(tsgl_nbs* nbs) {
         vTaskDelay((sleep*step) / portTICK_PERIOD_MS);
     }
 
+    if (nbs->file_opened) {
+        fclose(nbs->file);
+        nbs->file_opened = false;
+    }
+
+    nbs->task_created = false;
+    nbs->playing = false;
+
     vTaskDelete(NULL);
 }
 
@@ -145,7 +153,6 @@ tsgl_nbs* tsgl_nbs_load(tsgl_nbs_loadedSamples* loadedSamples, const char* path)
     if (nbs == NULL) return NULL;
 
     nbs->loadedSamples = loadedSamples;
-    nbs->file = tsgl_filesystem_open(path, "rb");
 
     return nbs;
 }
@@ -156,6 +163,11 @@ void tsgl_nbs_play(tsgl_nbs* nbs) {
     if (nbs->task_created) {
         vTaskResume(nbs->task);
         return;
+    }
+
+    if (!nbs->file_opened) {
+        nbs->file = tsgl_filesystem_open(path, "rb");
+        nbs->file_opened = true;
     }
     
     xTaskCreate((TaskFunction_t)nbs_player_task, NULL, TSGL_NBS_STACK_SIZE, nbs, configMAX_PRIORITIES - 1, &nbs->task);
@@ -187,12 +199,20 @@ void tsgl_nbs_setVolume(tsgl_nbs* nbs, float volume) {
     }
 }
 
+void tsgl_nbs_setLoop(tsgl_nbs* nbs, float loop) {
+    nbs->loop = loop;
+}
+
 void tsgl_nbs_free(tsgl_nbs* nbs) {
     if (nbs->task_created) {
 		vTaskDelete(nbs->task);
 		nbs->task_created = false;
 	}
 
-    fclose(nbs->file);
+    if (nbs->file_opened) {
+        fclose(nbs->file);
+        nbs->file_opened = false;
+    }
+
     free(nbs);
 }
