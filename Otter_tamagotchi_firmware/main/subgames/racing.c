@@ -268,6 +268,7 @@ static void obj_spawn(uint8_t type) {
 }
 
 static void gameover() {
+    if (subgame_state->gameover) return;
     stop_music();
     pushsound_play(sound_gameover_path, SOUND_GAMEOVER_SAMPLERATE, SOUND_GAMEOVER_VOLUME);
     subgame_state->gameover = true;
@@ -337,6 +338,9 @@ void subgame_racing_handle() {
             boost = true;
             if (!subgame_state->old_boost) {
                 subgame_state->fuel -= SPEED_BOOST_FUEL_DELTA;
+                if (subgame_state->fuel < 0) {
+                    subgame_state->fuel = 0;
+                }
             }
         }
 
@@ -364,9 +368,6 @@ void subgame_racing_handle() {
             subgame_state->score += subgame_state->score_delta;
         }
     }
-    
-    if (subgame_state->score > current_state.subgame_recing_max_score)
-        current_state.subgame_recing_max_score = subgame_state->score;
 
     if (tsgl_keyboard_getRawState(&keyboard, KEY_INDEX_LEFT)) { //LEFT
         subgame_state->car_x -= subgame_state->taxiing_speed + add_taxiing_speed;
@@ -423,6 +424,11 @@ void subgame_racing_handle() {
         const Gameobj* gameobj = &objects[gameobj_state->type];
         tsgl_sprite* sprite = gameobj_state->sprite;
 
+        int self_speed = gameobj->self_speed;
+        if (gameobj->dymanic_self_speed) {
+            self_speed += subgame_state->speed;
+        }
+
         bool use_self_speed = true;
         if (gameobj_state->stopped) {
             use_self_speed = false;
@@ -434,7 +440,7 @@ void subgame_racing_handle() {
                 tsgl_sprite* sprite2 = gameobj_state2->sprite;
                 
                 if (tsgl_funcs_checkIntersection(
-                    gameobj_state->x, gameobj_state->y + (speed + gameobj->self_speed), sprite->sprite->width, sprite->sprite->height,
+                    gameobj_state->x, gameobj_state->y + (speed + self_speed), sprite->sprite->width, sprite->sprite->height,
                     gameobj_state2->x, gameobj_state2->y, sprite2->sprite->width, sprite2->sprite->height
                 )) {
                     gameobj_state->stopped = true;
@@ -445,14 +451,9 @@ void subgame_racing_handle() {
             
         }
 
-        int self_speed = 0;
-        if (use_self_speed) {
-            self_speed = gameobj->self_speed;
-            if (gameobj->dymanic_self_speed) {
-                self_speed += subgame_state->speed;
-            }
-        }
-        gameobj_state->y += speed + self_speed;
+        gameobj_state->y += speed;
+        if (use_self_speed) gameobj_state->y += self_speed;
+
         tsgl_framebuffer_push(&framebuffer, gameobj_state->x, gameobj_state->y, sprite);
 
         if (gameobj_state->y >= HEIGHT) {
@@ -475,6 +476,9 @@ void subgame_racing_handle() {
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "SCORE\n%i", subgame_state->score);
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
+
+    if (subgame_state->score > current_state.subgame_recing_max_score)
+        current_state.subgame_recing_max_score = subgame_state->score;
 
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "HIGH\n%i", current_state.subgame_recing_max_score);
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);

@@ -181,7 +181,10 @@ static void print_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_obj
         for (size_t iy = 0; iy < OBJECT_Y; iy++) {
             uint8_t type = tetris_object.array[iy][ix];
             if (type > 0) {
-                subgame_state->gamearray[x + ix][y + iy] = type;
+                size_t nx = x + ix;
+                size_t ny = y + iy;
+                if (nx < GAMEARRAY_X && ny < GAMEARRAY_Y)
+                    subgame_state->gamearray[nx][ny] = type;
             }
         }
     }
@@ -311,10 +314,14 @@ static void burn_line() {
 static void weld_object() {
     print_tetris_object(subgame_state->current_object_x, subgame_state->current_object_y, subgame_state->current_object);
     next_object();
+    pushsound_play("/firmware/sounds/weld.pcm", 16000, WELD_SOUND_VOLUME);
 }
 
 static void fall_object() {
     subgame_state->current_object_y++;
+    if (true) {
+        weld_object();
+    }
 }
 
 static void border_check() {
@@ -367,9 +374,6 @@ void subgame_tetris_handle() {
         subgame_state->oldTimerStepTime = currentTime;
         fall_object();
     }
-    
-    if (subgame_state->score > current_state.subgame_tetris_max_score)
-        current_state.subgame_tetris_max_score = subgame_state->score;
 
     process();
 
@@ -390,6 +394,9 @@ void subgame_tetris_handle() {
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "SCORE\n%i", subgame_state->score);
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
+
+    if (subgame_state->score > current_state.subgame_tetris_max_score)
+        current_state.subgame_tetris_max_score = subgame_state->score;
 
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "HIGH\n%i", current_state.subgame_tetris_max_score);
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
