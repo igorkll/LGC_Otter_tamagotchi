@@ -54,7 +54,7 @@
 // --------------------------- nbs
 
 #define NBS_SAMPLES_COUNT 4
-#define NBS_MAX_NOTES_COUNT 4
+#define NBS_MAX_NOTES_COUNT 1
 #define MAX_NBS_COUNT 1
 
 #define NBS_SAMPLES_PREFIX "/firmware/nbs/"
@@ -91,5 +91,6 @@
 //#define DEBUG_PARAMS
 //#define DEBUG_PARAMS_TIME
 //#define DEBUG_PARAMS_ABS
-#define DEBUG_DISABLE_STARTUP_SOUND
+//#define DEBUG_DISABLE_STARTUP_SOUND
+#define DEBUG_STARTUP
 #define DEBUG_NBS

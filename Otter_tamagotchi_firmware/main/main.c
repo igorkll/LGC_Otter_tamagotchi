@@ -119,6 +119,8 @@ void app_main() {
     }
 
     hctl_init();
+    
+    #ifndef DEBUG_STARTUP
     tsgl_delay(100);
 
     #ifndef DEBUG_DISABLE_STARTUP_SOUND
@@ -135,6 +137,7 @@ void app_main() {
 
     hctl_setBacklightAndWait(BACKLIGHT_MAX);
     tsgl_delay(STARTUP_IMAGE_CHANGE_DELAY);
+    #endif
 
     hctl_setBacklightAndWait(BACKLIGHT_OFF);
     game_start();

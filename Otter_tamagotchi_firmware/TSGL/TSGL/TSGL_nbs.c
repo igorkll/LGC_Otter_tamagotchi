@@ -165,6 +165,7 @@ static void nbs_player_task(tsgl_nbs* nbs) {
                 readShort(nbs->file);
             }
 
+            /*
             for (size_t i = 0; i < nbs->active_notes_max; i++) {
                 tsgl_sound* active_note = &nbs->active_notes[i];
                 if (!active_note->playing) {
@@ -176,10 +177,24 @@ static void nbs_player_task(tsgl_nbs* nbs) {
                         tsgl_sound_setVolume(active_note, nbs->volume);
                         tsgl_sound_play(active_note);
                         active_note->userData_int = 0;
-                        printf("NBS %i %i %f %i\n", inst, note, nbs->volume, nbs->outputsCount);
+                        printf("NBS %i %i %f %i %i\n", inst, note, nbs->volume, nbs->outputsCount, nbs->active_notes_max);
                     }
                     break;
                 }
+            }
+            */
+
+            tsgl_sound* active_note = &nbs->loadedSamples->samples[0];
+            if (!active_note->first_start) {
+                tsgl_sound_setOutputs(active_note, nbs->outputs, nbs->outputsCount, false);
+                tsgl_sound_setSpeed(active_note, pow(2, (note - 45) / 12.0));
+                tsgl_sound_setVolume(active_note, nbs->volume);
+                tsgl_sound_play(active_note);
+                active_note->userData_int = 0;
+                printf("NBS %i %i %f %i %i\n", inst, note, nbs->volume, nbs->outputsCount, nbs->active_notes_max);
+            } else {
+                tsgl_sound_setPosition(active_note, 0);
+                tsgl_sound_play(active_note);
             }
         }
 
