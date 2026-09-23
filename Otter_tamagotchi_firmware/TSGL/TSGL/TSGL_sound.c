@@ -21,7 +21,7 @@ static tsgl_sound** global_sounds;
 static size_t global_sounds_index = 0;
 static size_t global_sounds_max_count = 0;
 
-bool tsgl_sound_force_enable_output = true;
+bool tsgl_sound_force_enable_output = false;
 
 static int IRAM_ATTR _convertPcm(tsgl_sound* sound, void* source) {
     if (sound->bit_rate == 4) {
