@@ -53,7 +53,7 @@
 
 // --------------------------- nbs
 
-#define NBS_SAMPLES_COUNT 4
+#define NBS_SAMPLES_COUNT 3
 #define NBS_MAX_NOTES_COUNT 8
 #define MAX_NBS_COUNT 1
 

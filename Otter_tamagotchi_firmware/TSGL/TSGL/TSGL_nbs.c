@@ -182,6 +182,7 @@ static void nbs_player_task(tsgl_nbs* nbs) {
                     break;
                 }
             }
+            printf("NBS %i %i\n", inst, note);
         }
 
         TickType_t ticks = pdMS_TO_TICKS((TickType_t)(step_ms * step));

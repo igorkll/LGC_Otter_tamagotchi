@@ -82,8 +82,8 @@ struct tsgl_sound {
 
     bool math_block_flag;
     
-    uint32_t phase;
-    uint32_t phase_step;
+    uint64_t phase;
+    uint64_t phase_step;
 
     bool first_start;
     bool inited;

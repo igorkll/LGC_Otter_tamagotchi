@@ -255,7 +255,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
                 acc -= (1ULL << 32);
                 if (acc >= (1ULL << 32)) continue;
             }
-            sound->phase = (uint32_t)acc;
+            sound->phase = acc;
         }
 
         atomic_flag_clear(&sound->lock);
@@ -464,7 +464,7 @@ static void afterUpdateSpeed(tsgl_sound* sound) {
         //sound->global_timer_div = (global_timer_freq / sound->scaled_sample_rate) - 1;
 
         uint64_t step = ((uint64_t)sound->scaled_sample_rate << 32) / (uint64_t)global_timer_freq;
-        sound->phase_step = (uint32_t)step;
+        sound->phase_step = step;
     }
 }
 
