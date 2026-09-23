@@ -340,7 +340,7 @@ void subgame_racing_handle() {
             }
         }
 
-        //да не гавнокодер я. так задумано. tsgl_keyboard_getRawState быстрее реагирует на изменения а дополнительный tsgl_keyboard_getState тут чтобы избежать дребезка
+        //да не гавнокодер я. так задумано. tsgl_keyboard_getRawState быстрее реагирует на изменения а дополнительный tsgl_keyboard_getState тут чтобы избежать дребезга
     } else if (!tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY)) {
         subgame_state->okay_unlocked = true;
     }

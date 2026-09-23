@@ -22,9 +22,9 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define SOUND_GAMEOVER_VOLUME 1
 
 #define DEFAULT_SCORE_DELTA 1
+#define DEFAULT_STEPS_PER_SECOND 1
 
-#define FATIGUE_DELTA 0.05
-#define SADNESS_DELTA -1.1
+#define SADNESS_DELTA -0.1
 
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 25
@@ -38,6 +38,7 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define OBJECT_Y 4
 
 #define WIREFRAME_SIZE_X (BLOCKSIZE * OBJECT_X)
+#define WIREFRAME_SIZE_Y (BLOCKSIZE * OBJECT_Y)
 
 #define rgb tsgl_rgb
 const tsgl_color blockcolors[] = {
@@ -80,6 +81,8 @@ typedef struct {
 typedef struct {
     bool gameover;
     time_t oldTimerTickTime;
+    time_t oldTimerStepTime;
+    int steps_per_second;
     
     int score;
     int score_delta;
@@ -89,6 +92,10 @@ typedef struct {
 
     uint8_t gamearray[GAMEARRAY_X][GAMEARRAY_Y];
     tsgl_rawcolor blockcolors[COLOR_COUNT];
+
+    tsgl_pos current_object_x;
+    tsgl_pos current_object_y;
+
     Tetris_object current_object;
     Tetris_object next_object;
 } Subgame_state;
@@ -190,6 +197,14 @@ static void draw_wireframe(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) 
 
 static void next_object() {
     subgame_state->current_object = subgame_state->next_object;
+
+    tsgl_pos sizeX = 0;
+    tsgl_pos sizeY = 0;
+    get_tetris_object_size(subgame_state->current_object, &sizeX, &sizeY);
+    
+    subgame_state->current_object_x = tsgl_random(0, GAMEARRAY_X - sizeX);
+    subgame_state->current_object_y = -sizeY;
+
     subgame_state->next_object = get_random_object();
 }
 
@@ -199,7 +214,9 @@ void subgame_tetris_start() {
     subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
     subgame_state->person_sprite = game_getPersonSprite();
     subgame_state->oldTimerTickTime = tsgl_time();
+    subgame_state->oldTimerStepTime = subgame_state->oldTimerTickTime;
     subgame_state->score_delta = DEFAULT_SCORE_DELTA;
+    subgame_state->steps_per_second = DEFAULT_STEPS_PER_SECOND;
 
     subgame_state->current_object = get_random_object();
     subgame_state->next_object = get_random_object();
@@ -242,6 +259,47 @@ static void draw_array() {
     }
 }
 
+static void draw_current_object() {
+    tsgl_pos target_x = subgame_state->current_object_x * BLOCKSIZE;
+    tsgl_pos target_y = subgame_state->current_object_y * BLOCKSIZE;
+    draw_tetris_object(target_x, target_y, subgame_state->current_object);
+}
+
+static void weld_object() {
+    print_tetris_object(subgame_state->current_object_x, subgame_state->current_object_y, subgame_state->current_object);
+    next_object();
+}
+
+static void fall_object() {
+    subgame_state->current_object_y++;
+}
+
+static void border_check() {
+    tsgl_pos sizeX = 0;
+    tsgl_pos sizeY = 0;
+    get_tetris_object_size(subgame_state->current_object, &sizeX, &sizeY);
+
+    tsgl_pos max_x = GAMEARRAY_X - sizeX;
+    if (subgame_state->current_object_x > max_x) subgame_state->current_object_x = max_x;
+}
+
+static void process() {
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
+        subgame_state->current_object_x--;
+        if (subgame_state->current_object_x < 0) subgame_state->current_object_x = 0;
+    }
+
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
+        subgame_state->current_object = rotate_object(subgame_state->current_object);
+        border_check();
+    }
+
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
+        subgame_state->current_object_x++;
+        border_check();
+    }
+}
+
 void subgame_tetris_handle() {
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
         game_exit();
@@ -257,20 +315,27 @@ void subgame_tetris_handle() {
     if (currentTime - subgame_state->oldTimerTickTime > 1000) {
         subgame_state->oldTimerTickTime = currentTime;
 
-        game_states_change(&current_state.states_fatigue, FATIGUE_DELTA * GAMECFG_PARAMS_SPEED_MUL);
-        game_states_change(&current_state.states_sadness, SADNESS_DELTA * GAMECFG_PARAMS_SPEED_MUL);
+        game_states_change(&current_state.states_sadness, SADNESS_DELTA);
 
         subgame_state->score += subgame_state->score_delta;
+    }
+
+    if (currentTime - subgame_state->oldTimerStepTime > (1000 / subgame_state->steps_per_second)) {
+        subgame_state->oldTimerStepTime = currentTime;
+        fall_object();
     }
     
     if (subgame_state->score > current_state.subgame_tetris_max_score)
         current_state.subgame_tetris_max_score = subgame_state->score;
+
+    process();
 
     tsgl_framebuffer_fill(&framebuffer, 0, 0, GAME_ZONE, HEIGHT, BG_COLOR);
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, STATUS_ZONE, HEIGHT, black);
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, SEPARATOR_LINE_SIZE, HEIGHT, white);
 
     draw_array();
+    draw_current_object();
 
     printsettings_subgames.fg = white;
     printsettings_subgames.width = STATUS_ZONE;
@@ -293,12 +358,6 @@ void subgame_tetris_handle() {
         subgame_state->person_sprite
     );
 
-    draw_wireframe((GAME_ZONE + (STATUS_ZONE / 2)) - (WIREFRAME_SIZE_X / 2), draw_y, get_random_object());
-
-    
-    draw_tetris_object(20, 50, subgame_state->current_object);
-    draw_tetris_object(50, 50, subgame_state->next_object);
-    draw_tetris_object(50, 20, get_random_object());
-    
-    tsgl_delay(1000);
+    tsgl_pos margin = (STATUS_ZONE - WIREFRAME_SIZE_X) / 2;
+    draw_wireframe((GAME_ZONE + (STATUS_ZONE / 2)) - (WIREFRAME_SIZE_X / 2), HEIGHT - WIREFRAME_SIZE_Y - margin, subgame_state->next_object);
 }
