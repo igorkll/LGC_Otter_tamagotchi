@@ -45,7 +45,7 @@
 
 // --------------------------- sound
 
-#define SOUND_GLOBAL_TIMER_FREQ 32000
+#define SOUND_GLOBAL_TIMER_FREQ 16000
 #define SOUND_BUFFER_SIZE (4 * 1024)
 #define MAX_SOUNDS_COUNT 8
 #define USE_SOUND_DOUBLE_BUFFER true
@@ -54,7 +54,7 @@
 // --------------------------- nbs
 
 #define NBS_SAMPLES_COUNT 4
-#define NBS_MAX_NOTES_COUNT 4
+#define NBS_MAX_NOTES_COUNT 8
 #define MAX_NBS_COUNT 1
 
 #define NBS_SAMPLES_PREFIX "/firmware/nbs/"
