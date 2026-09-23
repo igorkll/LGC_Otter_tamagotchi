@@ -24,7 +24,7 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define DEFAULT_SCORE_DELTA 1
 #define DEFAULT_STEPS_PER_SECOND 1
 
-#define SADNESS_DELTA -0.1
+#define SADNESS_DELTA -0.05 //при полностью заполненой шкале печали она уйдет за 2000 секунд. то есть за 33 минуты игры
 
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 25
@@ -121,6 +121,33 @@ static Tetris_object get_random_object() {
     return tetris_object;
 }
 
+static Tetris_object paint_object(Tetris_object object, uint8_t color, uint8_t chess_offset) {
+    color = (color / 2) * 2;
+
+    for (size_t ix = 0; ix < OBJECT_X; ix++) {
+        for (size_t iy = 0; iy < OBJECT_Y; iy++) {
+            if (object.array[iy][ix] > 0) {
+                uint8_t color_offset = (ix + iy + chess_offset) % 2;
+                object.array[iy][ix] = (color + color_offset) + 1;
+            }
+        }
+    }
+
+    return object;
+}
+
+static uint8_t get_color(Tetris_object object) {
+    for (size_t ix = 0; ix < OBJECT_X; ix++) {
+        for (size_t iy = 0; iy < OBJECT_Y; iy++) {
+            if (object.array[iy][ix] > 0) {
+                return object.array[iy][ix] - 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
 static Tetris_object rotate_object(Tetris_object object) {
     uint8_t variants_count = 0;
     for (size_t i = 0; i < BASE_OBJECTS_COUNT; i++) {
@@ -135,11 +162,11 @@ static Tetris_object rotate_object(Tetris_object object) {
     for (size_t i = 0; i < BASE_OBJECTS_COUNT; i++) {
         Tetris_object obj = base_objects[i];
         if (obj.local_index == next_local_index && obj.object_index == object.object_index) {
-            return obj;
+            return paint_object(obj, get_color(object), 0);
         }
     }
 
-    ESP_LOGE(TAG, "WTF!");
+    ESP_LOGE(TAG, "Object not found");
     return object;
 }
 

@@ -253,7 +253,7 @@ static void processParametersDelta() {
     states_delta_hunger += current_state.states_fatigue / 500;
     states_delta_thirst += current_state.states_fatigue / 250;
     states_delta_caress += 0.2 - ((current_state.states_fatigue / 100) * 0.2);
-    states_delta_sadness += current_state.states_fatigue / 100;
+    states_delta_sadness += (current_state.states_fatigue / 100) + (current_state.states_caress / 100);
 
     #ifdef DEBUG_PARAMS
         ESP_LOGI(TAG, "-------- parameters");
@@ -300,6 +300,15 @@ static void processParametersDelta() {
     game_states_change(&current_state.states_thirst, states_delta_thirst);
     game_states_change(&current_state.states_caress, states_delta_caress);
     game_states_change(&current_state.states_sadness, states_delta_sadness);
+
+    #ifdef DEBUG_PARAMS_ABS
+        ESP_LOGI(TAG, "-------- values");
+        ESP_LOGI(TAG, "fatigue: %f", current_state.states_fatigue);
+        ESP_LOGI(TAG, "hunger: %f", current_state.states_hunger);
+        ESP_LOGI(TAG, "thirst: %f", current_state.states_thirst);
+        ESP_LOGI(TAG, "caress: %f", current_state.states_caress);
+        ESP_LOGI(TAG, "sadness: %f", current_state.states_sadness);
+    #endif
 }
 
 static time_t oldTimerTickTime = -9999;
@@ -317,6 +326,11 @@ static void checkActionTimer() {
         }
 
         if (current_state.sleepTimer > 0) {
+            // после полного цикла сна
+            // усталость на 0
+            // нежность на максимум (нужно погладить)
+            // грусть на минимум
+            
             game_state_val step = (1.0 / GAMECFG_FULL_SLEEP_TIME) * 100.0;
             current_state.states_fatigue -= step;
             current_state.states_caress += step;

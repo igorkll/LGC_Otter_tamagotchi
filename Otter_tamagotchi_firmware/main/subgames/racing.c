@@ -45,7 +45,7 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define SOUND_GAMEOVER_SAMPLERATE 16000
 #define SOUND_GAMEOVER_VOLUME 1
 
-#define SADNESS_DELTA -0.1
+#define SADNESS_DELTA -0.05
 
 // ----------------------------------------------------------
 
