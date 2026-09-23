@@ -65,6 +65,10 @@ typedef struct {
     int speed_boost_delta;
     int speed_boost_taxiing_speed_add_delta;
     int maingame_money_delta;
+
+    const char* sound_path;
+    int sound_samplerate;
+    float sound_volume;
 } Gameobj;
 
 typedef struct {
@@ -130,7 +134,11 @@ static const Gameobj objects[] = {
         .path = "/firmware/subgames/racing/money.bmp",
         .score_delta = 50,
         .maingame_money_delta = 1,
-        .delete = true
+        .delete = true,
+
+        .sound_path = "/firmware/sounds/money.pcm",
+        .sound_samplerate = 16000,
+        .sound_volume = MONEY_SOUND_VOLUME
     }
 };
 
@@ -289,6 +297,10 @@ static void obj_collision(size_t index) {
     subgame_state->speed_boost_taxiing_speed_add += gameobj.speed_boost_taxiing_speed_add_delta;
 
     current_state.states_money += gameobj.maingame_money_delta;
+
+    if (gameobj.sound_path != NULL) {
+        pushsound_play(gameobj.sound_path, gameobj.sound_samplerate, gameobj.sound_volume);
+    }
 
     if (gameobj.delete) obj_delete(index);
 }

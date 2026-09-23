@@ -65,6 +65,7 @@
 #define SADNESS_SOUND_VOLUME 2.2
 
 #define BUY_SOUND_VOLUME 1
+#define MONEY_SOUND_VOLUME 3
 
 // --------------------------- debug
 
