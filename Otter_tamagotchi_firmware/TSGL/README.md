@@ -1,4 +1,4 @@
-# TSGL 0.7.4
+# TSGL 0.8.0
 * extended graphics library for the ESP 32 family controller
 * this library is written entirely in "C"
 * designed exclusively for use with ESP-IDF
@@ -19,6 +19,11 @@
 * st7735 - st7735_rgb444 / st7735_rgb565 / st7735_rgb666
 * st7789 - st77XX_rgb444 / st77XX_rgb565 / st77XX_rgb666
 * st7796 - st77XX_rgb565 / st77XX_rgb888
+
+## supported audio formats
+* pcm
+* dfpwm
+* nbs
 
 ## features
 * the ability to install custom drivers without having to change the library code
