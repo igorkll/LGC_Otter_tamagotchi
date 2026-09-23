@@ -2,21 +2,23 @@
 #include "TSGL_filesystem.h"
 #include "TSGL_funcs.h"
 #include <math.h>
+#include <string.h>
 
-const char* TAG = "TSGL_nbs";
+//static const char* TAG = "TSGL_nbs";
 
 tsgl_nbs_loadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, const char* suffix, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format) {
     tsgl_nbs_loadedSamples* loadedSamples = malloc(sizeof(tsgl_nbs_loadedSamples));
     if (loadedSamples == NULL) return NULL;
 
     loadedSamples->count = count;
-    loadedSamples->samples = malloc(sizeof(tsgl_sound) * count);
+    loadedSamples->samples = calloc(count, sizeof(tsgl_sound));
 
-    for (size_t i = 0; i > count; i++) {
+    for (size_t i = 0; i < count; i++) {
         char path[TSGL_MAX_PATH_LEN];
         TSGL_funcs_slnprintf(path, TSGL_MAX_PATH_LEN, "%s%i%s", prefix, i, suffix);
 
         if (tsgl_sound_load_pcm(&loadedSamples->samples[i], TSGL_SOUND_FULLBUFFER, 0, path, sample_rate, bit_rate, channels, pcm_format) != ESP_OK) {
+            tsgl_nbs_freeSamples(loadedSamples);
             return NULL;
         }
     }
@@ -25,8 +27,11 @@ tsgl_nbs_loadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, c
 }
 
 void tsgl_nbs_freeSamples(tsgl_nbs_loadedSamples* loadedSamples) {
-    for (size_t i = 0; i > loadedSamples->count; i++) {
-        tsgl_sound_free(&loadedSamples->samples[i]);
+    for (size_t i = 0; i < loadedSamples->count; i++) {
+        tsgl_sound* sound = &loadedSamples->samples[i];
+        if (sound != NULL) {
+            tsgl_sound_free(sound);
+        }
     }
 
     free(loadedSamples->samples);
@@ -60,7 +65,46 @@ static void skipString(FILE* file) {
 
 // ---------------------------------------
 
+static void _stop(tsgl_nbs* nbs) {
+    for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
+        tsgl_sound* active_note = &nbs->active_notes[i];
+        if (active_note->playing) {
+            tsgl_sound_stop(active_note);
+            active_note->userData_int = 1;
+        }
+    }
+
+    nbs->playing = false;
+}
+
+static void _resumeNotes(tsgl_nbs* nbs) {
+    for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
+        tsgl_sound* active_note = &nbs->active_notes[i];
+        if (active_note->userData_int) {
+            tsgl_sound_play(active_note);
+            active_note->userData_int = 0;
+        }
+    }
+}
+
+static void _waitActiveNotes(tsgl_nbs* nbs) {
+    while (true) {
+        bool finded_active_note = false;
+        for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
+            tsgl_sound* active_note = &nbs->active_notes[i];
+            if (active_note->playing) {
+                finded_active_note = true;
+                break;
+            }
+        }
+        if (!finded_active_note) break;
+        vTaskDelay(1);
+    }
+}
+
 static void nbs_player_task(tsgl_nbs* nbs) {
+    fseek(nbs->file, 0, SEEK_SET);
+
     uint16_t length = readShort(nbs->file);
     uint16_t tempo;
     bool newFormat = length == 0;
@@ -93,13 +137,17 @@ static void nbs_player_task(tsgl_nbs* nbs) {
     }
 
     size_t dataStartPos = ftell(nbs->file);
-    uint32_t sleep = 1000.0 / (tempo / 100.0);
+    float step_ms = 1000.0f / ((float)tempo / 100.0f);
 
     while (true) {
         uint16_t step = readShort(nbs->file);
         if (step == 0) {
-            fseek(nbs->file, dataStartPos, SEEK_SET);
-            continue;
+            if (nbs->loop) {
+                _waitActiveNotes(nbs);
+                fseek(nbs->file, dataStartPos, SEEK_SET);
+                continue;
+            }
+            break;
         }
         if (newFormat) step /= 256;
 
@@ -126,23 +174,21 @@ static void nbs_player_task(tsgl_nbs* nbs) {
                         tsgl_sound_setSpeed(active_note, pow(2, (note - 45) / 12.0));
                         tsgl_sound_setVolume(active_note, nbs->volume);
                         tsgl_sound_play(active_note);
+                        active_note->userData_int = 0;
                     }
                     break;
                 }
             }
         }
 
-        vTaskDelay((sleep*step) / portTICK_PERIOD_MS);
+        TickType_t ticks = pdMS_TO_TICKS((TickType_t)(step_ms * step));
+        if (ticks == 0) ticks = 1;
+        vTaskDelay(ticks);
     }
 
-    if (nbs->file_opened) {
-        fclose(nbs->file);
-        nbs->file_opened = false;
-    }
-
+    _waitActiveNotes(nbs);
+    _stop(nbs);
     nbs->task_created = false;
-    nbs->playing = false;
-
     vTaskDelete(NULL);
 }
 
@@ -153,20 +199,23 @@ tsgl_nbs* tsgl_nbs_load(tsgl_nbs_loadedSamples* loadedSamples, const char* path)
     if (nbs == NULL) return NULL;
 
     nbs->loadedSamples = loadedSamples;
+    nbs->path = strdup(path);
 
     return nbs;
 }
 
 void tsgl_nbs_play(tsgl_nbs* nbs) {
+    if (nbs->playing) return;
     nbs->playing = true;
 
     if (nbs->task_created) {
+        _resumeNotes(nbs);
         vTaskResume(nbs->task);
         return;
     }
 
     if (!nbs->file_opened) {
-        nbs->file = tsgl_filesystem_open(path, "rb");
+        nbs->file = tsgl_filesystem_open(nbs->path, "rb");
         nbs->file_opened = true;
     }
     
@@ -175,19 +224,12 @@ void tsgl_nbs_play(tsgl_nbs* nbs) {
 }
 
 void tsgl_nbs_stop(tsgl_nbs* nbs) {
-    for (size_t i = 0; i < TSGL_NBS_MAX_ACTIVE_NOTES; i++) {
-        tsgl_sound* active_note = &nbs->active_notes[i];
-        if (active_note->playing) {
-            tsgl_sound_stop(active_note, false);
-        }
-    }
+    if (!nbs->playing) return;
+    _stop(nbs);
 
 	if (nbs->task_created) {
 		vTaskSuspend(nbs->task);
-		nbs->task_created = false;
 	}
-
-    nbs->playing = false;
 }
 
 void tsgl_nbs_setOutputs(tsgl_nbs* nbs, tsgl_sound_output** outputs, size_t outputsCount) {
@@ -211,7 +253,7 @@ void tsgl_nbs_setLoop(tsgl_nbs* nbs, float loop) {
 }
 
 void tsgl_nbs_free(tsgl_nbs* nbs) {
-    tsgl_nbs_stop(nbs);
+    _stop(nbs);
 
     if (nbs->task_created) {
 		vTaskDelete(nbs->task);
@@ -221,6 +263,10 @@ void tsgl_nbs_free(tsgl_nbs* nbs) {
     if (nbs->file_opened) {
         fclose(nbs->file);
         nbs->file_opened = false;
+    }
+
+    if (nbs->path) {
+        free(nbs->path);
     }
 
     free(nbs);

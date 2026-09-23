@@ -89,7 +89,7 @@ size_t pushsound_nbs_getFreeSlot() {
             if (iterationLimit <= 0) break;
         }
         
-        if (current_sound) tsgl_sound_free(current_sound);
+        if (current_sound) tsgl_nbs_free(current_sound);
     }
 
     return current_sound_index;
@@ -162,10 +162,9 @@ tsgl_nbs* pushsound_nbs_play(const char* path, float volume) {
     tsgl_nbs* current_sound = pushsound_nbs_load(path);
 
     tsgl_sound_output* sound_outputs[] = {sound_output};
-    tsgl_sound_enableFreeOnEnd(current_sound, true);
-    tsgl_sound_setOutputs(current_sound, sound_outputs, 1, false);
-    tsgl_sound_setVolume(current_sound, calc_effect_volume(volume));
-    tsgl_sound_play(current_sound);
+    tsgl_nbs_setOutputs(current_sound, sound_outputs, 1);
+    tsgl_nbs_setVolume(current_sound, calc_effect_volume(volume));
+    tsgl_nbs_play(current_sound);
     current_sound->userData_float = volume;
     current_sound->userData_int = 0;
 
@@ -173,7 +172,16 @@ tsgl_nbs* pushsound_nbs_play(const char* path, float volume) {
 }
 
 tsgl_nbs* pushsound_nbs_loop(const char* path, float volume) {
+    tsgl_nbs* current_sound = pushsound_nbs_load(path);
 
+    tsgl_sound_output* sound_outputs[] = {sound_output};
+    tsgl_nbs_setOutputs(current_sound, sound_outputs, 1);
+    tsgl_nbs_setVolume(current_sound, calc_music_volume(volume));
+    tsgl_nbs_play(current_sound);
+    current_sound->userData_float = volume;
+    current_sound->userData_int = 1;
+
+    return current_sound;
 }
 
 // -----------------------------------------
@@ -199,13 +207,15 @@ void pushsound_updateVolumeSettings(float _master_volume, float _music_volume) {
     for (size_t i = 0; i < MAX_NBS_COUNT; i++) {
         tsgl_nbs* current_sound = nbs_sounds[i];
 
-        float newVolume = 0;
-        if (current_sound->userData_int) {
-            newVolume = calc_music_volume(current_sound->userData_float);
-        } else {
-            newVolume = calc_effect_volume(current_sound->userData_float);
-        }
+        if (current_sound && current_sound->playing) {
+            float newVolume = 0;
+            if (current_sound->userData_int) {
+                newVolume = calc_music_volume(current_sound->userData_float);
+            } else {
+                newVolume = calc_effect_volume(current_sound->userData_float);
+            }
 
-        tsgl_nbs_setVolume(current_sound, newVolume);
+            tsgl_nbs_setVolume(current_sound, newVolume);
+        }
     }
 }

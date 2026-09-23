@@ -493,7 +493,7 @@ void game_start() {
     tsgl_benchmark_reset(&benchmark);
     game_load();
     game_updateParameters();
-    pushsound_initNbs();
+    //pushsound_initNbs();
 
     game_upmenu_init();
     start();

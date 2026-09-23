@@ -21,9 +21,8 @@
 
 #define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x333333), framebuffer.colormode)
 
-static const char* music_path = "/firmware/music/edmvselo.dpw";
-#define MUSIC_SAMPLERATE 16000
-#define MUSIC_VOLUME 0.6
+static const char* music_path = "/firmware/music/tetris.nbs";
+#define MUSIC_VOLUME 1
 
 static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define SOUND_GAMEOVER_SAMPLERATE 16000
@@ -91,7 +90,7 @@ typedef struct {
     int score;
     int score_delta;
 
-    tsgl_sound* music;
+    tsgl_nbs* music;
     tsgl_sprite* person_sprite;
 
     uint8_t gamearray[GAMEARRAY_X][GAMEARRAY_Y];
@@ -263,7 +262,7 @@ static void next_object() {
 void subgame_tetris_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
 
-    subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
+    subgame_state->music = pushsound_nbs_loop(music_path, MUSIC_VOLUME);
     subgame_state->person_sprite = game_getPersonSprite();
     subgame_state->oldTimerTickTime = tsgl_time();
     subgame_state->oldTimerStepTime = subgame_state->oldTimerTickTime;
@@ -280,7 +279,7 @@ void subgame_tetris_start() {
 
 static void stop_music() {
     if (subgame_state->music != NULL) {
-        tsgl_sound_free(subgame_state->music);
+        tsgl_nbs_free(subgame_state->music);
         subgame_state->music = NULL;
     }
 }

@@ -16,6 +16,8 @@ typedef struct {
 
     TaskHandle_t task;
     bool task_created;
+
+    char* path;
     
     tsgl_nbs_loadedSamples* loadedSamples;
     tsgl_sound active_notes[TSGL_NBS_MAX_ACTIVE_NOTES];
