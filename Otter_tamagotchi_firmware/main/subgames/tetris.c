@@ -113,10 +113,11 @@ static Tetris_object get_random_object() {
     Tetris_object tetris_object;
     memcpy(&tetris_object, &base_object, sizeof(Tetris_object));
 
+    uint8_t chess_offset = tetris_object.reverse_color_palette;
     for (size_t ix = 0; ix < OBJECT_X; ix++) {
         for (size_t iy = 0; iy < OBJECT_Y; iy++) {
             if (tetris_object.array[iy][ix] > 0) {
-                uint8_t color_offset = (ix + iy) % 2;
+                uint8_t color_offset = (ix + iy + chess_offset) % 2;
                 tetris_object.array[iy][ix] = (random_color + color_offset) + 1;
             }
         }
@@ -125,9 +126,10 @@ static Tetris_object get_random_object() {
     return tetris_object;
 }
 
-static Tetris_object paint_object(Tetris_object object, uint8_t color, uint8_t chess_offset) {
+static Tetris_object paint_object(Tetris_object object, uint8_t color) {
     color = (color / 2) * 2;
 
+    uint8_t chess_offset = object.reverse_color_palette;
     for (size_t ix = 0; ix < OBJECT_X; ix++) {
         for (size_t iy = 0; iy < OBJECT_Y; iy++) {
             if (object.array[iy][ix] > 0) {
@@ -166,7 +168,7 @@ static Tetris_object rotate_object(Tetris_object object) {
     for (size_t i = 0; i < BASE_OBJECTS_COUNT; i++) {
         Tetris_object obj = base_objects[i];
         if (obj.local_index == next_local_index && obj.object_index == object.object_index) {
-            return paint_object(obj, get_color(object), obj.reverse_color_palette);
+            return paint_object(obj, get_color(object));
         }
     }
 
