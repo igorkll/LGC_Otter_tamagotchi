@@ -190,6 +190,22 @@ static void print_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_obj
     }
 }
 
+static bool check_collision(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) {
+    for (size_t ix = 0; ix < OBJECT_X; ix++) {
+        for (size_t iy = 0; iy < OBJECT_Y; iy++) {
+            uint8_t type = tetris_object.array[iy][ix];
+            if (type > 0) {
+                size_t nx = x + ix;
+                size_t ny = y + iy;
+                if (nx < GAMEARRAY_X && ny < GAMEARRAY_Y && subgame_state->gamearray[nx][ny] > 0)
+                    return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 static void draw_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) {
     for (size_t ix = 0; ix < OBJECT_X; ix++) {
         for (size_t iy = 0; iy < OBJECT_Y; iy++) {
@@ -318,9 +334,14 @@ static void weld_object() {
 }
 
 static void fall_object() {
-    subgame_state->current_object_y++;
-    if (true) {
+    tsgl_pos sizeX = 0;
+    tsgl_pos sizeY = 0;
+    get_tetris_object_size(subgame_state->current_object, &sizeX, &sizeY);
+
+    if (subgame_state->current_object_y + sizeY >= GAMEARRAY_Y || check_collision(subgame_state->current_object_x, subgame_state->current_object_y + 1, subgame_state->current_object)) {
         weld_object();
+    } else {
+        subgame_state->current_object_y++;
     }
 }
 
@@ -340,8 +361,11 @@ static void process() {
     }
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
-        subgame_state->current_object = rotate_object(subgame_state->current_object);
-        border_check();
+        Tetris_object rotated = rotate_object(subgame_state->current_object);
+        if (!check_collision(subgame_state->current_object_x, subgame_state->current_object_y, rotated)) {
+            subgame_state->current_object = rotated;
+            border_check();
+        }
     }
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
