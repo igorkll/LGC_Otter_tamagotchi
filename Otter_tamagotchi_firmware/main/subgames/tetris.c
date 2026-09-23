@@ -356,8 +356,10 @@ static void border_check() {
 
 static void process() {
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
-        subgame_state->current_object_x--;
-        if (subgame_state->current_object_x < 0) subgame_state->current_object_x = 0;
+        if (!check_collision(subgame_state->current_object_x - 1, subgame_state->current_object_y, subgame_state->current_object)) {
+            subgame_state->current_object_x--;
+            if (subgame_state->current_object_x < 0) subgame_state->current_object_x = 0;
+        }
     }
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
@@ -369,8 +371,10 @@ static void process() {
     }
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
-        subgame_state->current_object_x++;
-        border_check();
+        if (!check_collision(subgame_state->current_object_x + 1, subgame_state->current_object_y, subgame_state->current_object)) {
+            subgame_state->current_object_x++;
+            border_check();
+        }
     }
 }
 

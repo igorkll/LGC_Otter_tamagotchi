@@ -66,7 +66,7 @@
 
 #define BUY_SOUND_VOLUME 1
 #define MONEY_SOUND_VOLUME 3
-#define WELD_SOUND_VOLUME 3
+#define WELD_SOUND_VOLUME 4
 
 // --------------------------- debug
 
