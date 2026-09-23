@@ -696,7 +696,7 @@ static void _stop(tsgl_sound* sound) {
         gptimer_disable(sound->timer);
         gptimer_del_timer(sound->timer);
         
-        _resetOutputs(sound);
+        if (!tsgl_sound_force_enable_output) _resetOutputs(sound);
     } else {
         bool found_playing = false;
         while (atomic_flag_test_and_set(&global_sounds_lock));
