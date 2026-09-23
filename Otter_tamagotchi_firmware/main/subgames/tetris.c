@@ -7,7 +7,15 @@
 
 // ----------------------------------------------------------
 
-#define STATUS_ZONE 50
+#define BURNLINE_ADD_SCORE 10
+#define BURNLINE_ADD_MONEY 10
+
+#define WIREFRAME_STOKE_SIZE 1
+#define BLOCKSIZE 8
+#define GAMEARRAY_X 10
+#define GAMEARRAY_Y (HEIGHT / BLOCKSIZE) //20
+
+#define STATUS_ZONE (WIDTH - (GAMEARRAY_X * BLOCKSIZE))
 #define GAME_ZONE (WIDTH - STATUS_ZONE)
 #define SEPARATOR_LINE_SIZE 2
 
@@ -28,11 +36,6 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 25
-
-#define WIREFRAME_STOKE_SIZE 1
-#define BLOCKSIZE 8
-#define GAMEARRAY_X (GAME_ZONE / BLOCKSIZE)
-#define GAMEARRAY_Y (HEIGHT / BLOCKSIZE)
 
 #define OBJECT_X 4
 #define OBJECT_Y 4
@@ -71,6 +74,7 @@ typedef struct {
     uint8_t object_index;
     uint8_t local_index;
     uint8_t array[OBJECT_Y][OBJECT_X];
+    bool reverse_color_palette;
 } Tetris_object;
 
 #include "cparts/tetris_objects.h"
@@ -162,7 +166,7 @@ static Tetris_object rotate_object(Tetris_object object) {
     for (size_t i = 0; i < BASE_OBJECTS_COUNT; i++) {
         Tetris_object obj = base_objects[i];
         if (obj.local_index == next_local_index && obj.object_index == object.object_index) {
-            return paint_object(obj, get_color(object), 0);
+            return paint_object(obj, get_color(object), obj.reverse_color_palette);
         }
     }
 
@@ -290,6 +294,16 @@ static void draw_current_object() {
     tsgl_pos target_x = subgame_state->current_object_x * BLOCKSIZE;
     tsgl_pos target_y = subgame_state->current_object_y * BLOCKSIZE;
     draw_tetris_object(target_x, target_y, subgame_state->current_object);
+}
+
+static void after_burn_line() {
+    subgame_state->score += BURNLINE_ADD_SCORE;
+    current_state.states_money += BURNLINE_ADD_MONEY;
+    pushsound_play("/firmware/sounds/money.pcm", 16000, MONEY_SOUND_VOLUME);
+}
+
+static void burn_line() {
+    after_burn_line();
 }
 
 static void weld_object() {
