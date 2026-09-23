@@ -17,7 +17,9 @@ tsgl_nbs_loadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, c
         char path[TSGL_MAX_PATH_LEN];
         TSGL_funcs_slnprintf(path, TSGL_MAX_PATH_LEN, "%s%i%s", prefix, i, suffix);
 
-        if (tsgl_sound_load_pcm(&loadedSamples->samples[i], TSGL_SOUND_FULLBUFFER, 0, path, sample_rate, bit_rate, channels, pcm_format) != ESP_OK) {
+        tsgl_sound* sound = &loadedSamples->samples[i];
+
+        if (tsgl_sound_load_pcm(sound, TSGL_SOUND_FULLBUFFER, 0, path, sample_rate, bit_rate, channels, pcm_format) != ESP_OK) {
             tsgl_nbs_freeSamples(loadedSamples);
             return NULL;
         }
@@ -165,40 +167,21 @@ static void nbs_player_task(tsgl_nbs* nbs) {
                 readShort(nbs->file);
             }
 
-            /*
             for (size_t i = 0; i < nbs->active_notes_max; i++) {
                 tsgl_sound* active_note = &nbs->active_notes[i];
                 if (!active_note->playing) {
                     if (active_note->inited) tsgl_sound_free_instance(active_note);
                     if (inst < nbs->loadedSamples->count) {
                         tsgl_sound_instance(active_note, &nbs->loadedSamples->samples[inst]);
-                        tsgl_sound_setOutputs(active_note, nbs->outputs, nbs->outputsCount, false);
+                        tsgl_sound_setOutputsRaw(active_note, nbs->outputs, nbs->outputsCount);
                         tsgl_sound_setSpeed(active_note, pow(2, (note - 45) / 12.0));
                         tsgl_sound_setVolume(active_note, nbs->volume);
                         tsgl_sound_play(active_note);
                         active_note->userData_int = 0;
-                        printf("NBS %i %i %f %i %i\n", inst, note, nbs->volume, nbs->outputsCount, nbs->active_notes_max);
                     }
                     break;
                 }
             }
-            */
-
-            tsgl_sound* active_note = &nbs->loadedSamples->samples[1];
-            if (!active_note->first_start) {
-                tsgl_sound_setOutputs(active_note, nbs->outputs, nbs->outputsCount, false);
-                tsgl_sound_setSpeed(active_note, pow(2, (note - 45) / 12.0));
-                tsgl_sound_setVolume(active_note, nbs->volume);
-                tsgl_sound_play(active_note);
-            } else {
-                tsgl_sound_setPosition(active_note, 0);
-                tsgl_sound_setOutputs(active_note, nbs->outputs, nbs->outputsCount, false);
-                tsgl_sound_setSpeed(active_note, pow(2, (note - 45) / 12.0));
-                tsgl_sound_setVolume(active_note, nbs->volume);
-                tsgl_sound_play(active_note);
-            }
-            active_note->userData_int = 0;
-            printf("NBS %i %i %f %i %i\n", inst, note, nbs->volume, nbs->outputsCount, nbs->active_notes_max);
         }
 
         TickType_t ticks = pdMS_TO_TICKS((TickType_t)(step_ms * step));

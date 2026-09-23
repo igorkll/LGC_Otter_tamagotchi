@@ -229,20 +229,33 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
         if (atomic_flag_test_and_set(&sound->lock)) continue;
 
         if (sound->playing) {
-            if (sound->global_timer_state == 0 && !sound->tempStop) {
+            //if (sound->global_timer_state == 0 && !sound->tempStop) {
+            if (sound->math_block_flag && !sound->tempStop) {
                 _math_current_block(sound);
+                sound->math_block_flag = false;
             }
 
             if (isSoundPlaying(sound)) {
                 _addOutputsValues(sound);
             }
 
+            /*
             if (sound->global_timer_state >= sound->global_timer_div) {
                 if (!sound->tempStop) _read_next_block(sound);
                 sound->global_timer_state = 0;
             } else {
                 sound->global_timer_state++;
             }
+            */
+
+            uint64_t acc = (uint64_t)sound->phase + sound->phase_step;
+            while (acc >= (1ULL << 32)) {
+                _read_next_block(sound);
+                sound->math_block_flag = true;
+                acc -= (1ULL << 32);
+                if (acc >= (1ULL << 32)) continue;
+            }
+            sound->phase = (uint32_t)acc;
         }
 
         atomic_flag_clear(&sound->lock);
@@ -448,13 +461,17 @@ static void afterUpdateSpeed(tsgl_sound* sound) {
     sound->scaled_sample_rate = sound->sample_rate * sound->speed;
 
     if (!sound->use_local_timer) {
-        sound->global_timer_div = (global_timer_freq / sound->scaled_sample_rate) - 1;
+        //sound->global_timer_div = (global_timer_freq / sound->scaled_sample_rate) - 1;
+
+        uint64_t step = ((uint64_t)sound->scaled_sample_rate << 32) / (uint64_t)global_timer_freq;
+        sound->phase_step = (uint32_t)step;
     }
 }
 
 esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loadsize, size_t bufferSize, int64_t caps, const char* path, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format, bool doubleSwapBuffer) {
     memset(sound, 0, sizeof(tsgl_sound));
     sound->inited = true;
+    sound->math_block_flag = true;
 
     atomic_flag_clear(&sound->lock);
 
@@ -556,6 +573,21 @@ void tsgl_sound_setOutputs(tsgl_sound* sound, tsgl_sound_output** outputs, size_
         sound->outputs[i] = output;
     }
     sound->freeOutputs = freeOutputs;
+
+    atomic_flag_clear(&sound->lock);
+    atomic_flag_clear(&global_sounds_lock);
+}
+
+void tsgl_sound_setOutputsRaw(tsgl_sound* sound, tsgl_sound_output** outputs, size_t outputsCount) {
+    while (atomic_flag_test_and_set(&global_sounds_lock));
+    while (atomic_flag_test_and_set(&sound->lock));
+
+    sound->outputsCount = outputsCount;
+    sound->outputs = malloc(outputsCount * sizeof(size_t));
+    for (size_t i = 0; i < sound->outputsCount; i++) {
+        tsgl_sound_output* output = outputs[i];
+        sound->outputs[i] = output;
+    }
 
     atomic_flag_clear(&sound->lock);
     atomic_flag_clear(&global_sounds_lock);

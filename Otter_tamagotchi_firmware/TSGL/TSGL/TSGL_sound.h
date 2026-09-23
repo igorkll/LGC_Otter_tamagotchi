@@ -35,7 +35,7 @@ typedef enum {
 } tsgl_sound_pcm_format;
 
 typedef struct tsgl_sound tsgl_sound;
-struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use methods. you can only write values to the first two configuration fields
+struct tsgl_sound {
     bool heap; //it will automatically call free when calling tsgl_sound_free
 
     bool playing;
@@ -74,11 +74,16 @@ struct tsgl_sound { //do not write ANYTHING in the fields of the structure. use 
     size_t outputsCount;
     bool freeOutputs;
 
-    uint8_t global_timer_div;
-    uint8_t global_timer_state;
+    //uint8_t global_timer_div;
+    //uint8_t global_timer_state;
 
     gptimer_handle_t timer;
     bool use_local_timer;
+
+    bool math_block_flag;
+    
+    uint32_t phase;
+    uint32_t phase_step;
 
     bool first_start;
     bool inited;
@@ -130,6 +135,7 @@ esp_err_t tsgl_sound_instance(tsgl_sound* sound, tsgl_sound* parent);
 //supports the NULL value so that, for example, you can output only the first channel to two outputs at once, passing: output, NULL, output. then the first channel will be output to two outputs at once
 //if you want your channels to be free after the track is free, pass true to freeOutputs
 void tsgl_sound_setOutputs(tsgl_sound* sound, tsgl_sound_output** outputs, size_t outputsCount, bool freeOutputs);
+void tsgl_sound_setOutputsRaw(tsgl_sound* sound, tsgl_sound_output** outputs, size_t outputsCount);
 void tsgl_sound_setSpeed(tsgl_sound* sound, float speed);
 void tsgl_sound_setLoop(tsgl_sound* sound, bool loop);
 void tsgl_sound_setVolume(tsgl_sound* sound, float volume);
