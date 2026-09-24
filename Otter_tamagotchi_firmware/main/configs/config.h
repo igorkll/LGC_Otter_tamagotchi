@@ -40,7 +40,8 @@
 // --------------------------- keys
 
 #define KEYS_DEBOUNCE_PRESSING_MS 0
-#define KEYS_DEBOUNCE_RELEASING_MS 30
+#define KEYS_DEBOUNCE_RELEASING_MS 10
+#define KEYS_CHECK_PERIOD 25
 
 // --------------------------- other
 

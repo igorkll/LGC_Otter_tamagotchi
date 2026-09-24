@@ -4,6 +4,7 @@
 static int16_t currentBackgroundValue = 0;
 static uint8_t targetBackgroundValue = 0;
 static TimerHandle_t change_backlight_timer_handle = NULL;
+static TimerHandle_t read_keyboard_timer_handle = NULL;
 
 static time_t lastInteractTime = 0;
 static bool isIdle = false;
@@ -27,6 +28,10 @@ static void change_backlight_timer_callback(TimerHandle_t xTimer) {
     if (currentBackgroundValue == targetBackgroundValue) {
         xTimerStop(xTimer, 0);
     }
+}
+
+static void read_keyboard_timer_callback(TimerHandle_t xTimer) {
+    tsgl_keyboard_readAll(&keyboard);
 }
 
 void hctl_init() {
@@ -57,6 +62,15 @@ void hctl_init() {
         NULL, 
         change_backlight_timer_callback
     );
+
+    read_keyboard_timer_handle = xTimerCreate(
+        NULL,
+        pdMS_TO_TICKS(KEYS_CHECK_PERIOD),
+        pdTRUE,
+        NULL, 
+        read_keyboard_timer_callback
+    );
+    xTimerStart(read_keyboard_timer_handle, 0);
 }
 
 void hctl_setBacklight(uint8_t value) {
@@ -74,8 +88,6 @@ void hctl_setBacklightAndWait(uint8_t value) {
 }
 
 void hctl_process() {
-    tsgl_keyboard_readAll(&keyboard);
-
     time_t currentTime = tsgl_time();
     for (size_t i = 0; i < KEYS_COUNT; i++) {
         if (tsgl_keyboard_whenPressed(&keyboard, i)) {
