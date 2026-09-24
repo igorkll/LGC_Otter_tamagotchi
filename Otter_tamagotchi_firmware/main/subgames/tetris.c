@@ -42,6 +42,8 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define WIREFRAME_SIZE_X (BLOCKSIZE * OBJECT_X)
 #define WIREFRAME_SIZE_Y (BLOCKSIZE * OBJECT_Y)
 
+#define WITHOUT_MUSIC true
+
 #define rgb tsgl_rgb
 const tsgl_color blockcolors[] = {
     rgb(253, 62, 62),
@@ -262,7 +264,9 @@ static void next_object() {
 void subgame_tetris_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
 
-    subgame_state->music = pushsound_nbs_loop(music_path, MUSIC_VOLUME);
+    if (!WITHOUT_MUSIC) {
+        subgame_state->music = pushsound_nbs_loop(music_path, MUSIC_VOLUME);
+    }
     subgame_state->person_sprite = game_getPersonSprite();
     subgame_state->oldTimerTickTime = tsgl_time();
     subgame_state->oldTimerStepTime = subgame_state->oldTimerTickTime;
@@ -322,8 +326,34 @@ static void after_burn_line() {
     pushsound_play("/firmware/sounds/money.pcm", 16000, MONEY_SOUND_VOLUME);
 }
 
-static void burn_line() {
+static void burn_line(tsgl_pos posY) {
+    for (int ix = 0; ix < GAMEARRAY_X; ix++) {
+        for (int iy = posY - 1; iy >= 0; iy--) {
+            subgame_state->gamearray[ix][iy + 1] = subgame_state->gamearray[ix][iy];
+        }
+        subgame_state->gamearray[ix][0] = 0;
+    }
     after_burn_line();
+}
+
+static void burn_line_check() {
+    for (int iy = GAMEARRAY_Y - 1; iy >= 0;) {
+        bool found_line = true;
+        for (int ix = 0; ix < GAMEARRAY_X; ix++) {
+            uint8_t type = subgame_state->gamearray[ix][iy];
+            if (type == 0) {
+                found_line = false;
+                break;
+            }
+        }
+
+        if (found_line) {
+            burn_line(iy);
+            break; //одну линию за раз
+        } else {
+            iy--;
+        }
+    }
 }
 
 static void weld_object() {
@@ -378,12 +408,12 @@ static void process() {
 }
 
 void subgame_tetris_handle() {
-    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
-        game_exit();
-        return;
-    }
-
     if (subgame_state->gameover) {
+        if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
+            game_exit();
+            return;
+        }
+
         game_modal_draw_gameover(subgame_state->score, current_state.subgame_tetris_max_score);
         return;
     }
@@ -399,6 +429,9 @@ void subgame_tetris_handle() {
 
     if (currentTime - subgame_state->oldTimerStepTime > (1000 / subgame_state->steps_per_second)) {
         subgame_state->oldTimerStepTime = currentTime;
+        fall_object();
+        burn_line_check();
+    } else if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
         fall_object();
     }
 

@@ -111,11 +111,8 @@ static void _waitActiveNotes(tsgl_nbs* nbs) {
         for (size_t i = 0; i < nbs->active_notes_max; i++) {
             tsgl_sound* active_note = &nbs->active_notes[i];
             if (active_note->playing) {
-                printf("active %i %i\n", active_note->playing, active_note->callback_end_run);
                 finded_active_note = true;
                 break;
-            } else {
-                printf("test %i %i\n", active_note->playing, active_note->callback_end_run);
             }
         }
         if (!finded_active_note) break;

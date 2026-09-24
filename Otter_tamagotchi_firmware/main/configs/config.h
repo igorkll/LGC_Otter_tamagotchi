@@ -90,7 +90,7 @@
 
 #define RESET_SETTINGS_ID 17
 
-//#define DEBUG_FPS
+#define DEBUG_FPS
 #define DEBUG_RAM
 //#define DEBUG_TITLE
 //#define DEBUG_PARAMS
