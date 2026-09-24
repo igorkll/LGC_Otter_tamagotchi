@@ -1,6 +1,7 @@
 #include "TSGL_nbs.h"
 #include "TSGL_filesystem.h"
 #include "TSGL_funcs.h"
+#include "TSGL_math.h"
 #include <math.h>
 #include <string.h>
 #include <esp_log.h>
@@ -187,13 +188,13 @@ static void nbs_player_task(tsgl_nbs* nbs) {
 
             for (size_t i = 0; i < nbs->active_notes_max; i++) {
                 tsgl_sound* active_note = &nbs->active_notes[i];
-                if (!active_note->playing) {
-                    if (active_note->inited) tsgl_sound_free_instance(active_note);
+                if (!active_note->inited) {
                     if (inst < nbs->loadedSamples->count) {
                         tsgl_sound_instance(active_note, &nbs->loadedSamples->samples[inst]);
                         tsgl_sound_enableFreeOnEnd(active_note, true);
                         tsgl_sound_setOutputsRaw(active_note, nbs->outputs, nbs->outputsCount);
-                        tsgl_sound_setSpeed(active_note, pow(2, (note - 45) / 12.0));
+                        float speed = pow(2, (note - 45) / 12.0);
+                        tsgl_sound_setSpeed(active_note, TSGL_MATH_CLAMP(speed, 0.1, 4));
                         tsgl_sound_setVolume(active_note, nbs->volume);
                         tsgl_sound_play(active_note);
                         active_note->userData_int = 0;
