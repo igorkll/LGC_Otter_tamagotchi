@@ -3,8 +3,9 @@
 #include "TSGL_funcs.h"
 #include <math.h>
 #include <string.h>
+#include <esp_log.h>
 
-//static const char* TAG = "TSGL_nbs";
+static const char* TAG = "TSGL_nbs";
 
 tsgl_nbs_loadedSamples* tsgl_nbs_loadSamples(size_t count, const char* prefix, const char* suffix, size_t sample_rate, size_t bit_rate, size_t channels, tsgl_sound_pcm_format pcm_format) {
     tsgl_nbs_loadedSamples* loadedSamples = malloc(sizeof(tsgl_nbs_loadedSamples));
@@ -79,6 +80,20 @@ static void _stop(tsgl_nbs* nbs) {
     nbs->playing = false;
 }
 
+static void _freeNotes(tsgl_nbs* nbs) {
+    for (size_t i = 0; i < nbs->active_notes_max; i++) {
+        tsgl_sound* active_note = &nbs->active_notes[i];
+        if (active_note->inited) tsgl_sound_free_instance(active_note);
+    }
+}
+
+static void _closeHandle(tsgl_nbs* nbs) {
+    if (nbs->file_opened) {
+        fclose(nbs->file);
+        nbs->file_opened = false;
+    }
+}
+
 static void _resumeNotes(tsgl_nbs* nbs) {
     for (size_t i = 0; i < nbs->active_notes_max; i++) {
         tsgl_sound* active_note = &nbs->active_notes[i];
@@ -95,6 +110,7 @@ static void _waitActiveNotes(tsgl_nbs* nbs) {
         for (size_t i = 0; i < nbs->active_notes_max; i++) {
             tsgl_sound* active_note = &nbs->active_notes[i];
             if (active_note->playing) {
+                printf("active %i\n", active_note->playing);
                 finded_active_note = true;
                 break;
             }
@@ -173,11 +189,14 @@ static void nbs_player_task(tsgl_nbs* nbs) {
                     if (active_note->inited) tsgl_sound_free_instance(active_note);
                     if (inst < nbs->loadedSamples->count) {
                         tsgl_sound_instance(active_note, &nbs->loadedSamples->samples[inst]);
+                        tsgl_sound_enableFreeOnEnd(active_note, true);
                         tsgl_sound_setOutputsRaw(active_note, nbs->outputs, nbs->outputsCount);
                         tsgl_sound_setSpeed(active_note, pow(2, (note - 45) / 12.0));
                         tsgl_sound_setVolume(active_note, nbs->volume);
                         tsgl_sound_play(active_note);
                         active_note->userData_int = 0;
+                    } else {
+                        ESP_LOGW(TAG, "sample with id %i not loaded", inst);
                     }
                     break;
                 }
@@ -190,7 +209,11 @@ static void nbs_player_task(tsgl_nbs* nbs) {
     }
 
     _waitActiveNotes(nbs);
+
     _stop(nbs);
+    _freeNotes(nbs);
+    _closeHandle(nbs);
+
     nbs->task_created = false;
     vTaskDelete(NULL);
 }
@@ -240,11 +263,25 @@ void tsgl_nbs_play(tsgl_nbs* nbs) {
 
 void tsgl_nbs_stop(tsgl_nbs* nbs) {
     if (!nbs->playing) return;
-    _stop(nbs);
 
-	if (nbs->task_created) {
+    if (nbs->task_created) {
 		vTaskSuspend(nbs->task);
 	}
+
+    _stop(nbs);
+}
+
+void tsgl_nbs_stopAndSetPosZero(tsgl_nbs* nbs) {
+    if (!nbs->playing) return;
+
+    if (nbs->task_created) {
+		vTaskDelete(nbs->task);
+        nbs->task_created = false;
+	}
+
+    _stop(nbs);
+    _freeNotes(nbs);
+    _closeHandle(nbs);
 }
 
 void tsgl_nbs_setOutputs(tsgl_nbs* nbs, tsgl_sound_output** outputs, size_t outputsCount) {
@@ -261,27 +298,19 @@ void tsgl_nbs_setVolume(tsgl_nbs* nbs, float volume) {
     }
 }
 
-void tsgl_nbs_setLoop(tsgl_nbs* nbs, float loop) {
+void tsgl_nbs_setLoop(tsgl_nbs* nbs, bool loop) {
     nbs->loop = loop;
 }
 
 void tsgl_nbs_free(tsgl_nbs* nbs) {
-    _stop(nbs);
-
     if (nbs->task_created) {
 		vTaskDelete(nbs->task);
 		nbs->task_created = false;
 	}
 
-    for (size_t i = 0; i < nbs->active_notes_max; i++) {
-        tsgl_sound* active_note = &nbs->active_notes[i];
-        if (active_note->inited) tsgl_sound_free_instance(active_note);
-    }
-
-    if (nbs->file_opened) {
-        fclose(nbs->file);
-        nbs->file_opened = false;
-    }
+    _stop(nbs);
+    _freeNotes(nbs);
+    _closeHandle(nbs);
 
     if (nbs->path) {
         free(nbs->path);
