@@ -91,6 +91,9 @@ const Room rooms[] = {
     {
         .background = "fear",
 
+        .music = "fear",
+        .musicVolume = 0.6,
+
         .person_x = (WIDTH / 4) - 20,
         .person_y = (HEIGHT / 4) * 3,
 
