@@ -118,7 +118,7 @@ static void _soundServiceTask(void* _sound) {
     }
 }
 
-static void IRAM_ATTR _read_next_block_raw(tsgl_sound* sound, int bufOffset) {
+static void IRAM_ATTR _read_next_sample_raw(tsgl_sound* sound, int bufOffset) {
     bool readFile = false;
 
     sound->bufferPosition += bufOffset;
@@ -165,7 +165,7 @@ static void IRAM_ATTR _read_next_block_raw(tsgl_sound* sound, int bufOffset) {
     }
 }
 
-static void IRAM_ATTR _math_current_block(tsgl_sound* sound) {
+static void IRAM_ATTR _process_dfpwm(tsgl_sound* sound) {
     if (sound->dfpwm_decode_state) {
         void* ptr = sound->buffer + sound->bufferPosition;
 
@@ -175,15 +175,17 @@ static void IRAM_ATTR _math_current_block(tsgl_sound* sound) {
     }
 }
 
-static void IRAM_ATTR _read_next_block(tsgl_sound* sound) {
+static void IRAM_ATTR _read_next_sample(tsgl_sound* sound) {
     if (sound->dfpwm_decode_state) {
         sound->bit_pos += sound->channels;
         if (sound->bit_pos >= 8) {
             sound->bit_pos = 0;
-            _read_next_block_raw(sound, 1);
+            _read_next_sample_raw(sound, 1);
         }
+
+        _process_dfpwm(sound);
     } else {
-        _read_next_block_raw(sound, sound->bit_rate * sound->channels);
+        _read_next_sample_raw(sound, sound->bit_rate * sound->channels);
     }
 }
 
@@ -231,28 +233,13 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
         if (atomic_flag_test_and_set(&sound->lock)) continue;
 
         if (sound->playing) {
-            //if (sound->global_timer_state == 0 && !sound->tempStop) {
-            if (sound->math_block_flag && !sound->tempStop) {
-                _math_current_block(sound);
-                sound->math_block_flag = false;
-            }
-
             if (isSoundPlaying(sound)) {
                 _addOutputsValues(sound);
             }
 
-            /*
-            if (sound->global_timer_state >= sound->global_timer_div) {
-                if (!sound->tempStop) _read_next_block(sound);
-                sound->global_timer_state = 0;
-            } else {
-                sound->global_timer_state++;
-            }
-            */
-
             uint64_t acc = (uint64_t)sound->phase + sound->phase_step;
             while (acc >= (1ULL << 32)) {
-                _read_next_block(sound);
+                _read_next_sample(sound);
                 sound->math_block_flag = true;
                 acc -= (1ULL << 32);
                 if (acc >= (1ULL << 32)) continue;
@@ -310,8 +297,6 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
         return false;
     }
 
-    _math_current_block(sound);
-
     if (tsgl_sound_force_enable_output || isSoundPlaying(sound)) {
         _addOutputsValues(sound);
 
@@ -326,7 +311,7 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
         }
     }
 
-    _read_next_block(sound);
+    _read_next_sample(sound);
 
     atomic_flag_clear(&sound->lock);
 
@@ -334,8 +319,6 @@ static bool IRAM_ATTR _timer_ISR(gptimer_handle_t timer, const gptimer_alarm_eve
 }
 
 static void _initTimer(tsgl_sound* sound) {
-    uint64_t freq = sound->sample_rate * sound->speed;
-
     gptimer_alarm_config_t alarm_config = {
         .alarm_count = 1,
         .flags = {
@@ -346,7 +329,7 @@ static void _initTimer(tsgl_sound* sound) {
     gptimer_config_t timer_config = {
         .clk_src = GPTIMER_CLK_SRC_DEFAULT,
         .direction = GPTIMER_COUNT_UP,
-        .resolution_hz = freq // 1MHz, 1 tick = 1us
+        .resolution_hz = sound->scaled_sample_rate // 1MHz, 1 tick = 1us
     };
   
     gptimer_event_callbacks_t callback_config = {
@@ -383,14 +366,12 @@ static void _resetDfpwmDecoder(tsgl_sound* sound) {
 
     float cutoff_mul = sound->cutoff_mul > 0 ? sound->cutoff_mul : 0.35;
 
-    //блять, тут кароче надо взять по идеи минимальное из частот
-    //только по нормальному. все нахуй я спать
-    uint32_t scaled = TSGL_MATH_MIN(sound->scaled_sample_rate, global_timer_freq);
-
     sound->bit_pos = 0;
     for (size_t i = 0; i < sound->channels; i++) {
-        tsgl_dfpwm_reset(&sound->dfpwm_decode_state[i], scaled, ((float)sound->scaled_sample_rate) * cutoff_mul);
+        tsgl_dfpwm_reset(&sound->dfpwm_decode_state[i], sound->scaled_sample_rate, ((float)sound->scaled_sample_rate) * cutoff_mul);
     }
+
+    _process_dfpwm(sound);
 }
 
 static void _setPosition(tsgl_sound* sound, size_t position) {
@@ -603,12 +584,8 @@ void tsgl_sound_setSpeed(tsgl_sound* sound, float speed) {
     while (atomic_flag_test_and_set(&sound->lock));
 
     sound->speed = speed;
-
     afterUpdateSpeed(sound);
-
-    if (sound->dfpwm_decode_state) {
-        _resetDfpwmDecoder(sound);
-    }
+    _resetDfpwmDecoder(sound);
 
     if (sound->playing && sound->use_local_timer) {
         gptimer_stop(sound->timer);
