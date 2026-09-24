@@ -491,6 +491,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
 
         sound->buffer = tsgl_malloc(bufferSize, caps);
         if (sound->buffer == NULL) {
+            fclose(sound->file);
             ESP_LOGE(TAG, "the buffer for the sound could not be allocated: %i bytes", bufferSize);
             memset(sound, 0, sizeof(tsgl_sound));
             return ESP_ERR_NO_MEM;
@@ -501,6 +502,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
         if (doubleSwapBuffer) {
             sound->buffer2 = tsgl_malloc(bufferSize, caps);
             if (sound->buffer2 == NULL) {
+                fclose(sound->file);
                 free(sound->buffer);
                 ESP_LOGE(TAG, "the buffer2 for the sound could not be allocated: %i bytes", sound->len);
                 memset(sound, 0, sizeof(tsgl_sound));
@@ -517,6 +519,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
 
         sound->buffer = tsgl_malloc(sound->len, caps);
         if (sound->buffer == NULL) {
+            fclose(sound->file);
             ESP_LOGE(TAG, "the full buffer for the sound could not be allocated: %i bytes", sound->len);
             memset(sound, 0, sizeof(tsgl_sound));
             return ESP_ERR_NO_MEM;
