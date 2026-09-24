@@ -197,15 +197,25 @@ static void nbs_player_task(tsgl_nbs* nbs) {
 
 // ---------------------------------------
 
-tsgl_nbs* tsgl_nbs_load(tsgl_nbs_loadedSamples* loadedSamples, const char* path, size_t active_notes_max) {
-    tsgl_nbs* nbs = calloc(1, sizeof(tsgl_nbs));
-    if (nbs == NULL) return NULL;
+esp_err_t tsgl_nbs_load(tsgl_nbs* nbs, tsgl_nbs_loadedSamples* loadedSamples, const char* path, size_t active_notes_max) {
+    memset(nbs, 0, sizeof(tsgl_nbs));
+    nbs->inited = true;
 
     nbs->loadedSamples = loadedSamples;
     nbs->path = strdup(path);
     nbs->active_notes_max = active_notes_max;
     nbs->active_notes = calloc(active_notes_max, sizeof(tsgl_sound));
 
+    return ESP_OK;
+}
+
+tsgl_nbs* tsgl_nbs_loadHeap(tsgl_nbs_loadedSamples* loadedSamples, const char* path, size_t active_notes_max) {
+    tsgl_nbs* nbs = calloc(1, sizeof(tsgl_nbs));
+    if (nbs == NULL) return NULL;
+
+    tsgl_nbs_load(nbs, loadedSamples, path, active_notes_max);
+
+    nbs->heap = true;
     return nbs;
 }
 
@@ -275,11 +285,14 @@ void tsgl_nbs_free(tsgl_nbs* nbs) {
 
     if (nbs->path) {
         free(nbs->path);
+        nbs->path = NULL;
     }
 
     if (nbs->active_notes) {
         free(nbs->active_notes);
+        nbs->active_notes = NULL;
     }
 
-    free(nbs);
+    memset(nbs, 0, sizeof(tsgl_nbs));
+    if (nbs->heap) free(nbs);
 }

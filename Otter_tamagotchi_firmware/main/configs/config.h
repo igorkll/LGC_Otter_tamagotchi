@@ -5,6 +5,10 @@
 #define USE_HARDWARE_ROTATE false
 #define ROTATE 0
 
+#define MAX_AUTOSAVE_PER_TIME 3000
+
+// ---------------------------
+
 #define PUSH_FUNC tsgl_framebuffer_pushFast_wtrans
 #define PUSH_FUNC_TRANS tsgl_framebuffer_pushFast
 

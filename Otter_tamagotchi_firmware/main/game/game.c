@@ -407,14 +407,17 @@ static void processControl() {
     }
 }
 
+static time_t oldSaveTime = -9999;
+
 static void process() {
     checkActionTimer();
     hctl_process();
     processControl();
 
-    if (memcmp(&current_state, &old_state, sizeof(Game_state)) != 0) {
+    if (tsgl_time() - oldSaveTime > MAX_AUTOSAVE_PER_TIME && memcmp(&current_state, &old_state, sizeof(Game_state)) != 0) {
         old_state = current_state;
         game_save();
+        oldSaveTime = tsgl_time();
     }
 }
 
