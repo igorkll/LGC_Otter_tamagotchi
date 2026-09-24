@@ -3,6 +3,7 @@
 #include <esp_log.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include <esp_heap_caps.h>
 #include <string.h>
 
 static const char* TAG = "TSGL_benchmark";
@@ -76,9 +77,9 @@ void tsgl_benchmark_print(tsgl_benchmark* benchmark) {
         if (output2)
             ESP_LOGI(TAG, "send      time: %.3f", benchmark->sendTime / 1000.0);
         if (output3)
-            ESP_LOGI(TAG, "total     fps:  %.3f", benchmark->totalFPS);
+            ESP_LOGI(TAG, "total      fps: %.3f", benchmark->totalFPS);
         if (output4)
-            ESP_LOGI(TAG, "real      fps:  %li",  benchmark->realFPS);
+            ESP_LOGI(TAG, "real       fps: %li",  benchmark->realFPS);
         ESP_LOGI(TAG, "----------------------------");
     }
 }
@@ -115,4 +116,39 @@ int tsgl_benchmark_processMulInt(tsgl_benchmark* benchmark, float targetFPS) {
     if (mul < 1)
         return 1;
     return mul + 0.5;
+}
+
+// ---------------------------------- print ram
+
+void tsgl_benchmark_printRamStart() {
+    ESP_LOGI(TAG, "------    tsgl ram    ------");
+}
+
+void tsgl_benchmark_printRamTitle(const char* title) {
+    ESP_LOGI(TAG, "------ %s", title);
+}
+
+void tsgl_benchmark_printRamCaps(uint32_t caps) {
+    size_t total_internal = heap_caps_get_total_size(caps);
+    size_t free_now = heap_caps_get_free_size(caps);
+    size_t free_min = heap_caps_get_minimum_free_size(caps);
+    size_t largest_block = heap_caps_get_largest_free_block(caps);
+
+    ESP_LOGI(TAG, "total     ram: %.3fKB", total_internal / 1024.0);
+    ESP_LOGI(TAG, "free      ram: %.3fKB", free_now / 1024.0);
+    ESP_LOGI(TAG, "min       ram: %.3fKB", free_min / 1024.0);
+    ESP_LOGI(TAG, "largest block: %.3fKB", largest_block / 1024.0);
+}
+
+void tsgl_benchmark_printRamEnd() {
+    ESP_LOGI(TAG, "----------------------------");
+}
+
+void tsgl_benchmark_printAllRam() {
+    tsgl_benchmark_printRamStart();
+
+    tsgl_benchmark_printRamTitle("internal");
+    tsgl_benchmark_printRamCaps(MALLOC_CAP_INTERNAL);
+
+    tsgl_benchmark_printRamEnd();
 }

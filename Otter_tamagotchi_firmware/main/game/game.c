@@ -527,6 +527,10 @@ void game_start() {
             afterFirstFrame();
             firstFrame = false;
         }
+
+        #ifdef DEBUG_RAM
+            tsgl_benchmark_printAllRam();
+        #endif
     }
 }
 
