@@ -142,7 +142,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             
-            NULL,
+            "???", //???
             NULL,
             NULL,
             NULL,
@@ -159,6 +159,21 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             
             "\xCB\xE8\xEC\xEE\xED\xF7\xE8\xEA\xE8", //Лимончики
             "\xD2\xFE\xF5\x2D\xF2\xFE\xF5", //Тюх-тюх
+            NULL,
+            NULL,
+            NULL
+        }
+    },
+    { //???
+        .arr = {
+            CLUB_STR,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            
+            NULL,
+            NULL,
             NULL,
             NULL,
             NULL

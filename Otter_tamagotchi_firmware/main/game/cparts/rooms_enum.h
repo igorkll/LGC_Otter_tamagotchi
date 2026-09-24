@@ -8,5 +8,7 @@ typedef enum {
     game_room_car,
     game_room_shop,
     game_room_club,
-    game_room_museum
+    game_room_museum,
+    
+    game_room_fear
 } game_room;

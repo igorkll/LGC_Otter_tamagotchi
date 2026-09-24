@@ -152,6 +152,10 @@ static void game_club_roomAction(int action) {
         case 0:
             game_selectRoom(game_room_car);
             break;
+
+        case L2:
+            game_selectRoom(game_room_fear);
+            break;
     }
 }
 
@@ -167,6 +171,14 @@ static void game_museum_roomAction(int action) {
 
         case 6:
             startRoomMusic(16000, "gmp1", 1);
+            break;
+    }
+}
+
+static void game_fear_roomAction(int action) {
+    switch (action) {
+        case 0:
+            game_selectRoom(game_room_club);
             break;
     }
 }
@@ -203,6 +215,10 @@ void game_roomAction(int action) {
 
         case game_room_museum:
             game_museum_roomAction(action);
+            break;
+
+        case game_room_fear:
+            game_fear_roomAction(action);
             break;
     }
 
