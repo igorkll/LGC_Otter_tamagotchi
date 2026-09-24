@@ -91,6 +91,7 @@ typedef struct {
     
     int score;
     int score_delta;
+    bool gameover_flag;
 
     tsgl_nbs* music;
     tsgl_sprite* person_sprite;
@@ -182,10 +183,12 @@ static void print_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_obj
         for (size_t iy = 0; iy < OBJECT_Y; iy++) {
             uint8_t type = tetris_object.array[iy][ix];
             if (type > 0) {
-                size_t nx = x + ix;
-                size_t ny = y + iy;
-                if (nx < GAMEARRAY_X && ny < GAMEARRAY_Y)
+                int nx = x + ix;
+                int ny = y + iy;
+                if (nx < GAMEARRAY_X && ny < GAMEARRAY_Y) {
                     subgame_state->gamearray[nx][ny] = type;
+                    if (ny < 0) subgame_state->gameover_flag = true;
+                }
             }
         }
     }
@@ -359,7 +362,7 @@ static void burn_line_check() {
 static void weld_object() {
     print_tetris_object(subgame_state->current_object_x, subgame_state->current_object_y, subgame_state->current_object);
     next_object();
-    pushsound_play("/firmware/sounds/weld.pcm", 16000, WELD_SOUND_VOLUME);
+    if (!subgame_state->gameover_flag) pushsound_play("/firmware/sounds/weld.pcm", 16000, WELD_SOUND_VOLUME);
 }
 
 static void fall_object() {
@@ -384,6 +387,10 @@ static void border_check() {
 }
 
 static void process() {
+    if (subgame_state->gameover_flag) {
+        gameover();
+    }
+
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
         if (!check_collision(subgame_state->current_object_x - 1, subgame_state->current_object_y, subgame_state->current_object)) {
             subgame_state->current_object_x--;
