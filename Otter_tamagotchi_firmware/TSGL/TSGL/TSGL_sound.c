@@ -95,7 +95,7 @@ static void _soundTask(void* _sound) {
 static void _soundServiceTask(void* _sound) {
     tsgl_sound* sound = _sound;
     
-    vTaskSuspend(NULL);
+    //vTaskSuspend(NULL);
 
     while (true) {
         if (sound->callback_end_run) {

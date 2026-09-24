@@ -110,9 +110,11 @@ static void _waitActiveNotes(tsgl_nbs* nbs) {
         for (size_t i = 0; i < nbs->active_notes_max; i++) {
             tsgl_sound* active_note = &nbs->active_notes[i];
             if (active_note->playing) {
-                printf("active %i\n", active_note->playing);
+                printf("active %i %i\n", active_note->playing, active_note->callback_end_run);
                 finded_active_note = true;
                 break;
+            } else {
+                printf("test %i %i\n", active_note->playing, active_note->callback_end_run);
             }
         }
         if (!finded_active_note) break;
@@ -257,7 +259,7 @@ void tsgl_nbs_play(tsgl_nbs* nbs) {
         nbs->file_opened = true;
     }
     
-    xTaskCreate((TaskFunction_t)nbs_player_task, NULL, TSGL_NBS_STACK_SIZE, nbs, configMAX_PRIORITIES - 1, &nbs->task);
+    xTaskCreate((TaskFunction_t)nbs_player_task, NULL, TSGL_NBS_STACK_SIZE, nbs, 1, &nbs->task);
     nbs->task_created = true;
 }
 
