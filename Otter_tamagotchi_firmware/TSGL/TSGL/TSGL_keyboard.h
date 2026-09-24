@@ -3,7 +3,6 @@
 #include "TSGL_gui.h"
 #include <esp_log.h>
 #include <driver/gpio.h>
-#include <stdatomic.h>
 
 typedef struct {
     int buttonID;
@@ -28,7 +27,6 @@ typedef struct {
 typedef struct {
     tsgl_keyboard_bind** binds;
     size_t bindsCount;
-    atomic_flag lock;
 } tsgl_keyboard;
 
 // you can use a char as the button ID

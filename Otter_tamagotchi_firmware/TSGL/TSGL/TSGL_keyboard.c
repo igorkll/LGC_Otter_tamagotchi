@@ -62,7 +62,6 @@ static bool _rawRead(tsgl_keyboard_bind* bindState) {
 
 void tsgl_keyboard_init(tsgl_keyboard* keyboard) {
     memset(keyboard, 0, sizeof(tsgl_keyboard));
-    atomic_flag_clear(&keyboard->lock);
 }
 
 tsgl_keyboard_bind* tsgl_keyboard_bindButton(tsgl_keyboard* keyboard, int buttonID, bool pull, bool highLevel, gpio_num_t pin) {
@@ -148,55 +147,41 @@ bool tsgl_keyboard_readState(tsgl_keyboard* keyboard, int buttonID) {
 }
 
 void tsgl_keyboard_readAll(tsgl_keyboard* keyboard) {
-    while (atomic_flag_test_and_set(&keyboard->lock));
     for (size_t i = 0; i < keyboard->bindsCount; i++) {
         _rawRead(keyboard->binds[i]);
     }
-    atomic_flag_clear(&keyboard->lock);
 }
 
 bool tsgl_keyboard_getState(tsgl_keyboard* keyboard, int buttonID) {
-    while (atomic_flag_test_and_set(&keyboard->lock));
     tsgl_keyboard_bind* bindState = tsgl_keyboard_findButton(keyboard, buttonID);
-    bool state = false;
     if (bindState != NULL) {
-        state = bindState->state;
+        return bindState->state;
     }
-    atomic_flag_clear(&keyboard->lock);
-    return state;
+    return false;
 }
 
 bool tsgl_keyboard_getRawState(tsgl_keyboard* keyboard, int buttonID) {
-    while (atomic_flag_test_and_set(&keyboard->lock));
     tsgl_keyboard_bind* bindState = tsgl_keyboard_findButton(keyboard, buttonID);
-    bool state = false;
     if (bindState != NULL) {
-        state = bindState->rawState;
+        return bindState->rawState;
     }
-    atomic_flag_clear(&keyboard->lock);
-    return state;
+    return false;
 }
 
 bool tsgl_keyboard_whenPressed(tsgl_keyboard* keyboard, int buttonID) {
-    while (atomic_flag_test_and_set(&keyboard->lock));
     tsgl_keyboard_bind* bindState = tsgl_keyboard_findButton(keyboard, buttonID);
-    bool state = false;
     if (bindState != NULL) {
-        state = bindState->whenPressed;
+        return bindState->whenPressed;
     }
-    atomic_flag_clear(&keyboard->lock);
-    return state;
+    return false;
 }
 
 bool tsgl_keyboard_whenReleasing(tsgl_keyboard* keyboard, int buttonID) {
-    while (atomic_flag_test_and_set(&keyboard->lock));
     tsgl_keyboard_bind* bindState = tsgl_keyboard_findButton(keyboard, buttonID);
-    bool state = false;
     if (bindState != NULL) {
-        state = bindState->whenReleasing;
+        return bindState->whenReleasing;
     }
-    atomic_flag_clear(&keyboard->lock);
-    return state;
+    return false;
 }
 
 void tsgl_keyboard_free(tsgl_keyboard* keyboard) {
