@@ -36,6 +36,7 @@ typedef struct {
     // main
     game_room room;
     game_person person;
+    bool dead;
     
     // car
     game_room old_car_room;

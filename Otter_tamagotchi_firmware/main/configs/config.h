@@ -88,7 +88,7 @@
 
 // --------------------------- debug
 
-#define RESET_SETTINGS_ID 17
+#define RESET_SETTINGS_ID 18
 
 #define DEBUG_FPS
 #define DEBUG_RAM

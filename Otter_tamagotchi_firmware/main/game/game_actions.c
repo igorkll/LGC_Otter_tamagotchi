@@ -3,11 +3,17 @@
 #include "../pushsound.h"
 #include "game_states.h"
 
-void game_actions_sleep(int sleepTime) {
-    pushsound_play("/firmware/sounds/sadness.pcm", 16000, SADNESS_SOUND_VOLUME);
+void game_actions_sleep_withoutSound(int sleepTime) {
+    if (current_state.sleepTimer > 0) return;
     current_state.sleepTimer = sleepTime;
     current_state.sleepStartTimer = sleepTime;
     game_sleepIn();
+}
+
+void game_actions_sleep(int sleepTime) {
+    if (current_state.sleepTimer > 0) return;
+    pushsound_play("/firmware/sounds/sadness.pcm", 16000, SADNESS_SOUND_VOLUME);
+    game_actions_sleep_withoutSound(sleepTime);
 }
 
 void game_actions_eat() {

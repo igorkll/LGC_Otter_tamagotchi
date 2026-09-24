@@ -10,6 +10,7 @@
 #include "game_states.h"
 #include "game_settings.h"
 #include "game_combinemenu.h"
+#include "game_actions.h"
 #include "game_room_overlays.h"
 
 // ------------------------------------ consts
@@ -348,7 +349,7 @@ static void checkActionTimer() {
 }
 
 static void processControl() {
-    if (current_state.sleepTimer == 0) {
+    if (current_state.sleepTimer == 0 && game_alt_handle == NULL) {
         bool allPressed = true;
         for (size_t i = 0; i < KEYS_COUNT; i++) {
             if (!tsgl_keyboard_getState(&keyboard, i)) {
@@ -407,12 +408,31 @@ static void processControl() {
     }
 }
 
+static void gameover() {
+    if (current_state.dead) return;
+    current_state.dead = true;
+}
+
+static void processCheck() {
+    if (current_state.states_fatigue >= 100) {
+        game_actions_sleep_withoutSound(GAMECFG_FULL_SLEEP_TIME);
+    }
+
+    if (current_state.states_hunger >= 100 || current_state.states_thirst >= 100) {
+        gameover();
+    }
+}
+
 static time_t oldSaveTime = -9999;
 
 static void process() {
-    checkActionTimer();
     hctl_process();
-    processControl();
+
+    if (!current_state.dead) {
+        checkActionTimer();
+        processControl();
+        processCheck();
+    }
 
     if (tsgl_time() - oldSaveTime > MAX_AUTOSAVE_PER_TIME && memcmp(&current_state, &old_state, sizeof(Game_state)) != 0) {
         old_state = current_state;
@@ -463,7 +483,18 @@ static void drawSleep() {
     TSGL_funcs_slnprintf(sleepStatus, MAX_ACTION_LEN, "");
 }
 
+static void drawDead() {
+    tsgl_framebuffer_clear(&framebuffer, black);
+    gfx_drawCenteredImageWithTransparentSupport(WIDTH / 2, HEIGHT / 2, "/firmware/images/dead.bmp");
+
+}
+
 static void render() {
+    if (current_state.dead) {
+        drawDead();
+        return;
+    }
+
     if (current_state.sleepTimer > 0) {
         drawSleep();
         return;
