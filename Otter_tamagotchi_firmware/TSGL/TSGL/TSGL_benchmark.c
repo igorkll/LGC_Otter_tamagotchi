@@ -129,15 +129,18 @@ void tsgl_benchmark_printRamTitle(const char* title) {
 }
 
 void tsgl_benchmark_printRamCaps(uint32_t caps) {
-    size_t total_internal = heap_caps_get_total_size(caps);
-    size_t free_now = heap_caps_get_free_size(caps);
-    size_t free_min = heap_caps_get_minimum_free_size(caps);
-    size_t largest_block = heap_caps_get_largest_free_block(caps);
+    multi_heap_info_t info;
+    heap_caps_get_info(&info, caps);
 
-    ESP_LOGI(TAG, "total     ram: %.3fKB", total_internal / 1024.0);
-    ESP_LOGI(TAG, "free      ram: %.3fKB", free_now / 1024.0);
-    ESP_LOGI(TAG, "min       ram: %.3fKB", free_min / 1024.0);
-    ESP_LOGI(TAG, "largest block: %.3fKB", largest_block / 1024.0);
+    size_t total_bytes = heap_caps_get_total_size(caps);
+    size_t peak_used = total_bytes - info.minimum_free_bytes;
+
+    ESP_LOGI(TAG, "total     ram: %.3fKB", total_bytes / 1024.0);
+    ESP_LOGI(TAG, "used      ram: %.3fKB", info.total_allocated_bytes / 1024.0);
+    ESP_LOGI(TAG, "free      ram: %.3fKB", info.total_free_bytes / 1024.0);
+    ESP_LOGI(TAG, "min       ram: %.3fKB", info.minimum_free_bytes / 1024.0);
+    ESP_LOGI(TAG, "peak     used: %.3fKB", peak_used / 1024.0);
+    ESP_LOGI(TAG, "largest block: %.3fKB", info.largest_free_block / 1024.0);
 }
 
 void tsgl_benchmark_printRamEnd() {
