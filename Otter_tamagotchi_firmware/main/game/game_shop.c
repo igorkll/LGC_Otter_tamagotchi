@@ -57,12 +57,17 @@ void shop_draw_overlay() {
     int price = shop_getItemPrice(currentItem);
     int* itemPtr = shop_getItemPtr(currentItem);
     if (price < 0 || itemPtr == NULL) return;
+
+    int canBuy = current_state.states_money / price;
     
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "\xD6\xE5\xED\xE0: %i\n", price); //Цена
     tsgl_framebuffer_text(&framebuffer, ROOM_OVERLAY_START_X, ROOM_OVERLAY_START_Y + SHOPOVERLAY_TEXT_OFFSET, printsettings_overlay, text);
 
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "\xD3\x20\xE2\xE0\xF1: %i\n", *itemPtr); //У вас
     tsgl_framebuffer_text(&framebuffer, ROOM_OVERLAY_START_X, ROOM_OVERLAY_START_Y + (SHOPOVERLAY_TEXT_OFFSET * 2), printsettings_overlay, text);
+
+    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "\xD5\xE2\xE0\xF2\xE0\xE5\xF2\x20\xED\xE0: %i\n", canBuy); //Хватает на
+    tsgl_framebuffer_text(&framebuffer, ROOM_OVERLAY_START_X, ROOM_OVERLAY_START_Y + (SHOPOVERLAY_TEXT_OFFSET * 3), printsettings_overlay, text);
 }
 
 bool shop_buy(int* countvar, int price) {
