@@ -1,25 +1,35 @@
 #include "game_modal.h"
 #include "game_printsets.h"
 
+#define GAMEOVER_COLOR red
+#define GAMEOVER_STROKE tsgl_color_raw(tsgl_color_pack(100, 0, 0), framebuffer.colormode)
+
+#define MODAL_WINDOW_TEXT_MARGIN 10
 #define MODAL_WINDOW_MARGIN 20
-#define MODAL_WINDOW_COLOR 
+#define MODAL_WINDOW_TEXT_COLOR tsgl_color_raw(tsgl_color_pack(0, 0, 0), framebuffer.colormode)
+#define MODAL_WINDOW_BG_COLOR tsgl_color_raw(tsgl_color_pack(199, 199, 199), framebuffer.colormode)
+#define MODAL_WINDOW_BORDER_COLOR tsgl_color_raw(tsgl_color_pack(0, 0, 64), framebuffer.colormode)
+#define MODAL_WINDOW_BORDER_STROKE 2
 
 void game_modal_draw_gameover(int score, int maxscore) {
     char text[MAX_ACTION_LONG_LEN];
     TSGL_funcs_slnprintf(text, MAX_ACTION_LONG_LEN, "GAMEOVER\nSCORE: %i\nMAX SCORE: %i", score, maxscore);
 
     printsettings_gametitle.fg = red;
-    printsettings_gametitle.fg = red;
+    printsettings_gametitle.stroke = GAMEOVER_STROKE;
     printsettings_gametitle.width = WIDTH;
     printsettings_gametitle.height = HEIGHT;
     tsgl_framebuffer_text(&framebuffer, 0, 0, printsettings_gametitle, text);
 }
 
 void game_modal_draw_message(const char* message) {
-    printsettings_gametitle.fg = red;
-    printsettings_gametitle.fg = red;
-    printsettings_gametitle.width = WIDTH - (MODAL_WINDOW_MARGIN * 2);
-    printsettings_gametitle.height = HEIGHT - (MODAL_WINDOW_MARGIN * 2);
-    tsgl_framebuffer_fill(&framebuffer, MODAL_WINDOW_MARGIN, MODAL_WINDOW_MARGIN, printsettings_gametitle.width, printsettings_gametitle.height, white);
-    tsgl_framebuffer_text(&framebuffer, MODAL_WINDOW_MARGIN, MODAL_WINDOW_MARGIN, printsettings_gametitle, message);
+    tsgl_pos width = WIDTH - (MODAL_WINDOW_MARGIN * 2);
+    tsgl_pos height = HEIGHT - (MODAL_WINDOW_MARGIN * 2);
+    tsgl_framebuffer_fill(&framebuffer, MODAL_WINDOW_MARGIN, MODAL_WINDOW_MARGIN, width, height, MODAL_WINDOW_BG_COLOR);
+    tsgl_framebuffer_rect(&framebuffer, MODAL_WINDOW_MARGIN, MODAL_WINDOW_MARGIN, width, height, MODAL_WINDOW_BORDER_COLOR, MODAL_WINDOW_BORDER_STROKE);
+
+    printsettings_message.fg = MODAL_WINDOW_TEXT_COLOR;
+    printsettings_message.width = width - (MODAL_WINDOW_TEXT_MARGIN * 2);
+    printsettings_message.height = height - (MODAL_WINDOW_TEXT_MARGIN * 2);
+    tsgl_framebuffer_text(&framebuffer, MODAL_WINDOW_MARGIN + MODAL_WINDOW_TEXT_MARGIN, MODAL_WINDOW_MARGIN + MODAL_WINDOW_TEXT_MARGIN, printsettings_message, message);
 }

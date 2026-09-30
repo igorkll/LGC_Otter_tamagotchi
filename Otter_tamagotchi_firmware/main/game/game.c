@@ -12,6 +12,7 @@
 #include "game_combinemenu.h"
 #include "game_actions.h"
 #include "game_room_overlays.h"
+#include "game_modal.h"
 
 // ------------------------------------ consts
 
@@ -39,7 +40,7 @@ static tsgl_sprite* person_sprite = NULL;
 static tsgl_sound* room_music;
 
 void(*game_alt_handle)() = NULL;
-const char* game_alt_message = NULL;
+const char* game_alt_message = "TEST MODAL 1\nTEST MODAL 2\nASDASDASDASDASDASDASDD";
 
 // ------------------------------------ functions
 

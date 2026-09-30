@@ -63,3 +63,25 @@ tsgl_print_settings printsettings_gametitle = {
     .stroke_thickness = 1,
     .stroke_no_clamp = true
 };
+
+#define MESSAGE_TEXT_TARGET_WIDTH 7
+#define MESSAGE_TEXT_TARGET_HEIGHT 16
+
+tsgl_print_settings printsettings_message = {
+    .locationMode = tsgl_print_start_top,
+
+    // multiline
+    .multiline = true,
+    .globalCentering = true,
+    .alignment = tsgl_print_alignment_center,
+
+    // font
+    .font = DejaVuSerif,
+    .localLocationMode = tsgl_print_localLocationMode_center,
+    .targetWidth = MESSAGE_TEXT_TARGET_WIDTH,
+    .targetHeight = MESSAGE_TEXT_TARGET_HEIGHT,
+    .spacing = 3,
+
+    .fill = TSGL_INVALID_RAWCOLOR,
+    .bg = TSGL_INVALID_RAWCOLOR
+};
