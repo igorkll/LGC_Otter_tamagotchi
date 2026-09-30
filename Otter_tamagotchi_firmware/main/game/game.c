@@ -64,11 +64,13 @@ const char* game_getCurrentPerson() {
     return game_persons_images[current_state.person];
 }
 
-void game_save() {
+bool game_save() {
     if (tsgl_filesystem_writeFile(game_state_path, &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
         ESP_LOGI(TAG, "game saved");
+        return true;
     } else {
         ESP_LOGE(TAG, "failed to save game");
+        return false;
     }
 }
 
@@ -136,7 +138,10 @@ void game_updateActiveIcons() {
 }
 
 void game_selectRoom(game_room index) {
-    if (current_state.room == game_room_yard && index == game_room_car) {
+    if (
+        (current_state.room == game_room_yard && index == game_room_car) || //Если уже во дворе и устали то фиг сядем в машину
+        (current_state.room < game_room_yard && index == game_room_yard) //Если хотим выйти во двор и устали то фиг 
+    ) {
         if (game_states_is_fatigue_critical()) {
             game_alt_message = "\xDF\x20\xF3\xF1\xF2\xE0\xEB\x2E\x2E\x2E\n\xD5\xEE\xF7\xF3\x20\xF1\xEF\xE0\xF2\xFC"; //Я устал...\nХочу спать
             return;
@@ -437,7 +442,7 @@ static void gameover() {
 }
 
 static void processCheck() {
-    if (current_state.states_fatigue >= 100) {
+    if (current_state.sleepTimer == 0 && current_state.states_fatigue >= 100) {
         game_actions_sleep_withoutSound(GAMECFG_FULL_SLEEP_TIME);
     }
 
@@ -458,8 +463,7 @@ static void process() {
     }
 
     if (tsgl_time() - oldSaveTime > MAX_AUTOSAVE_PER_TIME && memcmp(&current_state, &old_state, sizeof(Game_state)) != 0) {
-        old_state = current_state;
-        game_save();
+        if (game_save()) old_state = current_state;
         oldSaveTime = tsgl_time();
     }
 }
@@ -566,6 +570,8 @@ void game_start() {
 
     game_upmenu_init();
     start();
+
+    current_state.states_fatigue = 90;
 
     bool firstFrame = true;
     while (true) {

@@ -106,7 +106,7 @@ tsgl_sprite* game_getPersonSprite();
 size_t game_getCurrentRoomIndex();
 bool game_isLockedInRoom();
 const char* game_getCurrentPerson();
-void game_save();
+bool game_save();
 void game_start();
 void game_startActionTimer(int actionTimer, const char* str, game_action action, game_room nextRoom, bool allowCancel);
 void game_stopActionTimer();
