@@ -2,8 +2,17 @@
 #include "game_shop.h"
 #include "game_upmenu.h"
 #include "game_printsets.h"
+#include "game_states.h"
+#include "../gfx.h"
 
-void kitchen_draw_overlay() {
+#define EMOTE_SIZE 26 
+#define EMOTE_MARGIN 10
+#define EMOTE_GAP 8
+
+#define EMOTE_DRAW_START_X EMOTE_MARGIN
+#define EMOTE_DRAW_Y (HEIGHT - ROOM_OVERLAY_Y_BASE - EMOTE_SIZE - EMOTE_MARGIN)
+
+static void kitchen_draw_overlay() {
     printsettings_overlay.fg = green;
     printsettings_overlay.stroke = black;
 
@@ -17,7 +26,24 @@ void kitchen_draw_overlay() {
     tsgl_framebuffer_text(&framebuffer, ROOM_OVERLAY_START_X, ROOM_OVERLAY_START_Y, printsettings_overlay, text);
 }
 
+static void draw_emote(tsgl_pos* emote_x, const char* path) {
+    gfx_image(*emote_x, EMOTE_DRAW_Y, path);
+    *emote_x += EMOTE_SIZE + EMOTE_GAP;
+}   
+
+static void draw_emotions() {
+    tsgl_pos emote_x = EMOTE_DRAW_START_X;
+
+    if (game_states_is_caress_critical() && game_states_is_sadness_critical()) {
+        draw_emote(&emote_x, "/firmware/emotes/patpat.bmp");
+        draw_emote(&emote_x, "/firmware/emotes/patpat.bmp");
+        draw_emote(&emote_x, "/firmware/emotes/patpat.bmp");
+    }
+}
+
 void game_roomOverlay() {
+    draw_emotions();
+
     switch (game_getCurrentRoomIndex()) {
         case game_room_kitchen:
             kitchen_draw_overlay();

@@ -118,3 +118,11 @@ void game_states_change(game_state_val* ptr, game_state_val delta) {
     if (*ptr < 0) *ptr = 0;
     if (*ptr > 100) *ptr = 100;
 }
+
+bool game_states_is_caress_critical() {
+    return current_state.states_caress >= 80;
+}
+
+bool game_states_is_sadness_critical() {
+    return current_state.states_sadness >= 80;
+}
