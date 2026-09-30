@@ -11,3 +11,5 @@ void game_modal_draw_gameover(int score, int maxscore) {
     printsettings_gametitle.height = HEIGHT;
     tsgl_framebuffer_text(&framebuffer, 0, 0, printsettings_gametitle, text);
 }
+
+

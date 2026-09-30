@@ -119,12 +119,22 @@ void game_states_change(game_state_val* ptr, game_state_val delta) {
     if (*ptr > 100) *ptr = 100;
 }
 
+bool game_states_is_caress_fatigue() {
+    return current_state.states_fatigue >= 80;
+}
+
+bool game_states_is_caress_hunger() {
+    return current_state.states_hunger >= 80;
+}
+
+bool game_states_is_caress_thirst() {
+    return current_state.states_thirst >= 80;
+}
+
 bool game_states_is_caress_critical() {
-    printf("current_state.states_caress %f\n", current_state.states_caress);
     return current_state.states_caress >= 80;
 }
 
 bool game_states_is_sadness_critical() {
-    printf("current_state.states_sadness %f\n", current_state.states_sadness);
     return current_state.states_sadness >= 80;
 }
