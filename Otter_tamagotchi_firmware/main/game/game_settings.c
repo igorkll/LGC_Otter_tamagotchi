@@ -139,8 +139,12 @@ void game_settings_draw() {
 
     tsgl_pos x2 = SETTINGS_CONTENT_OFFSET + x;
     tsgl_pos y2 = SETTINGS_CONTENT_OFFSET + y;
-    y2 = drawstate_slider(x2, y2, "\xCE\xE1\xF9\xE0\xFF\x20\xE3\xF0\xEE\xEC\xEA\xEE\xF1\xF2\xFC", current_state.settings_master_volume, current_setting == 0);
-    y2 = drawstate_slider(x2, y2, "\xC3\xF0\xEE\xEC\xEA\xEE\xF1\xF2\xFC\x20\xEC\xF3\xE7\xFB\xEA\xE8", current_state.settings_music_volume, current_setting == 1);
+
+    // Громкость
+    y2 = drawstate_slider(x2, y2, "\xC3\xF0\xEE\xEC\xEA\xEE\xF1\xF2\xFC", current_state.settings_master_volume, current_setting == 0);
+
+    // Музыка
+    y2 = drawstate_slider(x2, y2, "\xCC\xF3\xE7\xFB\xEA\xE0", current_state.settings_music_volume, current_setting == 1);
 
     if (setting_lock) {
         handle_locked();
