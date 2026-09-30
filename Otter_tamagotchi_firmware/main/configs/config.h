@@ -90,11 +90,11 @@
 
 #define RESET_SETTINGS_ID 18
 
-#define DEBUG_FPS
-#define DEBUG_RAM
+//#define DEBUG_FPS
+//#define DEBUG_RAM
 //#define DEBUG_TITLE
 //#define DEBUG_PARAMS
-//#define DEBUG_PARAMS_TIME
+#define DEBUG_PARAMS_TIME
 //#define DEBUG_PARAMS_ABS
 //#define DEBUG_DISABLE_STARTUP_SOUND
 //#define DEBUG_STARTUP

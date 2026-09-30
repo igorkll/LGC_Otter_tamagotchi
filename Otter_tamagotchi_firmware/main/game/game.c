@@ -571,7 +571,7 @@ void game_start() {
     game_upmenu_init();
     start();
 
-    //current_state.states_fatigue = 90;
+    current_state.states_fatigue = 99;
 
     bool firstFrame = true;
     while (true) {
