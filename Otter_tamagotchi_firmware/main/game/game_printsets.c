@@ -65,7 +65,7 @@ tsgl_print_settings printsettings_gametitle = {
 };
 
 #define MESSAGE_TEXT_TARGET_WIDTH 7
-#define MESSAGE_TEXT_TARGET_HEIGHT 16
+#define MESSAGE_TEXT_TARGET_HEIGHT 8
 
 tsgl_print_settings printsettings_message = {
     .locationMode = tsgl_print_start_top,

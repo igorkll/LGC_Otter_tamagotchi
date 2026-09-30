@@ -40,7 +40,7 @@ static tsgl_sprite* person_sprite = NULL;
 static tsgl_sound* room_music;
 
 void(*game_alt_handle)() = NULL;
-const char* game_alt_message = "TEST MODAL 1\nTEST MODAL 2\nASDASDASDASDASDASDASDD";
+const char* game_alt_message = NULL;
 
 // ------------------------------------ functions
 
