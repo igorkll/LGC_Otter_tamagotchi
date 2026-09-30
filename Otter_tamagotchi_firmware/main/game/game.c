@@ -135,7 +135,19 @@ void game_updateActiveIcons() {
     game_upmenu_setActivate(ID_CONSTIEM_OVERLAY, game_isAnyBackbackOverlayOpened());
 }
 
-void game_selectRoom(int index) {
+void game_selectRoom(game_room index) {
+    if (current_state.room == game_room_yard && index == game_room_car) {
+        if (game_states_is_fatigue_critical()) {
+            game_alt_message = "\xDF\x20\xF3\xF1\xF2\xE0\xEB\x2E\x2E\x2E\n\xD5\xEE\xF7\xF3\x20\xF1\xEF\xE0\xF2\xFC"; //Я устал...\nХочу спать
+            return;
+        }
+
+        if (game_states_is_sadness_critical()) {
+            game_alt_message = "\xCC\xFF\xFF\x2E\x2E\x2E\n\xC0\x20\xEF\xEE\xE3\xEB\xE0\xE4\xE8\xF2\xFC\x3F"; //Мяя...\nА погладить?
+            return;
+        }
+    }
+
     current_state.room = index;
 
     game_updateActiveIcons();
