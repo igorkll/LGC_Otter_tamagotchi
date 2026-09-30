@@ -5,6 +5,8 @@
 //#define TRANSPARENT_COLOR tsgl_color_pack(160, 160, 160)
 //#define TRANSPARENT_COLOR tsgl_color_pack(0, 0, 0)
 
+#define TRANSPARENT_RAWCOLOR tsgl_color_raw(TRANSPARENT_COLOR, colormode)
+
 tsgl_sprite* gfx_loadSprite(const char* path);
 
 void gfx_image(tsgl_pos x, tsgl_pos y, const char* path);

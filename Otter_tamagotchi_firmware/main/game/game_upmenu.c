@@ -100,7 +100,7 @@ static tsgl_print_settings printsettings_upselect = {
 
     .fill = TSGL_INVALID_RAWCOLOR,
     .bg = TSGL_INVALID_RAWCOLOR,
-    .stroke_thickness = 1,
+    .stroke_thickness = 2,
     .stroke_no_clamp = true
 };
 
@@ -134,7 +134,8 @@ static void draw_option_description(int selectingIndex) {
     if (text != NULL) {
         printsettings_upselect.stroke = black;
         printsettings_upselect.fg = white;
-        if (renderedOptionDescription == NULL) renderedOptionDescription = tsgl_gfx_renderTextToSprite(0, 0, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, printsettings_upselect, text, framebuffer.colormode, 0, TSGL_INVALID_RAWCOLOR, black);
+        if (renderedOptionDescription == NULL) renderedOptionDescription = tsgl_gfx_renderTextToSprite(0, 0, OPTION_DESCRIPTION_WIDTH, OPTION_DESCRIPTION_HEIGHT, printsettings_upselect, text, framebuffer.colormode, 0, TSGL_INVALID_RAWCOLOR, TRANSPARENT_RAWCOLOR);
+        renderedOptionDescription->transparentColor = TRANSPARENT_RAWCOLOR;
         PUSH_FUNC_TRANS(&framebuffer, positionX, position, renderedOptionDescription);
     }
 }
