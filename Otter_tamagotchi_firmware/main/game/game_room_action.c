@@ -94,11 +94,13 @@ static void game_gaming_roomAction(int action) {
         case L2:
             subgame_racing_start();
             game_alt_handle = subgame_racing_handle;
+            game_alt_exit = subgame_racing_exit;
             break;
 
         case L2 + 1:
             subgame_tetris_start();
             game_alt_handle = subgame_tetris_handle;
+            game_alt_exit = subgame_tetris_exit;
             break;
     }
 }

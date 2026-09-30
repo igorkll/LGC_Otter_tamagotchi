@@ -16,6 +16,7 @@
 typedef double game_state_val;
 
 extern void(*game_alt_handle)();
+extern void(*game_alt_exit)();
 extern const char* game_alt_message;
 
 #include "cparts/rooms_enum.h"

@@ -3,3 +3,4 @@
 
 void subgame_racing_start();
 void subgame_racing_handle();
+void subgame_racing_exit();

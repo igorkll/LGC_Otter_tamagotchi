@@ -3,3 +3,4 @@
 
 void subgame_tetris_start();
 void subgame_tetris_handle();
+void subgame_tetris_exit();

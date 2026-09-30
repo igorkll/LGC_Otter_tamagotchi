@@ -478,3 +478,7 @@ void subgame_tetris_handle() {
     tsgl_pos margin = (STATUS_ZONE - WIREFRAME_SIZE_X) / 2;
     draw_wireframe((GAME_ZONE + (STATUS_ZONE / 2)) - (WIREFRAME_SIZE_X / 2), HEIGHT - WIREFRAME_SIZE_Y - margin, subgame_state->next_object);
 }
+
+void subgame_tetris_exit() {
+    game_exit();
+}

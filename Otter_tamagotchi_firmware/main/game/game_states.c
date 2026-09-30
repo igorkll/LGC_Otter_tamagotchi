@@ -62,7 +62,7 @@ static void raw_draw_slider(tsgl_pos x, tsgl_pos y, game_state_val value) {
         y + STATES_SLIDER_FILL_OFFSET,
         floatValue * (STATES_CONTENT_WIDTH - (STATES_SLIDER_FILL_OFFSET * 2)),
         STATES_SLIDER_HEIGHT - (STATES_SLIDER_FILL_OFFSET * 2),
-        tsgl_color_raw(tsgl_color_combine(floatValue, GREEN, RED), framebuffer.colormode)
+        tsgl_color_raw(tsgl_color_combine(floatValue, TSGL_GREEN, TSGL_RED), framebuffer.colormode)
     );
 }
 

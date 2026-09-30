@@ -40,6 +40,7 @@ static tsgl_sprite* person_sprite = NULL;
 static tsgl_sound* room_music;
 
 void(*game_alt_handle)() = NULL;
+void(*game_alt_exit)() = NULL;
 const char* game_alt_message = NULL;
 
 // ------------------------------------ functions
@@ -436,14 +437,31 @@ static void processControl() {
     }
 }
 
+static void closeAltApp() {
+    if (game_alt_handle != NULL) {
+        if (game_alt_exit != NULL) game_alt_exit();
+
+        game_alt_handle = NULL;
+        game_alt_exit = NULL;
+    }
+}
+
+static void stopRoomSound() {
+
+}
+
 static void gameover() {
     if (current_state.dead) return;
     current_state.dead = true;
+    closeAltApp();
+    stopRoomSound();
 }
 
 static void processCheck() {
     if (current_state.sleepTimer == 0 && current_state.states_fatigue >= 100) {
         game_actions_sleep_withoutSound(GAMECFG_FULL_SLEEP_TIME);
+        closeAltApp();
+        stopRoomSound();
     }
 
     if (current_state.states_hunger >= 100 || current_state.states_thirst >= 100) {

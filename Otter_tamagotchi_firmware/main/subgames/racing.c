@@ -503,3 +503,7 @@ void subgame_racing_handle() {
         gameover();
     }
 }
+
+void subgame_racing_exit() {
+    game_exit();
+}
