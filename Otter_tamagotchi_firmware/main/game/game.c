@@ -39,6 +39,7 @@ static tsgl_sprite* person_sprite = NULL;
 static tsgl_sound* room_music;
 
 void(*game_alt_handle)() = NULL;
+const char* game_alt_message = NULL;
 
 // ------------------------------------ functions
 
@@ -130,7 +131,7 @@ void game_updateActiveIcons() {
 
     if (current_state.room == game_room_car && current_state.next_car_icon >= 0) game_upmenu_setActivate(current_state.next_car_icon, true);
     
-    game_upmenu_setActivate(ID_CONSTIEM_OVERLAY, game_isAnyOverlayOpened());
+    game_upmenu_setActivate(ID_CONSTIEM_OVERLAY, game_isAnyBackbackOverlayOpened());
 }
 
 void game_selectRoom(int index) {
@@ -144,8 +145,12 @@ void game_selectRoom(int index) {
     game_stopGameActionRoomMusic();
 }
 
-bool game_isAnyOverlayOpened() {
+bool game_isAnyBackbackOverlayOpened() {
     return current_state.combinemenu_opened || current_state.backpack_opened || current_state.states_opened || current_state.settings_opened;
+}
+
+bool game_isAnyOverlayOpened() {
+    return game_isAnyBackbackOverlayOpened() || game_alt_message != NULL;
 }
 
 // ------------------------------------ process
@@ -370,6 +375,11 @@ static void processControl() {
             return;
         }
 
+        if (game_alt_message) {
+            game_alt_message = NULL;
+            return;
+        }
+
         if (current_state.combinemenu_opened) {
             game_combinemenu_close();
             return;
@@ -516,6 +526,10 @@ static void render() {
     game_settings_draw();
     game_states_draw();
     game_backpack_draw();
+
+    if (game_alt_message) {
+        game_modal_draw_message(game_alt_message);
+    }
 }
 
 void game_updateParameters() {

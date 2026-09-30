@@ -16,6 +16,7 @@
 typedef double game_state_val;
 
 extern void(*game_alt_handle)();
+extern const char* game_alt_message;
 
 #include "cparts/rooms_enum.h"
 #define game_room int8_t
@@ -111,6 +112,7 @@ void game_startActionTimer(int actionTimer, const char* str, game_action action,
 void game_stopActionTimer();
 void game_sleepIn();
 void game_updateActiveIcons();
+bool game_isAnyBackbackOverlayOpened();
 bool game_isAnyOverlayOpened();
 void game_updateParameters();
 void game_protectDoublePressOkay();
