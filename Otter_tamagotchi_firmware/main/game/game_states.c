@@ -119,15 +119,15 @@ void game_states_change(game_state_val* ptr, game_state_val delta) {
     if (*ptr > 100) *ptr = 100;
 }
 
-bool game_states_is_caress_fatigue() {
+bool game_states_is_fatigue_critical() {
     return current_state.states_fatigue >= 80;
 }
 
-bool game_states_is_caress_hunger() {
+bool game_states_is_hunger_critical() {
     return current_state.states_hunger >= 80;
 }
 
-bool game_states_is_caress_thirst() {
+bool game_states_is_thirst_critical() {
     return current_state.states_thirst >= 80;
 }
 

@@ -34,15 +34,15 @@ static void draw_emote(tsgl_pos* emote_x, const char* path) {
 static void draw_emotions() {
     tsgl_pos emote_x = EMOTE_DRAW_START_X;
 
-    if (game_states_is_caress_fatigue()) {
+    if (game_states_is_fatigue_critical()) {
         draw_emote(&emote_x, "/firmware/emotes/fatigue.bmp");
     }
 
-    if (game_states_is_caress_hunger()) {
+    if (game_states_is_hunger_critical()) {
         draw_emote(&emote_x, "/firmware/emotes/hunger.bmp");
     }
 
-    if (game_states_is_caress_thirst()) {
+    if (game_states_is_thirst_critical()) {
         draw_emote(&emote_x, "/firmware/emotes/thirst.bmp");
     }
 
