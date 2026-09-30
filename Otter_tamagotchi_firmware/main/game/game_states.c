@@ -120,9 +120,11 @@ void game_states_change(game_state_val* ptr, game_state_val delta) {
 }
 
 bool game_states_is_caress_critical() {
+    printf("current_state.states_caress %f\n", current_state.states_caress);
     return current_state.states_caress >= 80;
 }
 
 bool game_states_is_sadness_critical() {
+    printf("current_state.states_sadness %f\n", current_state.states_sadness);
     return current_state.states_sadness >= 80;
 }

@@ -32,6 +32,12 @@ void gfx_drawCenteredScreenImage(const char* path) {
 }
 
 
+void gfx_imageWithTransparentSupport(tsgl_pos x, tsgl_pos y, const char* path) {
+    tsgl_sprite* sprite = gfx_loadSprite(path);
+    PUSH_FUNC_TRANS(&framebuffer, x, y, sprite);
+    tsgl_bmp_free(sprite);
+}
+
 void gfx_drawCenteredImageSprite(tsgl_pos x, tsgl_pos y, tsgl_sprite* sprite) {
     PUSH_FUNC(&framebuffer, x - (sprite->sprite->width / 2), y - (sprite->sprite->height / 2), sprite);
 }

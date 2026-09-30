@@ -6,8 +6,8 @@
 #include "../gfx.h"
 
 #define EMOTE_SIZE 26 
-#define EMOTE_MARGIN 10
-#define EMOTE_GAP 8
+#define EMOTE_MARGIN 5
+#define EMOTE_GAP 5
 
 #define EMOTE_DRAW_START_X EMOTE_MARGIN
 #define EMOTE_DRAW_Y (HEIGHT - ROOM_OVERLAY_Y_BASE - EMOTE_SIZE - EMOTE_MARGIN)
@@ -27,7 +27,7 @@ static void kitchen_draw_overlay() {
 }
 
 static void draw_emote(tsgl_pos* emote_x, const char* path) {
-    gfx_image(*emote_x, EMOTE_DRAW_Y, path);
+    gfx_imageWithTransparentSupport(*emote_x, EMOTE_DRAW_Y, path);
     *emote_x += EMOTE_SIZE + EMOTE_GAP;
 }   
 
