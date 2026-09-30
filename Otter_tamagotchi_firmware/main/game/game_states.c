@@ -34,7 +34,7 @@ static tsgl_print_settings printsettings = {
 };
 
 static tsgl_pos drawstate_str(tsgl_pos x, tsgl_pos y, const char* text) {
-    printsettings.fg = green;
+    printsettings.fg = white;
     tsgl_framebuffer_text(&framebuffer, x, y, printsettings, text);
     return y + STATES_FONT_TARGET_HEIGHT + STATES_GAP;
 }
@@ -62,7 +62,7 @@ static void raw_draw_slider(tsgl_pos x, tsgl_pos y, game_state_val value) {
         y + STATES_SLIDER_FILL_OFFSET,
         floatValue * (STATES_CONTENT_WIDTH - (STATES_SLIDER_FILL_OFFSET * 2)),
         STATES_SLIDER_HEIGHT - (STATES_SLIDER_FILL_OFFSET * 2),
-        green
+        tsgl_color_raw(tsgl_color_combine(floatValue, GREEN, RED), framebuffer.colormode)
     );
 }
 
