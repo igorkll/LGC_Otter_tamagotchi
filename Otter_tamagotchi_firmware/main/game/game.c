@@ -13,6 +13,7 @@
 #include "game_actions.h"
 #include "game_room_overlays.h"
 #include "game_modal.h"
+#include "game_deadscreen.h"
 
 // ------------------------------------ consts
 
@@ -528,15 +529,9 @@ static void drawSleep() {
     TSGL_funcs_slnprintf(sleepStatus, MAX_ACTION_LEN, "");
 }
 
-static void drawDead() {
-    tsgl_framebuffer_clear(&framebuffer, black);
-    gfx_drawCenteredImageWithTransparentSupport(WIDTH / 2, HEIGHT / 2, "/firmware/images/dead.bmp");
-
-}
-
 static void render() {
     if (current_state.dead) {
-        drawDead();
+        game_deadscreen_drawAndProcess();
         return;
     }
 
