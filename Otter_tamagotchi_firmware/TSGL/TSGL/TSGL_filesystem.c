@@ -102,3 +102,7 @@ size_t tsgl_filesystem_size(const char* path) {
     fclose(file);
     return size;
 }
+
+bool tsgl_filesystem_remove(const char *path) {
+    
+}

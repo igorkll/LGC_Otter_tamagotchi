@@ -17,7 +17,10 @@
 
 // ------------------------------------ consts
 
-static const char* game_state_path = "/storage/gamestat";
+const char* gamestate_paths[] = {
+    "/storage/gamestat",
+    "/storage/gamestt2"
+};
 
 #include "cparts/rooms.h"
 
@@ -67,7 +70,8 @@ const char* game_getCurrentPerson() {
 }
 
 bool game_save() {
-    if (tsgl_filesystem_writeFile(game_state_path, &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
+    current_state.save_counter++;
+    if (tsgl_filesystem_writeFile(gamestate_paths[0], &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
         ESP_LOGI(TAG, "game saved");
         return true;
     } else {
@@ -83,8 +87,8 @@ static void game_loadDefaultSettings() {
 static void game_load() {
     game_loadDefaultSettings();
     
-    if (tsgl_filesystem_exists(game_state_path)) {
-        if (tsgl_filesystem_readFile(game_state_path, &current_state, sizeof(Game_state)) >= sizeof(Game_state)) {
+    if (tsgl_filesystem_exists(gamestate_paths[0])) {
+        if (tsgl_filesystem_readFile(gamestate_paths[0], &current_state, sizeof(Game_state)) >= sizeof(Game_state)) {
             ESP_LOGI(TAG, "game loaded");
 
             if (current_state.resetSettingsId != RESET_SETTINGS_ID) {

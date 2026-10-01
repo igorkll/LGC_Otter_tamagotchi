@@ -18,6 +18,7 @@ typedef double game_state_val;
 extern void(*game_alt_handle)();
 extern void(*game_alt_exit)();
 extern const char* game_alt_message;
+extern const char* gamestate_paths[];
 
 #include "cparts/rooms_enum.h"
 #define game_room int8_t
@@ -34,6 +35,7 @@ typedef enum {
 
 typedef struct {
     uint16_t resetSettingsId;
+    uint64_t save_counter;
 
     // main
     game_room room;
