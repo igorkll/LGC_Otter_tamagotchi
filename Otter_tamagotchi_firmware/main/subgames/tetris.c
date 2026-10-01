@@ -194,16 +194,24 @@ static void print_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_obj
     }
 }
 
-static bool check_collision(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) {
+static bool check_collision(int x, int y, Tetris_object tetris_object) {
     for (size_t ix = 0; ix < OBJECT_X; ix++) {
         for (size_t iy = 0; iy < OBJECT_Y; iy++) {
             uint8_t type = tetris_object.array[iy][ix];
-            if (type > 0) {
-                size_t nx = x + ix;
-                size_t ny = y + iy;
-                if (nx < GAMEARRAY_X && ny < GAMEARRAY_Y && subgame_state->gamearray[nx][ny] > 0)
-                    return true;
-            }
+
+            if (type == 0)
+                continue;
+
+            int nx = x + (int)ix;
+            int ny = y + (int)iy;
+
+            // За боковые границы и за низ — столкновение.
+            if (nx < 0 || nx >= GAMEARRAY_X || ny >= GAMEARRAY_Y)
+                return true;
+
+            // Над верхней границей можно находиться при спавне.
+            if (ny >= 0 && subgame_state->gamearray[nx][ny] > 0)
+                return true;
         }
     }
 
