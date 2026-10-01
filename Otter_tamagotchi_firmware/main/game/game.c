@@ -441,6 +441,11 @@ static void processControl() {
             return;
         }
 
+        if (current_state.overlay_slotmachine) {
+            game_slotmachine_close();
+            return;
+        }
+
         if (current_state.combinemenu_opened) {
             game_combinemenu_close();
             return;

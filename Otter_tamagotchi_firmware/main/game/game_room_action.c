@@ -6,6 +6,7 @@
 #include "game_states.h"
 #include "game_combinemenu.h"
 #include "game_shop.h"
+#include "game_slotmachine.h"
 #include "../pushsound.h"
 
 #include "../subgames/racing.h"
@@ -184,7 +185,7 @@ static void game_fear_roomAction(int action) {
             break;
 
         case L2:
-            game_actions_openSlotmachine();
+            game_slotmachine_open();
             break;
     }
 }
