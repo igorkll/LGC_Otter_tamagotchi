@@ -194,7 +194,7 @@ static void print_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_obj
     }
 }
 
-static bool check_collision(int x, int y, Tetris_object tetris_object) {
+static bool check_collision(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) {
     for (size_t ix = 0; ix < OBJECT_X; ix++) {
         for (size_t iy = 0; iy < OBJECT_Y; iy++) {
             uint8_t type = tetris_object.array[iy][ix];
