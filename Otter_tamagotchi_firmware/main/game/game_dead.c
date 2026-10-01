@@ -35,6 +35,10 @@ static const char* options[] = {
 static uint8_t option_selected = 0;
 
 static void resetGame() {
+    for (size_t i = 0; i < GAMESTATE_COUNT; i++) {
+        tsgl_filesystem_remove(gamestate_paths[i]);
+    }
+
     esp_restart();
 }
 

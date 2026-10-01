@@ -18,8 +18,8 @@
 // ------------------------------------ consts
 
 const char* gamestate_paths[] = {
-    "/storage/gamestat",
-    "/storage/gamestt2"
+    "/storage/state1",
+    "/storage/state2"
 };
 
 #include "cparts/rooms.h"
@@ -71,7 +71,11 @@ const char* game_getCurrentPerson() {
 
 bool game_save() {
     current_state.save_counter++;
-    if (tsgl_filesystem_writeFile(gamestate_paths[0], &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
+    size_t save_to_path_index = current_state.save_counter % GAMESTATE_COUNT;
+    const char* path = gamestate_paths[save_to_path_index];
+
+    ESP_LOGI(TAG, "saving: %i, %i, %s", current_state.save_counter, save_to_path_index, path);
+    if (tsgl_filesystem_writeFile(path, &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
         ESP_LOGI(TAG, "game saved");
         return true;
     } else {
@@ -85,22 +89,25 @@ static void game_loadDefaultSettings() {
 }
 
 static void game_load() {
-    game_loadDefaultSettings();
-    
-    if (tsgl_filesystem_exists(gamestate_paths[0])) {
-        if (tsgl_filesystem_readFile(gamestate_paths[0], &current_state, sizeof(Game_state)) >= sizeof(Game_state)) {
-            ESP_LOGI(TAG, "game loaded");
-
-            if (current_state.resetSettingsId != RESET_SETTINGS_ID) {
-                ESP_LOGI(TAG, "reset settings id changed: %i > %i", current_state.resetSettingsId, RESET_SETTINGS_ID);
+    bool loadDefault = true;
+    for (size_t i = 0; i < GAMESTATE_COUNT; i++) {
+        const char* path = gamestate_paths[i];
+        if (tsgl_filesystem_exists()) {
+            if (tsgl_filesystem_readFile(gamestate_paths[i], &current_state, sizeof(Game_state)) >= sizeof(Game_state)) {
+                ESP_LOGI(TAG, "game loaded");
+            } else {
+                ESP_LOGE(TAG, "failed to load game: ");
                 game_loadDefaultSettings();
             }
-        } else {
-            ESP_LOGE(TAG, "failed to load game");
-            game_loadDefaultSettings();
         }
-    } else {
+    }
+
+    if (loadDefault) {
         ESP_LOGI(TAG, "game default loaded");
+        game_loadDefaultSettings();
+    } else if (current_state.resetSettingsId != RESET_SETTINGS_ID) {
+        ESP_LOGI(TAG, "reset settings id changed: %i > %i", current_state.resetSettingsId, RESET_SETTINGS_ID);
+        game_loadDefaultSettings();
     }
 
     current_state.resetSettingsId = RESET_SETTINGS_ID;
