@@ -33,6 +33,9 @@
 * are red and blue mixed up? this is not a problem, just send the color encoded on the display not using the driver's color space, but its BGR/RGB counterpart. or set the swapRGB flag in the driver settings
 * support for the 444 color space, where 3 pixels are encoded in 2 bits (accessing such a framebuffer is slower, and working without framebuffer can cause graphical artifacts)
 
+## warnings
+* be sure to increase the stack size to at least 8192. for the main task, this is done with the "CONFIG_ESP_MAIN_TASK_STACK_SIZE" parameter in the sdkconfig
+
 ## langueches supported
 * english (ascii)
 * russian (cp1251)
