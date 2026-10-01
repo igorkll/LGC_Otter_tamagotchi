@@ -74,7 +74,7 @@ bool game_save() {
     const char* path = gamestate_paths[save_to_path_index];
     current_state.save_counter++;
 
-    ESP_LOGI(TAG, "saving: %lu, %zu, %s", current_state.save_counter, save_to_path_index, path);
+    ESP_LOGI(TAG, "saving: %llu, %zu, %s", current_state.save_counter, save_to_path_index, path);
     if (tsgl_filesystem_writeFile(path, &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
         ESP_LOGI(TAG, "game saved");
         return true;
