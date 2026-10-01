@@ -37,3 +37,9 @@ void game_actions_patPat() {
     game_states_change(&current_state.states_caress, -(100.0 / 3.0));
     game_states_change(&current_state.states_sadness, -(100.0 / 7.0));
 }
+
+void game_actions_openSlotmachine() {
+    if (current_state.overlay_slotmachine) return;
+    current_state.overlay_slotmachine = true;
+    
+}

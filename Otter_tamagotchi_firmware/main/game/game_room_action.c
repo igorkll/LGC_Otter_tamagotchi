@@ -167,11 +167,11 @@ static void game_museum_roomAction(int action) {
             game_selectRoom(game_room_car);
             break;
 
-        case 5:
+        case L2:
             startRoomMusic(16000, "gmp0", 1);
             break;
 
-        case 6:
+        case L2 + 1:
             startRoomMusic(16000, "gmp1", 1);
             break;
     }
@@ -181,6 +181,10 @@ static void game_fear_roomAction(int action) {
     switch (action) {
         case 0:
             game_selectRoom(game_room_club);
+            break;
+
+        case L2:
+            game_actions_openSlotmachine();
             break;
     }
 }

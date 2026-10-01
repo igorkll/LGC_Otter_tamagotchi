@@ -172,7 +172,7 @@ Room_option_descriptions game_rooms_option_descriptions[] = {
             NULL,
             NULL,
             
-            NULL,
+            "\xD1\xEB\xEE\xF2\x2D\xEC\xE0\xF8\xE8\xED\xE0", //Слот-машина
             NULL,
             NULL,
             NULL,

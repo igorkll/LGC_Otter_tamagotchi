@@ -7,3 +7,4 @@ void game_actions_sleep(int sleepTime);
 void game_actions_eat();
 void game_actions_drink();
 void game_actions_patPat();
+void game_actions_openSlotmachine();

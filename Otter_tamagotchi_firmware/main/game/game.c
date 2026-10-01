@@ -14,6 +14,7 @@
 #include "game_room_overlays.h"
 #include "game_modal.h"
 #include "game_dead.h"
+#include "game_slotmachine.h"
 
 // ------------------------------------ consts
 
@@ -149,6 +150,17 @@ static void reload_room_sound() {
     }
 }
 
+static void update_room_active() {
+    switch (current_state.room) {
+        case game_room_fear:
+            game_upmenu_setActivate(L2, current_state.overlay_slotmachine);
+            break;
+        
+        default:
+            break;
+    }
+}
+
 void game_updateActiveIcons() {
     for (size_t i = 0; i < ROOMS_COUNT_AVAILABLE_FOR_MANUAL_SELECT; i++) {
         game_upmenu_setActivate(i, current_state.room == i);
@@ -161,6 +173,7 @@ void game_updateActiveIcons() {
     if (current_state.room == game_room_car && current_state.next_car_icon >= 0) game_upmenu_setActivate(current_state.next_car_icon, true);
     
     game_upmenu_setActivate(ID_CONSTIEM_OVERLAY, game_isAnyBackbackOverlayOpened());
+    update_room_active();
 }
 
 void game_selectRoom(game_room index) {
@@ -196,7 +209,7 @@ bool game_isAnyBackbackOverlayOpened() {
 }
 
 bool game_isAnyOverlayOpened() {
-    return game_isAnyBackbackOverlayOpened() || game_alt_message != NULL;
+    return game_isAnyBackbackOverlayOpened() || game_alt_message != NULL || current_state.overlay_slotmachine;
 }
 
 // ------------------------------------ process
@@ -572,6 +585,7 @@ static void render() {
     game_settings_draw();
     game_states_draw();
     game_backpack_draw();
+    game_slotmachine_draw();
 
     if (game_alt_message) {
         game_modal_draw_message(game_alt_message);
