@@ -34,7 +34,6 @@ static tsgl_print_settings printsettings = {
 };
 
 static tsgl_pos drawstate_str(tsgl_pos x, tsgl_pos y, const char* text) {
-    printsettings.fg = white;
     tsgl_framebuffer_text(&framebuffer, x, y, printsettings, text);
     return y + STATES_FONT_TARGET_HEIGHT + STATES_GAP;
 }
@@ -84,8 +83,10 @@ void game_states_draw() {
 
     tsgl_pos x2 = STATES_CONTENT_OFFSET + x;
     tsgl_pos y2 = STATES_CONTENT_OFFSET + y;
+    printsettings.fg = green;
     y2 = drawstate_num(x2, y2, "MONEY", current_state.states_money);
     y2 += STATES_FONT_TARGET_HEIGHT;
+    printsettings.fg = white;
     y2 = drawstate_slider(x2, y2, "\xF3\xF1\xF2\xE0\xEB\xEE\xF1\xF2\xFC", current_state.states_fatigue); //усталость
     y2 = drawstate_slider(x2, y2, "\xE3\xEE\xEB\xEE\xE4", current_state.states_hunger); //голод
     y2 = drawstate_slider(x2, y2, "\xE6\xE0\xE6\xE4\xE0", current_state.states_thirst); //жажда
