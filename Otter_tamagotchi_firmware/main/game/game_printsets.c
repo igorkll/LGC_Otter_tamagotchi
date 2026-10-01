@@ -9,7 +9,7 @@ tsgl_print_settings printsettings_overlay = {
 
     // font
     .font = DejaVuSerif,
-    .localLocationMode = tsgl_print_localLocationMode_center,
+    .localLocationMode = tsgl_print_localLocationMode_bottom,
     .targetWidth = OVERLAY_TEXT_TARGET_WIDTH,
     .targetHeight = OVERLAY_TEXT_TARGET_HEIGHT,
 

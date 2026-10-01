@@ -60,7 +60,7 @@ static void kitchen_draw_overlay() {
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "\xCE\xF1\xF2\xE0\xEB\xEE\xF1\xFC: %i\n", count); //Осталось
     tsgl_framebuffer_text(&framebuffer, ROOM_OVERLAY_START_X, ROOM_OVERLAY_START_Y, printsettings_overlay, text);
 
-    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "\xCD\xF3\xE6\xED\xEE\x20\xF1\xFA\xE5\xF1\xF2\xFC: %.1f\n", needEat); //Нужно съесть
+    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "\xCD\xF3\xE6\xED\xEE: %.1f\n", needEat); //Нужно
     tsgl_framebuffer_text(&framebuffer, ROOM_OVERLAY_START_X, ROOM_OVERLAY_START_Y + TEXT_OFFSET, printsettings_overlay, text);
 }
 

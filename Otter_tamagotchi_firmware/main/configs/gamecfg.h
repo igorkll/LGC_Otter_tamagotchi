@@ -3,5 +3,5 @@
 #define GAMECFG_PARAMS_SPEED_MUL 0.05
 #define DONT_SHOW_EMPTY_ICONS true
 
-#define EAT_RECOVER (-(100.0 / 2.0))
-#define WATER_RECOVER (-(100.0 / 3.0))
+#define EAT_RECOVER (100.0 / 2.0)
+#define WATER_RECOVER (100.0 / 3.0)
