@@ -21,7 +21,7 @@ void game_actions_eat() {
     current_state.backpack_eat_count--;
 
     pushsound_play("/firmware/sounds/eat.pcm", 16000, 1);
-    game_states_change(&current_state.states_hunger, -(100.0 / 2.0));
+    game_states_change(&current_state.states_hunger, EAT_RECOVER);
 }
 
 void game_actions_drink() {
@@ -29,7 +29,7 @@ void game_actions_drink() {
     current_state.backpack_water_count--;
     
     pushsound_play("/firmware/sounds/drinking.pcm", 16000, 1);
-    game_states_change(&current_state.states_thirst, -(100.0 / 3.0));
+    game_states_change(&current_state.states_thirst, WATER_RECOVER);
 }
 
 void game_actions_patPat() {

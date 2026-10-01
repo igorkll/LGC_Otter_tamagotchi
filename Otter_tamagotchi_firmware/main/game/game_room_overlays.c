@@ -12,6 +12,34 @@
 #define EMOTE_DRAW_START_X EMOTE_MARGIN
 #define EMOTE_DRAW_Y (HEIGHT - ROOM_OVERLAY_Y_BASE - EMOTE_SIZE - EMOTE_MARGIN)
 
+#define TEXT_TARGET_HEIGHT 9
+#define TEXT_GAP 4
+#define TEXT_OFFSET (TEXT_TARGET_HEIGHT + TEXT_GAP)
+
+static float getCurrentValue(int item) {
+    switch (item) {
+        case 0:
+            return current_state.states_hunger;
+
+        case 1:
+            return current_state.states_thirst;
+    }
+
+    return 0;
+}
+
+static float getRecoverValue(int item) {
+    switch (item) {
+        case 0:
+            return EAT_RECOVER;
+
+        case 1:
+            return WATER_RECOVER;
+    }
+
+    return 0;
+}
+
 static void kitchen_draw_overlay() {
     printsettings_overlay.fg = green;
     printsettings_overlay.stroke = black;
@@ -20,10 +48,20 @@ static void kitchen_draw_overlay() {
     int* countPtr = shop_getItemPtr(itemNum);
     if (countPtr == NULL) return;
     int count = *countPtr;
+
+    float currentValue = getCurrentValue(itemNum);
+    float recoverValue = getRecoverValue(itemNum);
+    float needEat = 0;
+    if (recoverValue > 0) {
+        needEat = (100 - currentValue) / recoverValue;
+    }
     
     char text[MAX_ACTION_LEN];
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "\xCE\xF1\xF2\xE0\xEB\xEE\xF1\xFC: %i\n", count); //Осталось
     tsgl_framebuffer_text(&framebuffer, ROOM_OVERLAY_START_X, ROOM_OVERLAY_START_Y, printsettings_overlay, text);
+
+    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "\xCD\xF3\xE6\xED\xEE\x20\xF1\xFA\xE5\xF1\xF2\xFC: %.1f\n", needEat); //Нужно съесть
+    tsgl_framebuffer_text(&framebuffer, ROOM_OVERLAY_START_X, ROOM_OVERLAY_START_Y + TEXT_OFFSET, printsettings_overlay, text);
 }
 
 static void draw_emote(tsgl_pos* emote_x, const char* path) {
