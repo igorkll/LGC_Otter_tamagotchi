@@ -90,6 +90,7 @@ void app_main() {
     settings.backlight_pin = BL;
     settings.backlight_value = 0;
 
+    tsgl_filesystem_initparameter_setMaxOpenedFiles(MAX_OPENED_FILES);
     ESP_ERROR_CHECK(tsgl_filesystem_mount_fatfs("/firmware", "firmware"));
     ESP_ERROR_CHECK(tsgl_filesystem_mount_spifs_af("/storage", "storage"));
 

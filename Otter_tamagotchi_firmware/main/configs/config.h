@@ -6,6 +6,7 @@
 #define ROTATE 0
 
 #define MAX_AUTOSAVE_PER_TIME 3000
+#define MAX_OPENED_FILES 4
 
 // ---------------------------
 
