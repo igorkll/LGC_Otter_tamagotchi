@@ -1,4 +1,5 @@
 #include "game.h"
+#include "../hctl.h"
 #include "../gfx.h"
 #include <esp_system.h>
 
@@ -42,7 +43,7 @@ static void resetGame() {
     esp_restart();
 }
 
-static void select() {
+static void processAction() {
     switch (option_selected) {
         case 0:
             resetGame();
@@ -64,7 +65,7 @@ void game_dead_drawAndProcess() {
     }
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
-        select();
+        processAction();
     }
 
     // draw

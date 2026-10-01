@@ -70,11 +70,11 @@ const char* game_getCurrentPerson() {
 }
 
 bool game_save() {
-    current_state.save_counter++;
     size_t save_to_path_index = current_state.save_counter % GAMESTATE_COUNT;
     const char* path = gamestate_paths[save_to_path_index];
+    current_state.save_counter++;
 
-    ESP_LOGI(TAG, "saving: %i, %i, %s", current_state.save_counter, save_to_path_index, path);
+    ESP_LOGI(TAG, "saving: %lu, %zu, %s", current_state.save_counter, save_to_path_index, path);
     if (tsgl_filesystem_writeFile(path, &current_state, sizeof(Game_state)) == sizeof(Game_state)) {
         ESP_LOGI(TAG, "game saved");
         return true;
@@ -90,7 +90,7 @@ static void game_loadDefaultSettings() {
 
 static void game_load() {
     bool loadDefault = true;
-    uint64_t max_save_counter = 0;
+    int64_t max_save_counter = -1;
     for (size_t i = 0; i < GAMESTATE_COUNT; i++) {
         const char* path = gamestate_paths[i];
 
@@ -98,14 +98,14 @@ static void game_load() {
             Game_state readed;
             memcpy(&readed, &default_state, sizeof(Game_state));
             if (tsgl_filesystem_readFile(path, &readed, sizeof(Game_state)) >= sizeof(Game_state)) {
-                ESP_LOGI(TAG, "game loaded: %i, %s", i, path);
+                ESP_LOGI(TAG, "game loaded: %zu, %s", i, path);
                 if (readed.save_counter > max_save_counter) {
                     loadDefault = false;
                     max_save_counter = readed.save_counter;
                     memcpy(&current_state, &readed, sizeof(Game_state));
                 }
             } else {
-                ESP_LOGE(TAG, "failed to load game: %i, %s", i, path);
+                ESP_LOGE(TAG, "failed to load game: %zu, %s", i, path);
             }
         }
     }
