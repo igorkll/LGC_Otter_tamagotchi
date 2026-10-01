@@ -99,9 +99,10 @@ static void game_load() {
             Game_state readed;
             memcpy(&readed, &default_state, sizeof(Game_state));
             if (tsgl_filesystem_readFile(path, &readed, sizeof(Game_state)) >= sizeof(Game_state)) {
-                ESP_LOGI(TAG, "game loaded: %zu, %s", i, path);
+                ESP_LOGI(TAG, "save check: %zu, %s", i, path);
                 if (readed.save_counter > max_save_counter) {
                     loadDefault = false;
+                    ESP_LOGI(TAG, "new max save level: %i > %i", max_save_counter, readed.save_counter);
                     max_save_counter = readed.save_counter;
                     memcpy(&current_state, &readed, sizeof(Game_state));
                 }
@@ -117,6 +118,8 @@ static void game_load() {
     } else if (current_state.resetSettingsId != RESET_SETTINGS_ID) {
         ESP_LOGI(TAG, "reset settings id changed: %i > %i", current_state.resetSettingsId, RESET_SETTINGS_ID);
         game_loadDefaultSettings();
+    } else {
+        ESP_LOGI(TAG, "game loaded successful");
     }
 
     current_state.resetSettingsId = RESET_SETTINGS_ID;
