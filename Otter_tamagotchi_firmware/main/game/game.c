@@ -92,12 +92,17 @@ static void game_load() {
     bool loadDefault = true;
     for (size_t i = 0; i < GAMESTATE_COUNT; i++) {
         const char* path = gamestate_paths[i];
-        if (tsgl_filesystem_exists()) {
-            if (tsgl_filesystem_readFile(gamestate_paths[i], &current_state, sizeof(Game_state)) >= sizeof(Game_state)) {
-                ESP_LOGI(TAG, "game loaded");
+
+        if (tsgl_filesystem_exists(path)) {
+            Game_state readed;
+            memcpy(&readed, &default_state, sizeof(Game_state));
+            if (tsgl_filesystem_readFile(path, &readed, sizeof(Game_state)) >= sizeof(Game_state)) {
+                ESP_LOGI(TAG, "game loaded: %i, %s", i, path);
+                
+                loadDefault = false;
+                memcpy(&current_state, &readed, sizeof(Game_state));
             } else {
-                ESP_LOGE(TAG, "failed to load game: ");
-                game_loadDefaultSettings();
+                ESP_LOGE(TAG, "failed to load game: %i, %s", i, path);
             }
         }
     }
