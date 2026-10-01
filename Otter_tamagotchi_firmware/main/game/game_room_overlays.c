@@ -53,7 +53,7 @@ static void kitchen_draw_overlay() {
     float recoverValue = getRecoverValue(itemNum);
     float needEat = 0;
     if (recoverValue > 0) {
-        needEat = (100 - currentValue) / recoverValue;
+        needEat = currentValue / recoverValue;
     }
     
     char text[MAX_ACTION_LEN];
