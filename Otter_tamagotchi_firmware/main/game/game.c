@@ -19,7 +19,8 @@
 
 const char* gamestate_paths[] = {
     "/storage/state1",
-    "/storage/state2"
+    "/storage/state2",
+    "/storage/state3"
 };
 
 #include "cparts/rooms.h"
@@ -90,7 +91,7 @@ static void game_loadDefaultSettings() {
 
 static void game_load() {
     bool loadDefault = true;
-    int64_t max_save_counter = -1;
+    uint64_t max_save_counter = 0;
     for (size_t i = 0; i < GAMESTATE_COUNT; i++) {
         const char* path = gamestate_paths[i];
 

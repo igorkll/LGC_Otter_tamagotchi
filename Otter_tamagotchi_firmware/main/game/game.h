@@ -20,7 +20,7 @@ extern void(*game_alt_exit)();
 extern const char* game_alt_message;
 extern const char* gamestate_paths[];
 
-#define GAMESTATE_COUNT 2
+#define GAMESTATE_COUNT 3
 
 #include "cparts/rooms_enum.h"
 #define game_room int8_t
