@@ -90,6 +90,7 @@ static void game_loadDefaultSettings() {
 
 static void game_load() {
     bool loadDefault = true;
+    uint64_t max_save_counter = 0;
     for (size_t i = 0; i < GAMESTATE_COUNT; i++) {
         const char* path = gamestate_paths[i];
 
@@ -98,9 +99,11 @@ static void game_load() {
             memcpy(&readed, &default_state, sizeof(Game_state));
             if (tsgl_filesystem_readFile(path, &readed, sizeof(Game_state)) >= sizeof(Game_state)) {
                 ESP_LOGI(TAG, "game loaded: %i, %s", i, path);
-                
-                loadDefault = false;
-                memcpy(&current_state, &readed, sizeof(Game_state));
+                if (readed.save_counter > max_save_counter) {
+                    loadDefault = false;
+                    max_save_counter = readed.save_counter;
+                    memcpy(&current_state, &readed, sizeof(Game_state));
+                }
             } else {
                 ESP_LOGE(TAG, "failed to load game: %i, %s", i, path);
             }
@@ -116,6 +119,7 @@ static void game_load() {
     }
 
     current_state.resetSettingsId = RESET_SETTINGS_ID;
+    current_state.save_counter = max_save_counter;
     memcpy(&old_state, &current_state, sizeof(Game_state));
 }
 

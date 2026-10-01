@@ -1,5 +1,6 @@
 static const Game_state default_state = {
     .resetSettingsId = RESET_SETTINGS_ID,
+    .save_counter = 0,
 
     .room = game_room_bedroom,
     .person = game_person_otter,
