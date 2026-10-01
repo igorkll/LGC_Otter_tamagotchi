@@ -117,3 +117,4 @@ bool game_isAnyBackbackOverlayOpened();
 bool game_isAnyOverlayOpened();
 void game_updateParameters();
 void game_protectDoublePressOkay();
+void game_closeAltApp();

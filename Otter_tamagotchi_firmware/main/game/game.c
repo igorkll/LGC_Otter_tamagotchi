@@ -13,7 +13,7 @@
 #include "game_actions.h"
 #include "game_room_overlays.h"
 #include "game_modal.h"
-#include "game_deadscreen.h"
+#include "game_dead.h"
 
 // ------------------------------------ consts
 
@@ -158,7 +158,9 @@ void game_selectRoom(game_room index) {
     current_state.room = index;
 
     game_updateActiveIcons();
-    reload_room_sound();
+    if (current_state.sleepTimer == 0) {
+        reload_room_sound();
+    }
     game_upmenu_redrawTitle();
     game_upmenu_reloadIcons();
     game_roomSelected(index);
@@ -176,11 +178,13 @@ bool game_isAnyOverlayOpened() {
 // ------------------------------------ process
 
 void game_sleepIn() {
+    unload_room_sound();
     hctl_enableAutoBacklight(false);
     hctl_setBacklight(BACKLIGHT_IDLE);
 }
 
 static void sleepOut() {
+    reload_room_sound();
     hctl_enableAutoBacklight(true);
     hctl_setBacklight(BACKLIGHT_MAX);
 }
@@ -438,7 +442,7 @@ static void processControl() {
     }
 }
 
-static void closeAltApp() {
+void game_closeAltApp() {
     if (game_alt_handle != NULL) {
         if (game_alt_exit != NULL) game_alt_exit();
 
@@ -447,26 +451,14 @@ static void closeAltApp() {
     }
 }
 
-static void stopRoomSound() {
-
-}
-
-static void gameover() {
-    if (current_state.dead) return;
-    current_state.dead = true;
-    closeAltApp();
-    stopRoomSound();
-}
-
 static void processCheck() {
     if (current_state.sleepTimer == 0 && current_state.states_fatigue >= 100) {
         game_actions_sleep_withoutSound(GAMECFG_FULL_SLEEP_TIME);
-        closeAltApp();
-        stopRoomSound();
+        game_closeAltApp();
     }
 
     if (current_state.states_hunger >= 100 || current_state.states_thirst >= 100) {
-        gameover();
+        game_dead_gameover();
     }
 }
 
@@ -531,7 +523,7 @@ static void drawSleep() {
 
 static void render() {
     if (current_state.dead) {
-        game_deadscreen_drawAndProcess();
+        game_dead_drawAndProcess();
         return;
     }
 
