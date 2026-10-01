@@ -102,7 +102,7 @@ static void game_load() {
                 ESP_LOGI(TAG, "save check: %zu, %s", i, path);
                 if (readed.save_counter > max_save_counter) {
                     loadDefault = false;
-                    ESP_LOGI(TAG, "new max save level: %i > %i", max_save_counter, readed.save_counter);
+                    ESP_LOGI(TAG, "new max save level: %llu > %llu", max_save_counter, readed.save_counter);
                     max_save_counter = readed.save_counter;
                     memcpy(&current_state, &readed, sizeof(Game_state));
                 }
