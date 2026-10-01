@@ -125,11 +125,11 @@ bool game_states_is_fatigue_critical() {
 }
 
 bool game_states_is_hunger_critical() {
-    return current_state.states_hunger >= 80;
+    return current_state.states_hunger >= 50;
 }
 
 bool game_states_is_thirst_critical() {
-    return current_state.states_thirst >= 80;
+    return current_state.states_thirst >= 50;
 }
 
 bool game_states_is_caress_critical() {
