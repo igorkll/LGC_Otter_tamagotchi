@@ -423,6 +423,11 @@ static void process() {
 }
 
 void subgame_tetris_handle() {
+    if (tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_LEFT) && tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_RIGHT)) {
+        game_exit();
+        return;
+    }
+
     if (subgame_state->gameover) {
         if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
             game_exit();
