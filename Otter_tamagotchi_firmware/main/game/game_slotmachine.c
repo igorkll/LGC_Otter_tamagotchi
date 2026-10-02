@@ -14,7 +14,7 @@
 #define SLOTMACHINE_BASE_NUM_POS_Y -23
 #define SLOTMACHINE_BASE_NUM_STEP_X 21
 
-#define SLOTMACHINE_CURRENT_MONEY_X 25
+#define SLOTMACHINE_CURRENT_MONEY_X 20
 #define SLOTMACHINE_CURRENT_MONEY_Y -23
 
 tsgl_print_settings printsettings_slotmachine = {
@@ -79,7 +79,7 @@ void game_slotmachine_draw() {
     tsgl_framebuffer_text(&framebuffer, 0, (HEIGHT / 2) + SLOTMACHINE_Y_CENTER_OFFSET, printsettings_slotmachine, text);
 
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "%i", current_state.states_money);
-    printsettings_slotmachine.width = SLOTMACHINE_TEXT_TARGET_WIDTH * 2;
+    printsettings_slotmachine.width = SLOTMACHINE_TEXT_TARGET_WIDTH * 4;
     printsettings_slotmachine.height = SLOTMACHINE_TEXT_TARGET_HEIGHT;
     printsettings_slotmachine.stroke = black;
     printsettings_slotmachine.fg = green;
