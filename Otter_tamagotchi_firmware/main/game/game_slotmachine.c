@@ -14,8 +14,8 @@
 #define SLOTMACHINE_BASE_NUM_POS_Y -23
 #define SLOTMACHINE_BASE_NUM_STEP_X 21
 
-#define SLOTMACHINE_CURRENT_MONEY_X 20
-#define SLOTMACHINE_CURRENT_MONEY_Y -23
+#define SLOTMACHINE_CURRENT_MONEY_X 18
+#define SLOTMACHINE_CURRENT_MONEY_Y -28
 
 tsgl_print_settings printsettings_slotmachine = {
     .locationMode = tsgl_print_start_top,
@@ -39,8 +39,27 @@ tsgl_print_settings printsettings_slotmachine = {
 };
 
 static void _run() {
+    if (current_state.slotmachine_money > current_state.states_money) {
+        return;
+    }
+
+    current_state.states_money -= current_state.slotmachine_money;
+
+    bool win = true;
+    int firstNum = -1;
     for (size_t i = 0; i < SLOTMACHINE_NUMS_COUNT; i++) {
-        current_state.slotmachine_nums[i] = tsgl_random(0, 9);
+        int num = tsgl_random(0, 9);
+        current_state.slotmachine_nums[i] = num;
+
+        if (i == 0) {
+            firstNum = num;
+        } else if (num != firstNum) {
+            win = false;
+        }
+    }
+
+    if (win) {
+        current_state.states_money += current_state.slotmachine_money * firstNum;
     }
 }
 
