@@ -19,5 +19,7 @@ static const Game_state default_state = {
     .backpack_water_count = 10,
 
     .settings_master_volume = 1,
-    .settings_music_volume = 0.7
+    .settings_music_volume = 0.7,
+
+    .slotmachine_money = 10
 };

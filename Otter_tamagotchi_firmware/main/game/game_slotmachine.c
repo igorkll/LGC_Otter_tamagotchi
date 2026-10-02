@@ -4,7 +4,7 @@
 
 #define SLOTMACHINE_MIN_MONEY 10
 #define SLOTMACHINE_MAX_MONEY 1000
-#define SLOTMACHINE_MONEY_STEP 25
+#define SLOTMACHINE_MONEY_STEP 10
 
 #define SLOTMACHINE_Y_CENTER_OFFSET 10
 #define SLOTMACHINE_TEXT_TARGET_WIDTH 8
@@ -39,12 +39,12 @@ void game_slotmachine_draw() {
     if (!current_state.overlay_slotmachine) return;
 
     // ------------------- process
-    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
+    if (tsgl_keyboard_whenPressedOrHolded(&keyboard, KEY_INDEX_LEFT)) {
         current_state.slotmachine_money -= SLOTMACHINE_MONEY_STEP;
         if (current_state.slotmachine_money < SLOTMACHINE_MIN_MONEY) current_state.slotmachine_money = SLOTMACHINE_MAX_MONEY;
     }
 
-    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
+    if (tsgl_keyboard_whenPressedOrHolded(&keyboard, KEY_INDEX_OKAY)) {
         _run();
     }
 

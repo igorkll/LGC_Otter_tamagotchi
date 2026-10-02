@@ -26,18 +26,18 @@ static bool _rawRead(tsgl_keyboard_bind* bindState) {
         time_t time = tsgl_time();
         if (rawState != bindState->rawState) {
             if (rawState) {
-                bindState->press_time = time;
+                bindState->raw_press_time = time;
             } else {
-                bindState->release_time = time;
+                bindState->raw_release_time = time;
             }
             bindState->rawState = rawState;
         }
 
         if (rawState) {
-            if (bindState->pressing_ms == 0 || time - bindState->press_time >= bindState->pressing_ms)
+            if (bindState->pressing_ms == 0 || time - bindState->raw_press_time >= bindState->pressing_ms)
                bindState->newState = true;
         } else {
-            if (bindState->releasing_ms == 0 || time - bindState->release_time >= bindState->releasing_ms)
+            if (bindState->releasing_ms == 0 || time - bindState->raw_release_time >= bindState->releasing_ms)
                 bindState->newState = false;
         }
         
@@ -46,8 +46,10 @@ static bool _rawRead(tsgl_keyboard_bind* bindState) {
         if (bindState->newState != bindState->state) {
             if (bindState->newState) {
                 bindState->whenPressed = true;
+                bindState->press_time = time;
             } else {
                 bindState->whenReleasing = true;
+                bindState->release_time = time;
             }
             bindState->state = bindState->newState;
         }
@@ -191,4 +193,20 @@ void tsgl_keyboard_free(tsgl_keyboard* keyboard) {
         free(bindState);
     }
     free(keyboard->binds);
+}
+
+void tsgl_keyboard_whenHold(tsgl_keyboard* keyboard, int buttonID, time_t hold_time_ms, time_t trigger_per_ms) {
+    tsgl_keyboard_bind* bindState = tsgl_keyboard_findButton(keyboard, buttonID);
+    if (bindState != NULL && bindState->state) {
+        time_t time = tsgl_time();
+        if (time - bindState->press_time >= hold_time_ms) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void tsgl_keyboard_whenPressedOrHold(tsgl_keyboard* keyboard, int buttonID, time_t hold_time_ms, time_t trigger_per_ms) {
+    return tsgl_keyboard_whenPressed(keyboard, buttonID) || tsgl_keyboard_whenHold(keyboard, buttonID, hold_time_ms, trigger_per_ms);
 }
