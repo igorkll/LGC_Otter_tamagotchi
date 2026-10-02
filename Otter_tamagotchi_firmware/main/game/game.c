@@ -92,6 +92,7 @@ static void game_loadDefaultSettings() {
 
 static void game_load() {
     bool loadDefault = true;
+    const char* loaded_from_path = NULL;
     uint64_t max_save_counter = 0;
     for (size_t i = 0; i < GAMESTATE_COUNT; i++) {
         const char* path = gamestate_paths[i];
@@ -103,9 +104,12 @@ static void game_load() {
                 ESP_LOGI(TAG, "save check: %zu, %s", i, path);
                 if (readed.save_counter > max_save_counter) {
                     loadDefault = false;
-                    ESP_LOGI(TAG, "new max save level: %llu > %llu", max_save_counter, readed.save_counter);
+                    ESP_LOGW(TAG, "new max save level: %llu > %llu", max_save_counter, readed.save_counter);
                     max_save_counter = readed.save_counter;
+                    loaded_from_path = path;
                     memcpy(&current_state, &readed, sizeof(Game_state));
+                } else {
+                    ESP_LOGW(TAG, "not loaded: %llu | %llu", max_save_counter, readed.save_counter);
                 }
             } else {
                 ESP_LOGE(TAG, "failed to load game: %zu, %s", i, path);
@@ -114,13 +118,13 @@ static void game_load() {
     }
 
     if (loadDefault) {
-        ESP_LOGI(TAG, "game default loaded");
+        ESP_LOGW(TAG, "game default loaded");
         game_loadDefaultSettings();
     } else if (current_state.resetSettingsId != RESET_SETTINGS_ID) {
-        ESP_LOGI(TAG, "reset settings id changed: %i > %i", current_state.resetSettingsId, RESET_SETTINGS_ID);
+        ESP_LOGW(TAG, "reset settings id changed: %i > %i", current_state.resetSettingsId, RESET_SETTINGS_ID);
         game_loadDefaultSettings();
     } else {
-        ESP_LOGI(TAG, "game loaded successful");
+        ESP_LOGI(TAG, "game loaded successful: %s", loaded_from_path);
     }
 
     current_state.resetSettingsId = RESET_SETTINGS_ID;

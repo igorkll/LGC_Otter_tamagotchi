@@ -21,6 +21,7 @@ extern const char* game_alt_message;
 extern const char* gamestate_paths[];
 
 #define GAMESTATE_COUNT 3
+#define SLOTMACHINE_NUMS_COUNT 3
 
 #include "cparts/rooms_enum.h"
 #define game_room int8_t
@@ -89,6 +90,10 @@ typedef struct {
 
     // overlays
     bool overlay_slotmachine;
+
+    // slotmachine
+    int slotmachine_money;
+    uint8_t slotmachine_nums[SLOTMACHINE_NUMS_COUNT];
 } Game_state;
 
 typedef struct {
