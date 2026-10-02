@@ -39,16 +39,16 @@ void game_slotmachine_draw() {
     if (!current_state.overlay_slotmachine) return;
 
     // ------------------- process
-    if (tsgl_keyboard_whenPressedOrHolded(&keyboard, KEY_INDEX_LEFT)) {
+    if (tsgl_keyboard_whenPressedOrHoldWithTrigger(&keyboard, KEY_INDEX_LEFT)) {
         current_state.slotmachine_money -= SLOTMACHINE_MONEY_STEP;
         if (current_state.slotmachine_money < SLOTMACHINE_MIN_MONEY) current_state.slotmachine_money = SLOTMACHINE_MAX_MONEY;
     }
 
-    if (tsgl_keyboard_whenPressedOrHolded(&keyboard, KEY_INDEX_OKAY)) {
+    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_OKAY)) {
         _run();
     }
 
-    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
+    if (tsgl_keyboard_whenPressedOrHoldWithTrigger(&keyboard, KEY_INDEX_RIGHT)) {
         current_state.slotmachine_money += SLOTMACHINE_MONEY_STEP;
         if (current_state.slotmachine_money > SLOTMACHINE_MAX_MONEY) current_state.slotmachine_money = SLOTMACHINE_MIN_MONEY;
     }

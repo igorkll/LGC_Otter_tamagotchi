@@ -399,7 +399,7 @@ static void process() {
         gameover();
     }
 
-    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
+    if (tsgl_keyboard_whenPressedOrHoldWithTrigger(&keyboard, KEY_INDEX_LEFT)) {
         if (!check_collision(subgame_state->current_object_x - 1, subgame_state->current_object_y, subgame_state->current_object)) {
             subgame_state->current_object_x--;
             if (subgame_state->current_object_x < 0) subgame_state->current_object_x = 0;
@@ -414,7 +414,7 @@ static void process() {
         }
     }
 
-    if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_RIGHT)) {
+    if (tsgl_keyboard_whenPressedOrHoldWithTrigger(&keyboard, KEY_INDEX_RIGHT)) {
         if (!check_collision(subgame_state->current_object_x + 1, subgame_state->current_object_y, subgame_state->current_object)) {
             subgame_state->current_object_x++;
             border_check();

@@ -33,7 +33,12 @@ typedef struct {
     time_t hold_time_ms;
     time_t trigger_per_ms;
 
-    bool holded:
+    bool hold;
+    bool newHold;
+    bool holdWithTrigger;
+    time_t hold_time;
+    time_t unhold_time;
+    time_t hold_trigger_time;
 } tsgl_keyboard_bind;
 
 typedef struct {
@@ -60,5 +65,7 @@ bool tsgl_keyboard_getState(tsgl_keyboard* keyboard, int buttonID);
 bool tsgl_keyboard_getRawState(tsgl_keyboard* keyboard, int buttonID);
 bool tsgl_keyboard_whenPressed(tsgl_keyboard* keyboard, int buttonID);
 bool tsgl_keyboard_whenReleasing(tsgl_keyboard* keyboard, int buttonID);
-void tsgl_keyboard_whenHold(tsgl_keyboard* keyboard, int buttonID);
-void tsgl_keyboard_whenPressedOrHold(tsgl_keyboard* keyboard, int buttonID);
+bool tsgl_keyboard_whenHold(tsgl_keyboard* keyboard, int buttonID);
+bool tsgl_keyboard_whenHoldWithTrigger(tsgl_keyboard* keyboard, int buttonID);
+bool tsgl_keyboard_whenPressedOrHold(tsgl_keyboard* keyboard, int buttonID);
+bool tsgl_keyboard_whenPressedOrHoldWithTrigger(tsgl_keyboard* keyboard, int buttonID);

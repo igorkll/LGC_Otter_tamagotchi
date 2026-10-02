@@ -63,12 +63,24 @@ static bool _rawRead(tsgl_keyboard_bind* bindState) {
 
         // ------------------- process hold
         if (bindState->state) {
-            time_t time = tsgl_time();
-            bindState->holded = time - bindState->press_time >= bindState->hold_time_ms;
-
-            
+            bindState->hold = time - bindState->press_time >= bindState->hold_time_ms;
+            bindState->holdWithTrigger = false;
+            if (bindState->hold) {
+                if (!bindState->newHold) {
+                    bindState->hold_time = time;
+                    bindState->hold_trigger_time = time;
+                    bindState->holdWithTrigger = true;
+                    bindState->newHold = true;
+                } else if (time - bindState->hold_trigger_time >= bindState->trigger_per_ms) {
+                    bindState->hold_trigger_time = time;
+                    bindState->holdWithTrigger = true;
+                }
+            }
         } else {
-            bindState->holded = false;
+            bindState->hold = false;
+            bindState->newHold = false;
+            bindState->holdWithTrigger = false;
+            if (!bindState->hold) bindState->unhold_time = time;
         }
     }
     return bindState->state;
@@ -223,18 +235,38 @@ void tsgl_keyboard_free(tsgl_keyboard* keyboard) {
     free(keyboard->binds);
 }
 
-void tsgl_keyboard_whenHold(tsgl_keyboard* keyboard, int buttonID) {
+bool tsgl_keyboard_whenHold(tsgl_keyboard* keyboard, int buttonID) {
     tsgl_keyboard_bind* bindState = tsgl_keyboard_findButton(keyboard, buttonID);
-    if (bindState != NULL && bindState->state) {
-        time_t time = tsgl_time();
-        if (time - bindState->press_time >= hold_time_ms) {
-            return true;
-        }
+    if (bindState != NULL) {
+        return bindState->hold;
     }
 
     return false;
 }
 
-void tsgl_keyboard_whenPressedOrHold(tsgl_keyboard* keyboard, int buttonID) {
-    return tsgl_keyboard_whenPressed(keyboard, buttonID) || tsgl_keyboard_whenHold(keyboard, buttonID);
+bool tsgl_keyboard_whenHoldWithTrigger(tsgl_keyboard* keyboard, int buttonID) {
+    tsgl_keyboard_bind* bindState = tsgl_keyboard_findButton(keyboard, buttonID);
+    if (bindState != NULL) {
+        return bindState->holdWithTrigger;
+    }
+
+    return false;
+}
+
+bool tsgl_keyboard_whenPressedOrHold(tsgl_keyboard* keyboard, int buttonID) {
+    tsgl_keyboard_bind* bindState = tsgl_keyboard_findButton(keyboard, buttonID);
+    if (bindState != NULL) {
+        return bindState->whenPressed | bindState->hold;
+    }
+
+    return false;
+}
+
+bool tsgl_keyboard_whenPressedOrHoldWithTrigger(tsgl_keyboard* keyboard, int buttonID) {
+    tsgl_keyboard_bind* bindState = tsgl_keyboard_findButton(keyboard, buttonID);
+    if (bindState != NULL) {
+        return bindState->whenPressed || bindState->holdWithTrigger;
+    }
+
+    return false;
 }
