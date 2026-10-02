@@ -17,6 +17,8 @@
 #define SLOTMACHINE_CURRENT_MONEY_X 18
 #define SLOTMACHINE_CURRENT_MONEY_Y -28
 
+#define JACKPOT_MONEY 2000
+
 tsgl_print_settings printsettings_slotmachine = {
     .locationMode = tsgl_print_start_top,
 
@@ -48,7 +50,7 @@ static void _run() {
     bool win = true;
     int firstNum = -1;
     for (size_t i = 0; i < SLOTMACHINE_NUMS_COUNT; i++) {
-        int num = tsgl_random(0, 9);
+        int num = tsgl_random(2, 9);
         current_state.slotmachine_nums[i] = num;
 
         if (i == 0) {
