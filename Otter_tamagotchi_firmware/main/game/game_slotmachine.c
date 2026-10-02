@@ -10,9 +10,9 @@
 #define SLOTMACHINE_TEXT_TARGET_WIDTH 8
 #define SLOTMACHINE_TEXT_TARGET_HEIGHT 16
 
-#define SLOTMACHINE_BASE_NUM_POS_X -30
-#define SLOTMACHINE_BASE_NUM_POS_Y -10
-#define SLOTMACHINE_BASE_NUM_STEP_X 15
+#define SLOTMACHINE_BASE_NUM_POS_X -37
+#define SLOTMACHINE_BASE_NUM_POS_Y -23
+#define SLOTMACHINE_BASE_NUM_STEP_X 21
 
 tsgl_print_settings printsettings_slotmachine = {
     .locationMode = tsgl_print_start_top,
@@ -37,6 +37,10 @@ tsgl_print_settings printsettings_slotmachine = {
 
 static void _run() {
 
+}
+
+tsgl_rawcolor _get_num_color(int num) {
+    return tsgl_color_raw(tsgl_color_hsv(num , 255, 255), framebuffer.colormode);
 }
 
 void game_slotmachine_draw() {
@@ -70,10 +74,12 @@ void game_slotmachine_draw() {
     tsgl_framebuffer_text(&framebuffer, 0, (HEIGHT / 2) + SLOTMACHINE_Y_CENTER_OFFSET, printsettings_slotmachine, text);
 
     for (size_t i = 0; i < SLOTMACHINE_NUMS_COUNT; i++) {
-        TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "%i", current_state.slotmachine_nums[i]);
+        int num = current_state.slotmachine_nums[i];
+        TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "%i", num);
         printsettings_slotmachine.width = SLOTMACHINE_TEXT_TARGET_WIDTH;
         printsettings_slotmachine.height = SLOTMACHINE_TEXT_TARGET_HEIGHT;
         printsettings_slotmachine.stroke = black;
+        printsettings_slotmachine.fg = _get_num_color(num);
         tsgl_framebuffer_text(&framebuffer, (WIDTH / 2) + SLOTMACHINE_BASE_NUM_POS_X + (i * SLOTMACHINE_BASE_NUM_STEP_X), (HEIGHT / 2) + SLOTMACHINE_BASE_NUM_POS_Y, printsettings_slotmachine, text);
     }
 }
