@@ -14,6 +14,9 @@
 #define SLOTMACHINE_BASE_NUM_POS_Y -23
 #define SLOTMACHINE_BASE_NUM_STEP_X 21
 
+#define SLOTMACHINE_CURRENT_MONEY_X 25
+#define SLOTMACHINE_CURRENT_MONEY_Y -23
+
 tsgl_print_settings printsettings_slotmachine = {
     .locationMode = tsgl_print_start_top,
 
@@ -74,6 +77,13 @@ void game_slotmachine_draw() {
     printsettings_slotmachine.height = SLOTMACHINE_TEXT_TARGET_HEIGHT;
     printsettings_slotmachine.stroke = black;
     tsgl_framebuffer_text(&framebuffer, 0, (HEIGHT / 2) + SLOTMACHINE_Y_CENTER_OFFSET, printsettings_slotmachine, text);
+
+    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "%i", current_state.states_money);
+    printsettings_slotmachine.width = SLOTMACHINE_TEXT_TARGET_WIDTH * 2;
+    printsettings_slotmachine.height = SLOTMACHINE_TEXT_TARGET_HEIGHT;
+    printsettings_slotmachine.stroke = black;
+    printsettings_slotmachine.fg = green;
+    tsgl_framebuffer_text(&framebuffer, (WIDTH / 2) + SLOTMACHINE_CURRENT_MONEY_X, (HEIGHT / 2) + SLOTMACHINE_CURRENT_MONEY_Y, printsettings_slotmachine, text);
 
     for (size_t i = 0; i < SLOTMACHINE_NUMS_COUNT; i++) {
         int num = current_state.slotmachine_nums[i];
