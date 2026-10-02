@@ -36,11 +36,13 @@ tsgl_print_settings printsettings_slotmachine = {
 };
 
 static void _run() {
-
+    for (size_t i = 0; i < SLOTMACHINE_NUMS_COUNT; i++) {
+        current_state.slotmachine_nums[i] = tsgl_random(0, 9);
+    }
 }
 
 tsgl_rawcolor _get_num_color(int num) {
-    return tsgl_color_raw(tsgl_color_hsv(num , 255, 255), framebuffer.colormode);
+    return tsgl_color_raw(tsgl_color_hsv(num * (255 / 9), 255, 255), framebuffer.colormode);
 }
 
 void game_slotmachine_draw() {
