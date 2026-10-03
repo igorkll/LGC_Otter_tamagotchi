@@ -241,7 +241,7 @@ static void draw_tetris_train(tsgl_pos x, tsgl_pos y, Tetris_object tetris_objec
                 tsgl_pos px = x + (ix * BLOCKSIZE);
                 tsgl_pos py = y + (iy * BLOCKSIZE);
                 if (px < minX) minX = px;
-                if (px > maxX) maxX = px;
+                if (px > maxX) maxX = px + (BLOCKSIZE - 1);
                 if (py < minY) minY = py;
             }
         }
@@ -250,7 +250,6 @@ static void draw_tetris_train(tsgl_pos x, tsgl_pos y, Tetris_object tetris_objec
     tsgl_pos width;
     tsgl_pos height;
     tsgl_gfx_getFillBlockSizeFromTo(&width, &height, minX, minY, maxX, HEIGHT - 1);
-    printf("%i %i %i %i\n", minX, minY, width, height);
     tsgl_framebuffer_fill(&framebuffer, minX, minY, width, height, TRAIN_COLOR);
 }
 
