@@ -48,7 +48,7 @@ static void processAction() {
             break;
 
         case 1:
-
+            game_achievements_open();
             break;
     }
 }
@@ -74,16 +74,18 @@ static void drawAction() {
     }
 }
 
-static void closeAny() {
+static void closeOverlay() {
     if (current_state.achievements_opened) {
         game_achievements_close();
         return;
     }
 }
 
-void game_dead_drawAndProcess() {
-    // process
-    
+static bool isOverlayOpened() {
+    return current_state.achievements_opened;
+}
+
+static void processButtonsWithoutOverlay() {
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
         option_selected--;
         if (option_selected >= OPTIONS_COUNT) option_selected = OPTIONS_COUNT - 1;
@@ -101,9 +103,24 @@ void game_dead_drawAndProcess() {
     if (tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_OKAY)) {
         processActionHold();
     }
+}
 
+static void processButtonsWithoutOverlayDrawSelection() {
+    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY)) {
+        drawAction();
+    }
+}
+
+void game_dead_drawAndProcess() {
+    // process
+    
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
-        closeAny();
+        closeOverlay();
+    }
+
+    bool overlayOpened = isOverlayOpened();
+    if (!overlayOpened) {
+        processButtonsWithoutOverlay();
     }
 
     // draw
@@ -116,8 +133,8 @@ void game_dead_drawAndProcess() {
     printsettings_selectText.height = HEIGHT;
     tsgl_framebuffer_text(&framebuffer, 0, HEIGHT - TEXT_MARGIN, printsettings_selectText, options[option_selected]);
 
-    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_OKAY)) {
-        drawAction();
+    if (!overlayOpened) {
+        processButtonsWithoutOverlayDrawSelection();
     }
 
     game_achievements_draw();
