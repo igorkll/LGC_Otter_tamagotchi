@@ -7,18 +7,21 @@ tsgl_sprite* gfx_loadSprite(const char* path) {
 
 void gfx_image(tsgl_pos x, tsgl_pos y, const char* path) {
     tsgl_sprite* sprite = gfx_loadSprite(path);
+    if (!sprite) return;
     PUSH_FUNC(&framebuffer, x, y, sprite);
     tsgl_bmp_free(sprite);
 }
 
 void gfx_drawCenteredImage(tsgl_pos x, tsgl_pos y, const char* path) {
     tsgl_sprite* sprite = gfx_loadSprite(path);
+    if (!sprite) return;
     PUSH_FUNC(&framebuffer, x - (sprite->sprite->width / 2), y - (sprite->sprite->height / 2), sprite);
     tsgl_bmp_free(sprite);
 }
 
 void gfx_drawCenteredImageWithTransparentSupport(tsgl_pos x, tsgl_pos y, const char* path) {
     tsgl_sprite* sprite = gfx_loadSprite(path);
+    if (!sprite) return;
     PUSH_FUNC_TRANS(&framebuffer, x - (sprite->sprite->width / 2), y - (sprite->sprite->height / 2), sprite);
     tsgl_bmp_free(sprite);
 }
@@ -34,6 +37,7 @@ void gfx_drawCenteredScreenImage(const char* path) {
 
 void gfx_imageWithTransparentSupport(tsgl_pos x, tsgl_pos y, const char* path) {
     tsgl_sprite* sprite = gfx_loadSprite(path);
+    if (!sprite) return;
     PUSH_FUNC_TRANS(&framebuffer, x, y, sprite);
     tsgl_bmp_free(sprite);
 }
