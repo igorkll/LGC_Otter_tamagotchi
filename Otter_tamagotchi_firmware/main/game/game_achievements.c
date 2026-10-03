@@ -7,13 +7,13 @@
 #define ACHIEVEMENTS_BLOCK_HEIGHT 40
 #define ACHIEVEMENTS_BLOCKS_COUNT 3
 
-#define ACHIEVEMENTS_WIDTH (WIDTH - 10)
+#define ACHIEVEMENTS_WIDTH (WIDTH - 4)
 #define ACHIEVEMENTS_BORDER_SIZE 2
 #define ACHIEVEMENTS_HEIGHT (((ACHIEVEMENTS_BLOCK_HEIGHT + ACHIEVEMENTS_BLOCK_MARGIN) * ACHIEVEMENTS_BLOCKS_COUNT) + (ACHIEVEMENTS_BORDER_SIZE * 2))
 
 #define ACHIEVEMENTS_ICON_TEXT_WIDTH 6
 #define ACHIEVEMENTS_ICON_TEXT_HEIGHT 10
-#define ACHIEVEMENTS_ICON_SMALL_TEXT_WIDTH 6
+#define ACHIEVEMENTS_ICON_SMALL_TEXT_WIDTH 5
 #define ACHIEVEMENTS_ICON_SMALL_TEXT_HEIGHT 10
 #define ACHIEVEMENTS_ICON_BORDER_SIZE 1
 
@@ -37,7 +37,9 @@ static tsgl_print_settings printsettings_text = {
     .targetHeight = ACHIEVEMENTS_ICON_TEXT_HEIGHT,
 
     .fill = TSGL_INVALID_RAWCOLOR,
-    .bg = TSGL_INVALID_RAWCOLOR
+    .bg = TSGL_INVALID_RAWCOLOR,
+
+    .contrast = 0.7
 };
 
 static tsgl_print_settings printsettings_smalltext = {
@@ -50,7 +52,9 @@ static tsgl_print_settings printsettings_smalltext = {
     .targetHeight = ACHIEVEMENTS_ICON_SMALL_TEXT_HEIGHT,
 
     .fill = TSGL_INVALID_RAWCOLOR,
-    .bg = TSGL_INVALID_RAWCOLOR
+    .bg = TSGL_INVALID_RAWCOLOR,
+
+    .contrast = 0.7
 };
 
 static void draw_achievement(tsgl_pos x, tsgl_pos y, tsgl_pos index, bool completed, const char* image_path, const char* text, const char* smalltext) {
