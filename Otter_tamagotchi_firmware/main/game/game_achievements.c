@@ -3,9 +3,13 @@
 #include "gfx.h"
 #include "../pushsound.h"
 
+#define ACHIEVEMENTS_BLOCK_MARGIN 4
+#define ACHIEVEMENTS_BLOCK_HEIGHT 40
+#define ACHIEVEMENTS_BLOCKS_COUNT 3
+
 #define ACHIEVEMENTS_WIDTH (WIDTH - 10)
-#define ACHIEVEMENTS_HEIGHT (HEIGHT - 10)
 #define ACHIEVEMENTS_BORDER_SIZE 2
+#define ACHIEVEMENTS_HEIGHT (((ACHIEVEMENTS_BLOCK_HEIGHT + ACHIEVEMENTS_BLOCK_MARGIN) * ACHIEVEMENTS_BLOCKS_COUNT) + ACHIEVEMENTS_BLOCK_MARGIN + (ACHIEVEMENTS_BORDER_SIZE * 2))
 
 #define ACHIEVEMENTS_ICON_SIZE 24
 #define ACHIEVEMENTS_ICON_TEXT_WIDTH 10
@@ -17,9 +21,7 @@
 #define ACHIEVEMENTS_ICON_TEXT_OFFSET ((ACHIEVEMENTS_ICON_SIZE / 2) + (ACHIEVEMENTS_ICON_TEXT_HEIGHT / 2) + 1)
 #define ACHIEVEMENTS_ICON_BORDER_SIZE 1
 
-#define ACHIEVEMENTS_BLOCK_MARGIN 4
 #define ACHIEVEMENTS_BLOCK_WIDTH (ACHIEVEMENTS_WIDTH - (ACHIEVEMENTS_BLOCK_MARGIN * 2))
-#define ACHIEVEMENTS_BLOCK_HEIGHT 40
 #define ACHIEVEMENTS_BLOCK_BORDER_SIZE 1
 
 static tsgl_print_settings printsettings = {
@@ -49,7 +51,16 @@ void game_achievements_draw() {
     tsgl_framebuffer_fill(&framebuffer, x, y, ACHIEVEMENTS_WIDTH, ACHIEVEMENTS_HEIGHT, black);
     tsgl_framebuffer_rect(&framebuffer, x, y, ACHIEVEMENTS_WIDTH, ACHIEVEMENTS_HEIGHT, white, ACHIEVEMENTS_BORDER_SIZE);
 
-    draw_achievement(x + ACHIEVEMENTS_BLOCK_MARGIN, y + ACHIEVEMENTS_BLOCK_MARGIN, 0, current_state.achievements_completed_fullsleep);
+    tsgl_pos offset_x = x + ACHIEVEMENTS_BLOCK_MARGIN;
+    tsgl_pos offset_y = y + ACHIEVEMENTS_BLOCK_MARGIN;
+    tsgl_pos offset_step = ACHIEVEMENTS_BLOCK_HEIGHT + ACHIEVEMENTS_BLOCK_MARGIN;
+
+    draw_achievement(offset_x, offset_y, 0, current_state.achievements_completed_fullsleep);
+    offset_y += offset_step;
+    draw_achievement(offset_x, offset_y, 1, current_state.achievements_completed_fullsleep);
+    offset_y += offset_step;
+    draw_achievement(offset_x, offset_y, 2, current_state.achievements_completed_fullsleep);
+    offset_y += offset_step;
 }
 
 void game_achievements_open() {
