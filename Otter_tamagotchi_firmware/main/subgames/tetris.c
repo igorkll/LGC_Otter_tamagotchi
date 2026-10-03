@@ -20,7 +20,7 @@
 #define SEPARATOR_LINE_SIZE 2
 
 #define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x333333), framebuffer.colormode)
-#define TRAIN_COLOR tsgl_color_raw(tsgl_color_fromHex(0x777777), framebuffer.colormode)
+#define TRAIN_COLOR tsgl_color_raw(tsgl_color_fromHex(0x444444), framebuffer.colormode)
 
 static const char* music_path = "/firmware/music/tetris.nbs";
 #define MUSIC_VOLUME 1
@@ -220,11 +220,11 @@ static bool check_collision(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object)
 }
 
 static void draw_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object, bool fillEmptyBlocks) {
-    for (size_t iy = 0; iy < OBJECT_Y; iy++) {
+    for (size_t ix = 0; ix < OBJECT_X; ix++) {
         bool localFillEmptyBlocks = false;
 
         if (fillEmptyBlocks) {
-            for (size_t ix = 0; ix < OBJECT_X; ix++) {
+            for (size_t iy = 0; iy < OBJECT_Y; iy++) {
                 uint8_t type = tetris_object.array[iy][ix];
                 if (type > 0) {
                     localFillEmptyBlocks = true;
@@ -233,12 +233,13 @@ static void draw_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_obje
             }
         }
 
-        for (size_t ix = 0; ix < OBJECT_X; ix++) {
+        for (size_t iy = 0; iy < OBJECT_Y; iy++) {
             uint8_t type = tetris_object.array[iy][ix];
             tsgl_pos px = x + (ix * BLOCKSIZE);
             tsgl_pos py = y + (iy * BLOCKSIZE);
             if (type > 0) {
                 tsgl_framebuffer_fill(&framebuffer, px, py, BLOCKSIZE, BLOCKSIZE, subgame_state->blockcolors[type - 1]);
+                localFillEmptyBlocks = false;
             } else if (localFillEmptyBlocks) {
                 tsgl_framebuffer_fill(&framebuffer, px, py, BLOCKSIZE, BLOCKSIZE, BG_COLOR);
             }
