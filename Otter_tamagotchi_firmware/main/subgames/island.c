@@ -11,7 +11,7 @@
 #define GAME_ZONE (WIDTH - STATUS_ZONE)
 #define SEPARATOR_LINE_SIZE 2
 
-#define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x333333), framebuffer.colormode)
+#define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x2380a0), framebuffer.colormode)
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
 #define MUSIC_SAMPLERATE 16000
@@ -23,8 +23,7 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 
 #define DEFAULT_SCORE_DELTA 1
 
-#define FATIGUE_DELTA 0.05
-#define SADNESS_DELTA -1.1
+#define SADNESS_DELTA -0.05
 
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 25
@@ -44,7 +43,7 @@ typedef struct {
 
 static Subgame_state* subgame_state = NULL;
 
-void subgame_tetris_start() {
+void subgame_island_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
 
     subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
@@ -75,14 +74,14 @@ static void gameover() {
     subgame_state->gameover = true;
 }
 
-void subgame_tetris_handle() {
+void subgame_island_handle() {
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
         game_exit();
         return;
     }
 
     if (subgame_state->gameover) {
-        game_modal_draw_gameover(subgame_state->score, current_state.subgame_tetris_max_score);
+        game_modal_draw_gameover(subgame_state->score, current_state.subgame_island_max_score);
         return;
     }
 
@@ -90,14 +89,13 @@ void subgame_tetris_handle() {
     if (currentTime - subgame_state->oldTimerTickTime > 1000) {
         subgame_state->oldTimerTickTime = currentTime;
 
-        game_states_change(&current_state.states_fatigue, FATIGUE_DELTA * GAMECFG_PARAMS_SPEED_MUL);
         game_states_change(&current_state.states_sadness, SADNESS_DELTA * GAMECFG_PARAMS_SPEED_MUL);
 
         subgame_state->score += subgame_state->score_delta;
     }
     
-    if (subgame_state->score > current_state.subgame_tetris_max_score)
-        current_state.subgame_tetris_max_score = subgame_state->score;
+    if (subgame_state->score > current_state.subgame_island_max_score)
+        current_state.subgame_island_max_score = subgame_state->score;
 
     tsgl_framebuffer_fill(&framebuffer, 0, 0, GAME_ZONE, HEIGHT, BG_COLOR);
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, STATUS_ZONE, HEIGHT, black);
@@ -114,7 +112,7 @@ void subgame_tetris_handle() {
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
 
-    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "HIGH\n%i", current_state.subgame_tetris_max_score);
+    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "HIGH\n%i", current_state.subgame_island_max_score);
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
 
@@ -125,6 +123,6 @@ void subgame_tetris_handle() {
     );
 }
 
-void subgame_tetris_exit() {
+void subgame_island_exit() {
     game_exit();
 }
