@@ -131,6 +131,16 @@ static void gameover() {
     subgame_state->gameover = true;
 }
 
+static void process() {
+    obj_spawn(16, 16, 0);
+    obj_spawn(16, 32, 1);
+    obj_spawn(32, 32, 2);
+    obj_spawn(32, 16, 3);
+}
+
+static void draw() {
+}
+
 void subgame_island_handle() {
     if (tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_LEFT) && tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_RIGHT)) {
         game_exit();
@@ -154,7 +164,11 @@ void subgame_island_handle() {
     if (subgame_state->score > current_state.subgame_island_max_score)
         current_state.subgame_island_max_score = subgame_state->score;
 
+    process();
+
     tsgl_framebuffer_clear(&framebuffer, BG_COLOR);
+
+    draw();
 
     printsettings_subgames_line.fg = white;
 
