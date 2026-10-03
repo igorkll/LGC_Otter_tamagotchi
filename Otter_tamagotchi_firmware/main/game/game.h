@@ -86,7 +86,7 @@ typedef struct {
 
     // achievements
     bool achievements_opened;
-    bool achievements_full_sleep;
+    bool achievements_completed_fullsleep;
 
     // score table
     int subgame_recing_max_score;

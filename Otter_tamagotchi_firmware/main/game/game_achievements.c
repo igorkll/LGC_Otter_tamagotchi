@@ -17,6 +17,11 @@
 #define ACHIEVEMENTS_ICON_TEXT_OFFSET ((ACHIEVEMENTS_ICON_SIZE / 2) + (ACHIEVEMENTS_ICON_TEXT_HEIGHT / 2) + 1)
 #define ACHIEVEMENTS_ICON_BORDER_SIZE 1
 
+#define ACHIEVEMENTS_BLOCK_MARGIN 4
+#define ACHIEVEMENTS_BLOCK_WIDTH (ACHIEVEMENTS_WIDTH - (ACHIEVEMENTS_BLOCK_MARGIN * 2))
+#define ACHIEVEMENTS_BLOCK_HEIGHT 40
+#define ACHIEVEMENTS_BLOCK_BORDER_SIZE 1
+
 static tsgl_print_settings printsettings = {
     .locationMode = tsgl_print_start_top,
 
@@ -30,6 +35,11 @@ static tsgl_print_settings printsettings = {
     .bg = TSGL_INVALID_RAWCOLOR
 };
 
+static void draw_achievement(tsgl_pos x, tsgl_pos y, tsgl_pos index, bool completed) {
+    tsgl_framebuffer_fill(&framebuffer, x, y, ACHIEVEMENTS_BLOCK_WIDTH, ACHIEVEMENTS_BLOCK_HEIGHT, black);
+    tsgl_framebuffer_rect(&framebuffer, x, y, ACHIEVEMENTS_BLOCK_WIDTH, ACHIEVEMENTS_BLOCK_HEIGHT, white, ACHIEVEMENTS_BLOCK_BORDER_SIZE);
+}
+
 void game_achievements_draw() {
     if (!current_state.achievements_opened) return;
 
@@ -38,6 +48,8 @@ void game_achievements_draw() {
     
     tsgl_framebuffer_fill(&framebuffer, x, y, ACHIEVEMENTS_WIDTH, ACHIEVEMENTS_HEIGHT, black);
     tsgl_framebuffer_rect(&framebuffer, x, y, ACHIEVEMENTS_WIDTH, ACHIEVEMENTS_HEIGHT, white, ACHIEVEMENTS_BORDER_SIZE);
+
+    draw_achievement(x + ACHIEVEMENTS_BLOCK_MARGIN, y + ACHIEVEMENTS_BLOCK_MARGIN, 0, current_state.achievements_completed_fullsleep);
 }
 
 void game_achievements_open() {
