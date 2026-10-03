@@ -19,6 +19,7 @@ static const char* combinemenu_points[] = {
     "\xD0\xFE\xEA\xE7\xE0\xEA", //Рюкзак
     "\xD1\xEE\xF1\xF2\xEE\xFF\xED\xE8\xE5", //Состояние
     "\xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8", //Настройки
+    "\xC4\xEE\xF1\xF2\xE8\xE6\xE5\xED\xE8\xFF" //Достижения
 };
 
 #define POINTS_COUNT TSGL_CALC_ARRSIZE(combinemenu_points)
@@ -59,6 +60,9 @@ static void selectPoint(int index) {
 
         case 2:
             game_settings_open();
+            break;
+
+        case 3:
             break;
     }
 }

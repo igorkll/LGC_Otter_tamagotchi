@@ -84,6 +84,10 @@ typedef struct {
     float settings_master_volume;
     float settings_music_volume;
 
+    // achievements
+    bool achievements_opened;
+    bool achievements_full_sleep;
+
     // score table
     int subgame_recing_max_score;
     int subgame_tetris_max_score;

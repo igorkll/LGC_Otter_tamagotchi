@@ -15,6 +15,7 @@
 #include "game_modal.h"
 #include "game_dead.h"
 #include "game_slotmachine.h"
+#include "game_achievements.h"
 
 // ------------------------------------ consts
 
@@ -209,7 +210,7 @@ void game_selectRoom(game_room index) {
 }
 
 bool game_isAnyBackbackOverlayOpened() {
-    return current_state.combinemenu_opened || current_state.backpack_opened || current_state.states_opened || current_state.settings_opened;
+    return current_state.combinemenu_opened || current_state.backpack_opened || current_state.states_opened || current_state.settings_opened || current_state.achievements_opened;
 }
 
 bool game_isAnyOverlayOpened() {
@@ -470,6 +471,11 @@ static void processControl() {
             return;
         }
 
+        if (current_state.achievements_opened) {
+            game_achievements_close();
+            return;
+        }
+
         if (current_state.actionTimer > 0 && current_state.actionTimer_allowCancel) {
             game_stopActionTimer();
             return;
@@ -595,6 +601,7 @@ static void render() {
     game_states_draw();
     game_backpack_draw();
     game_slotmachine_draw();
+    game_achievements_draw();
 
     if (game_alt_message) {
         game_modal_draw_message(game_alt_message);
@@ -623,7 +630,7 @@ void game_start() {
     game_upmenu_init();
     start();
 
-    //current_state.states_thirst = 100;
+    current_state.states_thirst = 100;
 
     bool firstFrame = true;
     while (true) {
