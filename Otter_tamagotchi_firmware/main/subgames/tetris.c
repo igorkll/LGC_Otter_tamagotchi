@@ -20,6 +20,7 @@
 #define SEPARATOR_LINE_SIZE 2
 
 #define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x333333), framebuffer.colormode)
+#define TRAIN_COLOR tsgl_color_raw(tsgl_color_fromHex(0x777777), framebuffer.colormode)
 
 static const char* music_path = "/firmware/music/tetris.nbs";
 #define MUSIC_VOLUME 1
@@ -229,6 +230,30 @@ static void draw_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_obje
     }
 }
 
+static void draw_tetris_train(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) {
+    tsgl_pos maxX = TSGL_POS_MIN;
+    tsgl_pos minX = TSGL_POS_MAX;
+    tsgl_pos minY = TSGL_POS_MAX;
+    for (size_t ix = 0; ix < OBJECT_X; ix++) {
+        for (size_t iy = 0; iy < OBJECT_Y; iy++) {
+            uint8_t type = tetris_object.array[iy][ix];
+            if (type > 0) {
+                tsgl_pos px = x + (ix * BLOCKSIZE);
+                tsgl_pos py = y + (iy * BLOCKSIZE);
+                if (px < minX) minX = px;
+                if (px > maxX) maxX = px;
+                if (py < minY) minY = py;
+            }
+        }
+    }
+
+    tsgl_pos width;
+    tsgl_pos height;
+    tsgl_gfx_getFillBlockSizeFromTo(&width, &height, minX, minY, maxX, HEIGHT - 1);
+    printf("%i %i %i %i\n", minX, minY, width, height);
+    tsgl_framebuffer_fill(&framebuffer, minX, minY, width, height, TRAIN_COLOR);
+}
+
 static void get_tetris_object_size(Tetris_object tetris_object, tsgl_pos* sizeX, tsgl_pos* sizeY) {
     for (size_t ix = 0; ix < OBJECT_X; ix++) {
         for (size_t iy = 0; iy < OBJECT_Y; iy++) {
@@ -256,7 +281,10 @@ static void draw_wireframe(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) 
 
     tsgl_pos blockOffsetX = (OBJECT_X / 2) - (sizeX / 2);
     tsgl_pos blockOffsetY = (OBJECT_Y / 2) - (sizeY / 2);
-    draw_tetris_object(x + (blockOffsetX * BLOCKSIZE), y + (blockOffsetY * BLOCKSIZE), tetris_object);
+    
+    tsgl_pos posX = x + (blockOffsetX * BLOCKSIZE);
+    tsgl_pos posY = y + (blockOffsetY * BLOCKSIZE);
+    draw_tetris_object(posX, posY, tetris_object);
 }
 
 static void next_object() {
@@ -328,6 +356,8 @@ static void draw_array() {
 static void draw_current_object() {
     tsgl_pos target_x = subgame_state->current_object_x * BLOCKSIZE;
     tsgl_pos target_y = subgame_state->current_object_y * BLOCKSIZE;
+    
+    draw_tetris_train(target_x, target_y, subgame_state->current_object);
     draw_tetris_object(target_x, target_y, subgame_state->current_object);
 }
 
