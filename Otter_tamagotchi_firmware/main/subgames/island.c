@@ -33,6 +33,8 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 
 #define RNDMAX_CLOUD_SPAWN 60
 
+#define PLAYER_SPEED_X 2
+
 // ----------------------------------------------------------
 
 typedef enum {
@@ -42,11 +44,15 @@ typedef enum {
 typedef struct {
     const char* path;
     Gameobj_setup_type gameobj_setup_type;
+    tsgl_pos delta_x;
+    tsgl_pos delta_y;
 } Gameobj_setup;
 
 typedef struct {
     tsgl_pos x;
     tsgl_pos y;
+    tsgl_pos screen_x;
+    tsgl_pos screen_y;
     int8_t type;
     tsgl_sprite* sprite;
 } Gameobj_state;
@@ -180,8 +186,24 @@ static int8_t get_random_object_with_type(Gameobj_setup_type game_setup_type) {
     return -1;
 }
 
+static tsgl_pos globalPosToScreenPosX(tsgl_pos global_pos) {
+    return global_pos - subgame_state->player_x;
+}
+
+static tsgl_pos globalPosToScreenPosY(tsgl_pos global_pos) {
+    return global_pos - subgame_state->player_y;
+}
+
+static tsgl_pos screenPosToGlobalPosX(tsgl_pos screen_pos) {
+    return subgame_state->player_x - screen_pos;
+}
+
+static tsgl_pos screenPosToGlobalPosY(tsgl_pos screen_pos) {
+    return subgame_state->player_y - screen_pos;
+}
+
 static void spawn_random_cloud() {
-    obj_spawn(WIDTH, tsgl_random(MIN_CLOUD_SPAWN_POS_Y, MAX_CLOUD_SPAWN_POS_Y), get_random_object_with_type(gameobj_setup_type_cloud));
+    obj_spawn(screenPosToGlobalPosX(WIDTH), tsgl_random(MIN_CLOUD_SPAWN_POS_Y, MAX_CLOUD_SPAWN_POS_Y), get_random_object_with_type(gameobj_setup_type_cloud));
 }
 
 static void spawn_clouds() {
@@ -193,25 +215,40 @@ static void spawn_clouds() {
     }
 }
 
-static void process() {
-    spawn_clouds();
-
+static void process_objects() {
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
         Gameobj_state* gameobj_state = &subgame_state->objs[i];
         if (gameobj_state->type < 0) continue;
         const Gameobj_setup* gameobj_setup = &objects_settings[gameobj_state->type];
 
-        gameobj_state->x--;
+        gameobj_state->x += gameobj_setup->delta_x;
+        gameobj_state->y += gameobj_setup->delta_y;
+
+        gameobj_state->screen_x = globalPosToScreenPosX(gameobj_state->x);
+        gameobj_state->screen_y = globalPosToScreenPosY(gameobj_state->y);
     }
+}
+
+static void process() {
+    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_LEFT)) {
+        subgame_state->player_x -= PLAYER_SPEED_X;
+    }
+
+    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_RIGHT)) {
+        subgame_state->player_x += PLAYER_SPEED_X;
+    }
+
+    spawn_clouds();
+
+    process_objects();
 }
 
 static void draw() {
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
         Gameobj_state* gameobj_state = &subgame_state->objs[i];
         if (gameobj_state->type < 0) continue;
-
         tsgl_sprite* sprite = gameobj_state->sprite;
-        tsgl_framebuffer_push(&framebuffer, gameobj_state->x, gameobj_state->y, sprite);
+        tsgl_framebuffer_push(&framebuffer, gameobj_state->screen_x, gameobj_state->screen_y, sprite);
     }
 }
 
