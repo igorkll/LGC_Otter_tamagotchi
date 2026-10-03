@@ -72,6 +72,26 @@ typedef struct {
 
 static Subgame_state* subgame_state = NULL;
 
+static void obj_spawn(tsgl_pos x, tsgl_pos y, uint8_t type) {
+    for (size_t i = 0; i < MAX_OBJECTS; i++) {
+        if (subgame_state->objs[i].type < 0) {
+            tsgl_sprite* sprite = gameobj_sprites[type];
+            Gameobj_state* state = subgame_state->objs[i];
+
+            //memset(state, 0, sizeof(Gameobj_state));
+            state->x = x;
+            state->y = y;
+            state->type = type;
+            state->sprite = sprite;
+            return;
+        }
+    }
+}
+
+static void obj_destroy(size_t index) {
+    subgame_state->objs[index].type = -1;
+}
+
 void subgame_island_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
 
