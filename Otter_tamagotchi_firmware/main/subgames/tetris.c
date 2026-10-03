@@ -220,14 +220,26 @@ static bool check_collision(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object)
 }
 
 static void draw_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object, bool fillEmptyBlocks) {
-    for (size_t ix = 0; ix < OBJECT_X; ix++) {
-        for (size_t iy = 0; iy < OBJECT_Y; iy++) {
+    for (size_t iy = 0; iy < OBJECT_Y; iy++) {
+        bool localFillEmptyBlocks = false;
+
+        if (fillEmptyBlocks) {
+            for (size_t ix = 0; ix < OBJECT_X; ix++) {
+                uint8_t type = tetris_object.array[iy][ix];
+                if (type > 0) {
+                    localFillEmptyBlocks = true;
+                    break;
+                }
+            }
+        }
+
+        for (size_t ix = 0; ix < OBJECT_X; ix++) {
             uint8_t type = tetris_object.array[iy][ix];
             tsgl_pos px = x + (ix * BLOCKSIZE);
             tsgl_pos py = y + (iy * BLOCKSIZE);
             if (type > 0) {
                 tsgl_framebuffer_fill(&framebuffer, px, py, BLOCKSIZE, BLOCKSIZE, subgame_state->blockcolors[type - 1]);
-            } else if (fillEmptyBlocks) {
+            } else if (localFillEmptyBlocks) {
                 tsgl_framebuffer_fill(&framebuffer, px, py, BLOCKSIZE, BLOCKSIZE, BG_COLOR);
             }
         }
