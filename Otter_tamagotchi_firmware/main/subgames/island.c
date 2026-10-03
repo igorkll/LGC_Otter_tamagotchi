@@ -25,7 +25,38 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 10
 
+#define MAX_OBJECTS 32
+
 // ----------------------------------------------------------
+
+typedef struct {
+    const char* path;
+} Gameobj_setup;
+
+typedef struct {
+    tsgl_pos x;
+    tsgl_pos y;
+    int8_t type;
+    tsgl_sprite* sprite;
+} Gameobj_state;
+
+static const Gameobj_setup objects_settings[] = {
+    {
+        .path = "/firmware/subgames/island/cloud0.bmp",
+    },
+    {
+        .path = "/firmware/subgames/island/cloud1.bmp",
+    },
+    {
+        .path = "/firmware/subgames/island/cloud2.bmp",
+    },
+    {
+        .path = "/firmware/subgames/island/cloud3.bmp",
+    }
+};
+
+#define OBJECTS_TYPES_COUNT TSGL_CALC_ARRSIZE(objects)
+static tsgl_sprite* gameobj_sprites[OBJECTS_TYPES_COUNT];
 
 typedef struct {
     bool gameover;
@@ -35,6 +66,8 @@ typedef struct {
     int score_delta;
 
     tsgl_sound* music;
+
+    Gameobj_state objs[MAX_OBJECTS];
 } Subgame_state;
 
 static Subgame_state* subgame_state = NULL;
@@ -45,6 +78,10 @@ void subgame_island_start() {
     subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
     subgame_state->oldTimerTickTime = tsgl_time();
     subgame_state->score_delta = DEFAULT_SCORE_DELTA;
+
+    for (size_t i = 0; i < OBJECTS_TYPES_COUNT; i++) {
+        gameobj_sprites[i] = gfx_loadSprite(objects_settings[i].path);
+    }
 }
 
 static void stop_music() {
@@ -56,6 +93,11 @@ static void stop_music() {
 
 static void game_exit() {
     stop_music();
+
+    for (size_t i = 0; i < OBJECTS_TYPES_COUNT; i++) {
+        tsgl_bmp_free(gameobj_sprites[i]);
+        gameobj_sprites[i] = NULL;
+    }
 
     free(subgame_state);
     subgame_state = NULL;
