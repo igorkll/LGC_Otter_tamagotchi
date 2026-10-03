@@ -100,7 +100,7 @@ static void game_load() {
         if (tsgl_filesystem_exists(path)) {
             Game_state readed;
             memcpy(&readed, &default_state, sizeof(Game_state));
-            if (tsgl_filesystem_readFile(path, &readed, sizeof(Game_state)) >= sizeof(Game_state)) {
+            if (tsgl_filesystem_readFile(path, &readed, sizeof(Game_state)) == sizeof(Game_state)) {
                 ESP_LOGI(TAG, "save check: %zu, %s", i, path);
                 if (readed.save_counter > max_save_counter) {
                     loadDefault = false;
