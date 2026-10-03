@@ -1,4 +1,4 @@
-const Tetris_object base_objects[] = {
+static const Tetris_object base_objects[] = {
     // ---------------------------
     {
         .local_index = 0,

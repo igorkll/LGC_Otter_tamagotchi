@@ -31,6 +31,8 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define MIN_CLOUD_SPAWN_POS_Y 0
 #define MAX_CLOUD_SPAWN_POS_Y 32
 
+#define RNDMAX_CLOUD_SPAWN 60
+
 // ----------------------------------------------------------
 
 typedef enum {
@@ -161,35 +163,6 @@ static void gameover() {
     subgame_state->gameover = true;
 }
 
-static int8_t get_random_object_with_type(Gameobj_setup_type game_setup_type) {
-    int type_count = 0;
-    for (size_t i = 0; i < MAX_OBJECTS; i++) {
-        Gameobj_state* gameobj_state = &subgame_state->objs[i];
-        if (gameobj_state->type < 0) continue;
-        const Gameobj_setup* gameobj_setup = &objects_settings[gameobj_state->type];
-
-        if (gameobj_setup->gameobj_setup_type == game_setup_type) type_count++;
-    }
-
-    int random_idx = tsgl_random(0, type_count - 1);
-    int current_idx = 0;
-
-    for (size_t i = 0; i < MAX_OBJECTS; i++) {
-        Gameobj_state* gameobj_state = &subgame_state->objs[i];
-        if (gameobj_state->type < 0) continue;
-        const Gameobj_setup* gameobj_setup = &objects_settings[gameobj_state->type];
-
-        if (gameobj_setup->gameobj_setup_type == game_setup_type) {
-            if (current_idx == random_idx) {
-                return gameobj_state->type;
-            }
-            current_idx++;
-        }
-    }
-
-    return -1;
-}
-
 static int get_objects_with_type_count(Gameobj_setup_type game_setup_type) {
     int count = 0;
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
@@ -202,14 +175,46 @@ static int get_objects_with_type_count(Gameobj_setup_type game_setup_type) {
     return count;
 }
 
+static int get_registred_with_type_count(Gameobj_setup_type game_setup_type) {
+    int count = 0;
+    for (size_t i = 0; i < OBJECTS_TYPES_COUNT; i++) {
+        const Gameobj_setup* gameobj_setup = &objects_settings[i];
+        if (gameobj_setup->gameobj_setup_type == game_setup_type) count++;
+    }
+    return count;
+}
+
+static int8_t get_random_object_with_type(Gameobj_setup_type game_setup_type) {
+    int type_count = get_registred_with_type_count(game_setup_type);
+    if (type_count == 0) return -1;
+
+    int random_idx = tsgl_random(0, type_count - 1);
+    int current_idx = 0;
+
+    for (size_t i = 0; i < OBJECTS_TYPES_COUNT; i++) {
+        const Gameobj_setup* gameobj_setup = &objects_settings[i];
+
+        if (gameobj_setup->gameobj_setup_type == game_setup_type) {
+            if (current_idx == random_idx) {
+                return i;
+            }
+            current_idx++;
+        }
+    }
+
+    return -1;
+}
+
 static void spawn_random_cloud() {
     obj_spawn(WIDTH, tsgl_random(MIN_CLOUD_SPAWN_POS_Y, MAX_CLOUD_SPAWN_POS_Y), get_random_object_with_type(gameobj_setup_type_cloud));
 }
 
 static void spawn_clouds() {
-    int clouds_count = get_objects_with_type_count(gameobj_setup_type_cloud);
-    if (clouds_count < MAX_CLOUDS_COUNT) {
-        spawn_random_cloud();
+    if (tsgl_random(0, RNDMAX_CLOUD_SPAWN) == 0) {
+        int clouds_count = get_objects_with_type_count(gameobj_setup_type_cloud);
+        if (clouds_count < MAX_CLOUDS_COUNT) {
+            spawn_random_cloud();
+        }
     }
 }
 
@@ -262,17 +267,18 @@ void subgame_island_handle() {
     tsgl_framebuffer_clear(&framebuffer, BG_COLOR);
     draw();
 
-    printsettings_subgames_line.fg = white;
+    printsettings_subgames_line_stroke.fg = white;
+    printsettings_subgames_line_stroke.stroke = black;
 
     tsgl_pos draw_y = PRINT_START_POS_Y;
     
     char text[MAX_ACTION_LEN];
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "SCORE: %i", subgame_state->score);
-    tsgl_framebuffer_text(&framebuffer, PRINT_START_POS_X, draw_y, printsettings_subgames_line, text);
+    tsgl_framebuffer_text(&framebuffer, PRINT_START_POS_X, draw_y, printsettings_subgames_line_stroke, text);
     draw_y += PRINT_GAP_Y;
 
     TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "HIGH: %i", current_state.subgame_island_max_score);
-    tsgl_framebuffer_text(&framebuffer, PRINT_START_POS_X, draw_y, printsettings_subgames_line, text);
+    tsgl_framebuffer_text(&framebuffer, PRINT_START_POS_X, draw_y, printsettings_subgames_line_stroke, text);
     draw_y += PRINT_GAP_Y;
 }
 
