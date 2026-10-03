@@ -219,12 +219,16 @@ static bool check_collision(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object)
     return false;
 }
 
-static void draw_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) {
+static void draw_tetris_object(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object, bool fillEmptyBlocks) {
     for (size_t ix = 0; ix < OBJECT_X; ix++) {
         for (size_t iy = 0; iy < OBJECT_Y; iy++) {
             uint8_t type = tetris_object.array[iy][ix];
+            tsgl_pos px = x + (ix * BLOCKSIZE);
+            tsgl_pos py = y + (iy * BLOCKSIZE);
             if (type > 0) {
-                tsgl_framebuffer_fill(&framebuffer, x + (ix * BLOCKSIZE), y + (iy * BLOCKSIZE), BLOCKSIZE, BLOCKSIZE, subgame_state->blockcolors[type - 1]);
+                tsgl_framebuffer_fill(&framebuffer, px, py, BLOCKSIZE, BLOCKSIZE, subgame_state->blockcolors[type - 1]);
+            } else if (fillEmptyBlocks) {
+                tsgl_framebuffer_fill(&framebuffer, px, py, BLOCKSIZE, BLOCKSIZE, BG_COLOR);
             }
         }
     }
@@ -283,7 +287,7 @@ static void draw_wireframe(tsgl_pos x, tsgl_pos y, Tetris_object tetris_object) 
     
     tsgl_pos posX = x + (blockOffsetX * BLOCKSIZE);
     tsgl_pos posY = y + (blockOffsetY * BLOCKSIZE);
-    draw_tetris_object(posX, posY, tetris_object);
+    draw_tetris_object(posX, posY, tetris_object, false);
 }
 
 static void next_object() {
@@ -357,7 +361,7 @@ static void draw_current_object() {
     tsgl_pos target_y = subgame_state->current_object_y * BLOCKSIZE;
     
     draw_tetris_train(target_x, target_y, subgame_state->current_object);
-    draw_tetris_object(target_x, target_y, subgame_state->current_object);
+    draw_tetris_object(target_x, target_y, subgame_state->current_object, true);
 }
 
 static void after_burn_line() {
@@ -490,8 +494,8 @@ void subgame_tetris_handle() {
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, STATUS_ZONE, HEIGHT, black);
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, SEPARATOR_LINE_SIZE, HEIGHT, white);
 
-    draw_array();
     draw_current_object();
+    draw_array();
 
     printsettings_subgames.fg = white;
     printsettings_subgames.width = STATUS_ZONE;
