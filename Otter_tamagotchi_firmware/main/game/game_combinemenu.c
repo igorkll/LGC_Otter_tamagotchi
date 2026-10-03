@@ -90,13 +90,15 @@ void game_combinemenu_draw()
         if (selected) {
             tsgl_framebuffer_fill(&framebuffer,
                 x + (COMBINEMENU_BORDER_SIZE * 2),
-                (49 + point_y) - 2,
+                (38 + point_y) - 2,
                 COMBINEMENU_WIDTH - (COMBINEMENU_BORDER_SIZE * 4),
                 8 + 4,
                 green
             );
         }
-        tsgl_framebuffer_text(&framebuffer, x, y + point_y, printsettings, combinemenu_points[index]);
+
+        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, x, y + point_y, printsettings, combinemenu_points[index]);
+        //printf("%i %i\n", index, textArea.top);
     }
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_LEFT)) {
