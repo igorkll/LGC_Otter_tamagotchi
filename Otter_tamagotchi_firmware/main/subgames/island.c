@@ -23,7 +23,7 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 
 #define PRINT_START_POS_X 5
 #define PRINT_START_POS_Y 5
-#define PRINT_GAP_Y 10
+#define PRINT_GAP_Y 12
 
 #define MAX_OBJECTS 32
 #define MAX_CLOUDS_COUNT 8
@@ -51,32 +51,7 @@ typedef struct {
     tsgl_sprite* sprite;
 } Gameobj_state;
 
-static const Gameobj_setup objects_settings[] = {
-    {
-        .path = "/firmware/subgames/island/cloud0.bmp",
-        .gameobj_setup_type = gameobj_setup_type_cloud
-    },
-    {
-        .path = "/firmware/subgames/island/cloud1.bmp",
-        .gameobj_setup_type = gameobj_setup_type_cloud
-    },
-    {
-        .path = "/firmware/subgames/island/cloud2.bmp",
-        .gameobj_setup_type = gameobj_setup_type_cloud
-    },
-    {
-        .path = "/firmware/subgames/island/cloud3.bmp",
-        .gameobj_setup_type = gameobj_setup_type_cloud
-    },
-    {
-        .path = "/firmware/subgames/island/cloud4.bmp",
-        .gameobj_setup_type = gameobj_setup_type_cloud
-    },
-    {
-        .path = "/firmware/subgames/island/cloud5.bmp",
-        .gameobj_setup_type = gameobj_setup_type_cloud
-    }
-};
+#include "cparts/island_objects.h"
 
 #define OBJECTS_TYPES_COUNT TSGL_CALC_ARRSIZE(objects_settings)
 static tsgl_sprite* gameobj_sprites[OBJECTS_TYPES_COUNT];
@@ -88,8 +63,8 @@ typedef struct {
     int score;
     int score_delta;
 
-    tsgl_pos offset_x;
-    tsgl_pos offset_y;
+    tsgl_pos player_x;
+    tsgl_pos player_y;
 
     tsgl_sound* music;
 
