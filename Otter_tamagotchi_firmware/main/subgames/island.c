@@ -70,7 +70,7 @@ static void gameover() {
 }
 
 void subgame_island_handle() {
-    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
+    if (tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_LEFT) && tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_RIGHT)) {
         game_exit();
         return;
     }
