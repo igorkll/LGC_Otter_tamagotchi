@@ -5,9 +5,10 @@
 #include "game_backpack.h"
 #include "game_states.h"
 #include "game_settings.h"
+#include "game_achievements.h"
 
 #define COMBINEMENU_MARGIN_LEFT_RIGHT 20
-#define COMBINEMENU_MARGIN_TOP_BOTTOM 40
+#define COMBINEMENU_MARGIN_TOP_BOTTOM 30
 #define COMBINEMENU_WIDTH (WIDTH - (COMBINEMENU_MARGIN_LEFT_RIGHT * 2))
 #define COMBINEMENU_HEIGHT (HEIGHT - (COMBINEMENU_MARGIN_TOP_BOTTOM * 2))
 #define COMBINEMENU_BORDER_SIZE 2
@@ -63,6 +64,7 @@ static void selectPoint(int index) {
             break;
 
         case 3:
+            game_achievements_open();
             break;
     }
 }

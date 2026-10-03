@@ -111,6 +111,10 @@ static void processButtonsWithoutOverlayDrawSelection() {
     }
 }
 
+static void drawOverlay() {
+    game_achievements_draw();
+}
+
 void game_dead_drawAndProcess() {
     // process
     
@@ -137,7 +141,7 @@ void game_dead_drawAndProcess() {
         processButtonsWithoutOverlayDrawSelection();
     }
 
-    game_achievements_draw();
+    drawOverlay();
 }
 
 void game_dead_gameover() {

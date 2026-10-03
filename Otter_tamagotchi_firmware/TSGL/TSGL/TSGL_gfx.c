@@ -957,8 +957,3 @@ tsgl_sprite* tsgl_gfx_renderTextToSprite(tsgl_pos x, tsgl_pos y, tsgl_pos width,
 
     return sprite;
 }
-
-void tsgl_gfx_getFillBlockSizeFromTo(tsgl_pos* out_width, tsgl_pos* out_height, tsgl_pos x, tsgl_pos y, tsgl_pos x2, tsgl_pos y2) {
-    *out_width = (x2 - x) + 1;
-    *out_height = (y2 - y) + 1;
-}

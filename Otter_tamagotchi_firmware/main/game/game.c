@@ -630,7 +630,7 @@ void game_start() {
     game_upmenu_init();
     start();
 
-    current_state.states_thirst = 100;
+    //current_state.states_thirst = 100;
 
     bool firstFrame = true;
     while (true) {
