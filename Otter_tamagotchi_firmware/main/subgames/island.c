@@ -7,10 +7,6 @@
 
 // ----------------------------------------------------------
 
-#define STATUS_ZONE 50
-#define GAME_ZONE (WIDTH - STATUS_ZONE)
-#define SEPARATOR_LINE_SIZE 2
-
 #define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x2380a0), framebuffer.colormode)
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
@@ -25,8 +21,9 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 
 #define SADNESS_DELTA -0.05
 
+#define PRINT_START_POS_X 5
 #define PRINT_START_POS_Y 5
-#define PRINT_GAP_Y 25
+#define PRINT_GAP_Y 10
 
 // ----------------------------------------------------------
 
@@ -38,7 +35,6 @@ typedef struct {
     int score_delta;
 
     tsgl_sound* music;
-    tsgl_sprite* person_sprite;
 } Subgame_state;
 
 static Subgame_state* subgame_state = NULL;
@@ -47,7 +43,6 @@ void subgame_island_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
 
     subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
-    subgame_state->person_sprite = game_getPersonSprite();
     subgame_state->oldTimerTickTime = tsgl_time();
     subgame_state->score_delta = DEFAULT_SCORE_DELTA;
 }
@@ -97,30 +92,20 @@ void subgame_island_handle() {
     if (subgame_state->score > current_state.subgame_island_max_score)
         current_state.subgame_island_max_score = subgame_state->score;
 
-    tsgl_framebuffer_fill(&framebuffer, 0, 0, GAME_ZONE, HEIGHT, BG_COLOR);
-    tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, STATUS_ZONE, HEIGHT, black);
-    tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, SEPARATOR_LINE_SIZE, HEIGHT, white);
+    tsgl_framebuffer_clear(&framebuffer, BG_COLOR);
 
-    printsettings_subgames.fg = white;
-    printsettings_subgames.width = STATUS_ZONE;
-    printsettings_subgames.height = PRINT_GAP_Y;
+    printsettings_subgames_line.fg = white;
 
     tsgl_pos draw_y = PRINT_START_POS_Y;
     
     char text[MAX_ACTION_LEN];
-    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "SCORE\n%i", subgame_state->score);
-    tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
+    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "SCORE: %i", subgame_state->score);
+    tsgl_framebuffer_text(&framebuffer, PRINT_START_POS_X, draw_y, printsettings_subgames_line, text);
     draw_y += PRINT_GAP_Y;
 
-    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "HIGH\n%i", current_state.subgame_island_max_score);
-    tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
+    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "HIGH: %i", current_state.subgame_island_max_score);
+    tsgl_framebuffer_text(&framebuffer, PRINT_START_POS_X, draw_y, printsettings_subgames_line, text);
     draw_y += PRINT_GAP_Y;
-
-    PUSH_FUNC_TRANS(&framebuffer,
-        (GAME_ZONE + (STATUS_ZONE / 2)) - (subgame_state->person_sprite->sprite->width / 2),
-        HEIGHT - subgame_state->person_sprite->sprite->height - 2,
-        subgame_state->person_sprite
-    );
 }
 
 void subgame_island_exit() {

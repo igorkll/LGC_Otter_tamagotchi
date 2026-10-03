@@ -40,6 +40,19 @@ tsgl_print_settings printsettings_subgames = {
     .bg = TSGL_INVALID_RAWCOLOR
 };
 
+tsgl_print_settings printsettings_subgames_line = {
+    .locationMode = tsgl_print_start_top,
+
+    // font
+    .font = DejaVuSerif,
+    .localLocationMode = tsgl_print_localLocationMode_center,
+    .targetWidth = SUBGAMES_TEXT_TARGET_WIDTH,
+    .targetHeight = SUBGAMES_TEXT_TARGET_HEIGHT,
+
+    .fill = TSGL_INVALID_RAWCOLOR,
+    .bg = TSGL_INVALID_RAWCOLOR
+};
+
 #define GAMETITLE_TEXT_TARGET_WIDTH 7
 #define GAMETITLE_TEXT_TARGET_HEIGHT 16
 
