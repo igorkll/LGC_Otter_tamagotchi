@@ -33,7 +33,9 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 
 #define RNDMAX_CLOUD_SPAWN 60
 
-#define PLAYER_SPEED_X 2
+#define PLAYER_VELOCITY_CHANGE_X 0.5
+#define PLAYER_VELOCITY_MAX_X 2
+#define PLAYER_VELOCITY_DROP_X 0.8
 
 // ----------------------------------------------------------
 
@@ -69,8 +71,11 @@ typedef struct {
     int score;
     int score_delta;
 
-    tsgl_pos player_x;
-    tsgl_pos player_y;
+    float player_x;
+    float player_y;
+
+    float player_vel_x;
+    float player_vel_y;
 
     tsgl_sound* music;
 
@@ -195,11 +200,11 @@ static tsgl_pos globalPosToScreenPosY(tsgl_pos global_pos) {
 }
 
 static tsgl_pos screenPosToGlobalPosX(tsgl_pos screen_pos) {
-    return subgame_state->player_x - screen_pos;
+    return subgame_state->player_x + screen_pos;
 }
 
 static tsgl_pos screenPosToGlobalPosY(tsgl_pos screen_pos) {
-    return subgame_state->player_y - screen_pos;
+    return subgame_state->player_y + screen_pos;
 }
 
 static void spawn_random_cloud() {
@@ -230,13 +235,20 @@ static void process_objects() {
 }
 
 static void process() {
+    subgame_state->player_vel_x *= PLAYER_VELOCITY_DROP_X;
+
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_LEFT)) {
-        subgame_state->player_x -= PLAYER_SPEED_X;
+        subgame_state->player_vel_x -= PLAYER_VELOCITY_CHANGE_X;
+        if (subgame_state->player_vel_x < -PLAYER_VELOCITY_MAX_X) subgame_state->player_vel_x = -PLAYER_VELOCITY_MAX_X;
     }
 
     if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_RIGHT)) {
-        subgame_state->player_x += PLAYER_SPEED_X;
+        subgame_state->player_vel_x += PLAYER_VELOCITY_CHANGE_X;
+        if (subgame_state->player_vel_x > PLAYER_VELOCITY_MAX_X) subgame_state->player_vel_x = PLAYER_VELOCITY_MAX_X;
     }
+
+    subgame_state->player_x = subgame_state->player_vel_x;
+    subgame_state->player_y = subgame_state->player_vel_y;
 
     spawn_clouds();
 
