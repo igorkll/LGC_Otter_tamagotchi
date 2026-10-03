@@ -40,7 +40,8 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 // ----------------------------------------------------------
 
 typedef enum {
-    gameobj_setup_type_cloud = 0
+    gameobj_setup_type_cloud = 0,
+    gameobj_setup_type_brick
 } Gameobj_setup_type;
 
 typedef struct {
@@ -106,6 +107,8 @@ static void obj_destroy(size_t index) {
     subgame_state->objs[index].type = -1;
 }
 
+static void gameStart();
+
 void subgame_island_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
 
@@ -120,6 +123,8 @@ void subgame_island_start() {
     for (size_t i = 0; i < OBJECTS_TYPES_COUNT; i++) {
         gameobj_sprites[i] = gfx_loadSprite(objects_settings[i].path);
     }
+
+    gameStart();
 }
 
 static void stop_music() {
@@ -232,6 +237,10 @@ static void process_objects() {
         gameobj_state->screen_x = globalPosToScreenPosX(gameobj_state->x);
         gameobj_state->screen_y = globalPosToScreenPosY(gameobj_state->y);
     }
+}
+
+static void gameStart() {
+    obj_spawn(screenPosToGlobalPosX(WIDTH / 2), screenPosToGlobalPosX(HEIGHT / 2), get_random_object_with_type(gameobj_setup_type_brick));
 }
 
 static void process() {

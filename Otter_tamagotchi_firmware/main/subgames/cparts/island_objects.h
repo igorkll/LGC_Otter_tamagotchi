@@ -28,5 +28,9 @@ static const Gameobj_setup objects_settings[] = {
         .path = "/firmware/subgames/island/cloud5.bmp",
         .gameobj_setup_type = gameobj_setup_type_cloud,
         .delta_x = -2
+    },
+    {
+        .path = "/firmware/subgames/island/brick.bmp",
+        .gameobj_setup_type = gameobj_setup_type_brick
     }
 };
