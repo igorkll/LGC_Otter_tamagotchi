@@ -55,7 +55,7 @@ static const Gameobj_setup objects_settings[] = {
     }
 };
 
-#define OBJECTS_TYPES_COUNT TSGL_CALC_ARRSIZE(objects)
+#define OBJECTS_TYPES_COUNT TSGL_CALC_ARRSIZE(objects_settings)
 static tsgl_sprite* gameobj_sprites[OBJECTS_TYPES_COUNT];
 
 typedef struct {
@@ -72,20 +72,22 @@ typedef struct {
 
 static Subgame_state* subgame_state = NULL;
 
-static void obj_spawn(tsgl_pos x, tsgl_pos y, uint8_t type) {
+static int obj_spawn(tsgl_pos x, tsgl_pos y, uint8_t type) {
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
         if (subgame_state->objs[i].type < 0) {
             tsgl_sprite* sprite = gameobj_sprites[type];
-            Gameobj_state* state = subgame_state->objs[i];
+            Gameobj_state* state = &subgame_state->objs[i];
 
             //memset(state, 0, sizeof(Gameobj_state));
             state->x = x;
             state->y = y;
             state->type = type;
             state->sprite = sprite;
-            return;
+            return i;
         }
     }
+
+    return -1;
 }
 
 static void obj_destroy(size_t index) {
@@ -98,6 +100,10 @@ void subgame_island_start() {
     subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
     subgame_state->oldTimerTickTime = tsgl_time();
     subgame_state->score_delta = DEFAULT_SCORE_DELTA;
+
+    for (size_t i = 0; i < MAX_OBJECTS; i++) {
+        subgame_state->objs[i].type = -1;
+    }
 
     for (size_t i = 0; i < OBJECTS_TYPES_COUNT; i++) {
         gameobj_sprites[i] = gfx_loadSprite(objects_settings[i].path);
@@ -136,9 +142,23 @@ static void process() {
     obj_spawn(16, 32, 1);
     obj_spawn(32, 32, 2);
     obj_spawn(32, 16, 3);
+
+    for (size_t i = 0; i < MAX_OBJECTS; i++) {
+        Gameobj_state* gameobj_state = &subgame_state->objs[i];
+        if (gameobj_state->type < 0) continue;
+        const Gameobj_setup* gameobj_setup = &objects_settings[gameobj_state->type];
+
+    }
 }
 
 static void draw() {
+    for (size_t i = 0; i < MAX_OBJECTS; i++) {
+        Gameobj_state* gameobj_state = &subgame_state->objs[i];
+        if (gameobj_state->type < 0) continue;
+
+        tsgl_sprite* sprite = gameobj_state->sprite;
+        tsgl_framebuffer_push(&framebuffer, gameobj_state->x, gameobj_state->y, sprite);
+    }
 }
 
 void subgame_island_handle() {
@@ -165,9 +185,7 @@ void subgame_island_handle() {
         current_state.subgame_island_max_score = subgame_state->score;
 
     process();
-
     tsgl_framebuffer_clear(&framebuffer, BG_COLOR);
-
     draw();
 
     printsettings_subgames_line.fg = white;
