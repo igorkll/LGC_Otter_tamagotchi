@@ -26,11 +26,17 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define PRINT_GAP_Y 10
 
 #define MAX_OBJECTS 32
+#define MAX_CLOUDS_COUNT 8
 
 // ----------------------------------------------------------
 
+typedef enum {
+    gameobj_setup_type_cloud = 0
+} Gameobj_setup_type;
+
 typedef struct {
     const char* path;
+    Gameobj_setup_type gameobj_setup_type;
 } Gameobj_setup;
 
 typedef struct {
@@ -43,15 +49,27 @@ typedef struct {
 static const Gameobj_setup objects_settings[] = {
     {
         .path = "/firmware/subgames/island/cloud0.bmp",
+        .gameobj_setup_type = gameobj_setup_type_cloud
     },
     {
         .path = "/firmware/subgames/island/cloud1.bmp",
+        .gameobj_setup_type = gameobj_setup_type_cloud
     },
     {
         .path = "/firmware/subgames/island/cloud2.bmp",
+        .gameobj_setup_type = gameobj_setup_type_cloud
     },
     {
         .path = "/firmware/subgames/island/cloud3.bmp",
+        .gameobj_setup_type = gameobj_setup_type_cloud
+    },
+    {
+        .path = "/firmware/subgames/island/cloud4.bmp",
+        .gameobj_setup_type = gameobj_setup_type_cloud
+    },
+    {
+        .path = "/firmware/subgames/island/cloud5.bmp",
+        .gameobj_setup_type = gameobj_setup_type_cloud
     }
 };
 
@@ -64,6 +82,9 @@ typedef struct {
     
     int score;
     int score_delta;
+
+    tsgl_pos offset_x;
+    tsgl_pos offset_y;
 
     tsgl_sound* music;
 
@@ -137,16 +158,53 @@ static void gameover() {
     subgame_state->gameover = true;
 }
 
+static int get_random_object_with_type(Gameobj_setup_type game_setup_type) {
+    int type_count = 0;
+    for (size_t i = 0; i < MAX_OBJECTS; i++) {
+        Gameobj_state* gameobj_state = &subgame_state->objs[i];
+        if (gameobj_state->type < 0) continue;
+        const Gameobj_setup* gameobj_setup = &objects_settings[gameobj_state->type];
+
+        if (gameobj_setup->gameobj_setup_type == game_setup_type) type_count++;
+    }
+
+    int idx = tsgl_random(0, type_count - 1);
+    for (size_t i = 0; i < MAX_OBJECTS; i++) {
+        Gameobj_state* gameobj_state = &subgame_state->objs[i];
+        if (gameobj_state->type < 0) continue;
+        const Gameobj_setup* gameobj_setup = &objects_settings[gameobj_state->type];
+
+        if (gameobj_setup->gameobj_setup_type == game_setup_type) type_count++;
+    }
+}
+
+static void spawn_random_cloud() {
+    obj_spawn(32, 16, );
+}
+
+static void spawn_clouds() {
+    int clouds_count = 0;
+    for (size_t i = 0; i < MAX_OBJECTS; i++) {
+        Gameobj_state* gameobj_state = &subgame_state->objs[i];
+        if (gameobj_state->type < 0) continue;
+        const Gameobj_setup* gameobj_setup = &objects_settings[gameobj_state->type];
+
+        if (gameobj_setup->gameobj_setup_type == gameobj_setup_type_cloud) clouds_count++;
+    }
+
+    if (clouds_count < MAX_CLOUDS_COUNT) {
+        spawn_random_cloud();
+    }
+}
+
 static void process() {
-    obj_spawn(16, 16, 0);
-    obj_spawn(16, 32, 1);
-    obj_spawn(32, 32, 2);
-    obj_spawn(32, 16, 3);
+    spawn_clouds();
 
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
         Gameobj_state* gameobj_state = &subgame_state->objs[i];
         if (gameobj_state->type < 0) continue;
         const Gameobj_setup* gameobj_setup = &objects_settings[gameobj_state->type];
+
 
     }
 }
