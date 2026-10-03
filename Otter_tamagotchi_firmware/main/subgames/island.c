@@ -196,6 +196,14 @@ static int8_t get_random_object_with_type(Gameobj_setup_type game_setup_type) {
     return -1;
 }
 
+static tsgl_pos get_object_width(int8_t type) {
+    return gameobj_sprites[type]->sprite->width;
+}
+
+static tsgl_pos get_object_height(int8_t type) {
+    return gameobj_sprites[type]->sprite->height;
+}
+
 static tsgl_pos globalPosToScreenPosX(tsgl_pos global_pos) {
     return global_pos - subgame_state->player_x;
 }
@@ -225,6 +233,10 @@ static void spawn_clouds() {
     }
 }
 
+static void spawn_random_objects() {
+    spawn_clouds();
+}
+
 static void process_objects() {
     for (size_t i = 0; i < MAX_OBJECTS; i++) {
         Gameobj_state* gameobj_state = &subgame_state->objs[i];
@@ -240,7 +252,12 @@ static void process_objects() {
 }
 
 static void gameStart() {
-    obj_spawn(screenPosToGlobalPosX(WIDTH / 2), screenPosToGlobalPosX(HEIGHT / 2), get_random_object_with_type(gameobj_setup_type_brick));
+    int8_t type = get_random_object_with_type(gameobj_setup_type_brick);
+
+    tsgl_pos width = get_object_width(type);
+    tsgl_pos height = get_object_height(type);
+
+    obj_spawn(screenPosToGlobalPosX(WIDTH / 2), screenPosToGlobalPosX(HEIGHT) - height, type);
 }
 
 static void process() {
@@ -256,11 +273,10 @@ static void process() {
         if (subgame_state->player_vel_x > PLAYER_VELOCITY_MAX_X) subgame_state->player_vel_x = PLAYER_VELOCITY_MAX_X;
     }
 
-    subgame_state->player_x = subgame_state->player_vel_x;
-    subgame_state->player_y = subgame_state->player_vel_y;
+    subgame_state->player_x += subgame_state->player_vel_x;
+    subgame_state->player_y += subgame_state->player_vel_y;
 
-    spawn_clouds();
-
+    spawn_random_objects();
     process_objects();
 }
 
