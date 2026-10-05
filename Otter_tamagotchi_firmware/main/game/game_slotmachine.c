@@ -1,6 +1,7 @@
 #include "game_slotmachine.h"
 #include "../gfx.h"
 #include "../hctl.h"
+#include "../pushsound.h"
 
 #define SLOTMACHINE_MIN_MONEY 10
 #define SLOTMACHINE_MAX_MONEY 1000
@@ -64,6 +65,8 @@ static void _run() {
     if (win) {
         current_state.states_money += current_state.slotmachine_money * firstNum;
     }
+
+    pushsound_play("/firmware/sounds/lever2.pcm", 16000, LEVER2_SOUND_VOLUME);
 }
 
 tsgl_rawcolor _get_num_color(int num) {
@@ -128,10 +131,12 @@ void game_slotmachine_open() {
             current_state.slotmachine_nums[i] = num;
         }
     }
+
+    pushsound_play("/firmware/sounds/lever1.pcm", 16000, LEVER1_SOUND_VOLUME);
 }
 
 void game_slotmachine_close() {
     if (!current_state.overlay_slotmachine) return;
     current_state.overlay_slotmachine = false;
-
+    pushsound_play("/firmware/sounds/lever0.pcm", 16000, LEVER0_SOUND_VOLUME);
 }

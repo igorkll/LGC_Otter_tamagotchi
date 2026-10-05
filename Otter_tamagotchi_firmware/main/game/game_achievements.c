@@ -118,10 +118,10 @@ void game_achievements_draw() {
     );
     offset_y += offset_step;
 
-    //Игроман
+    //Задрот
     //Набрать 1000 очков
     draw_achievement(offset_x, offset_y, 2, current_state.achievements_completed_gaming, "/firmware/images/achivmnt/gaming.bmp",
-        "\xC8\xE3\xF0\xEE\xEC\xE0\xED",
+        "\xC7\xE0\xE4\xF0\xEE\xF2",
         "\xCD\xE0\xE1\xF0\xE0\xF2\xFC\x20\x31\x30\x30\x30\x20\xEE\xF7\xEA\xEE\xE2"
     );
     offset_y += offset_step;

@@ -1,5 +1,5 @@
 # Name,   Type, SubType, Offset,  Size, Flags
-factory,  app,  factory, ,  1M,
+factory,  app,  factory, ,  768K,
 nvs,      data, nvs,     ,  24K,
-firmware, data, fat,     ,  2800K,
-storage,  data, spiffs,  ,  100K,
+firmware, data, fat,     ,  3000K,
+storage,  data, spiffs,  ,  64K,

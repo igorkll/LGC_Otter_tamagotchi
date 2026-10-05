@@ -89,6 +89,10 @@
 #define WELD_SOUND_VOLUME 4
 #define BACKPACK_SOUND_VOLUME 2
 
+#define LEVER0_SOUND_VOLUME 1
+#define LEVER1_SOUND_VOLUME 1
+#define LEVER2_SOUND_VOLUME 1
+
 // --------------------------- debug
 
 #define RESET_SETTINGS_ID 22
