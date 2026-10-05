@@ -63,7 +63,18 @@ static void draw_achievement(tsgl_pos x, tsgl_pos y, tsgl_pos index, bool comple
 
     tsgl_pos imageX = x + ACHIEVEMENTS_BLOCK_IMAGE_MARGIN;
     tsgl_pos imageY = y + ACHIEVEMENTS_BLOCK_IMAGE_MARGIN;
-    gfx_image(imageX, imageY, image_path);
+
+    if (completed) {
+        tsgl_framebuffer_fill(&framebuffer, imageX, imageY, ACHIEVEMENTS_BLOCK_IMAGE_SIZE, ACHIEVEMENTS_BLOCK_IMAGE_SIZE, blue);
+    }
+
+    tsgl_sprite* sprite = gfx_loadSprite(image_path);
+    if (sprite) {
+        if (!completed) tsgl_sprite_apply_grayscale(sprite);
+        PUSH_FUNC(&framebuffer, imageX, imageY, sprite);
+        tsgl_sprite_free(sprite);
+    }
+
     tsgl_framebuffer_rect(&framebuffer, imageX, imageY, ACHIEVEMENTS_BLOCK_IMAGE_SIZE, ACHIEVEMENTS_BLOCK_IMAGE_SIZE, white, ACHIEVEMENTS_IMAGE_BORDER_SIZE);
 
     tsgl_pos textX = imageX + ACHIEVEMENTS_BLOCK_IMAGE_SIZE + ACHIEVEMENTS_BLOCK_IMAGE_MARGIN;
