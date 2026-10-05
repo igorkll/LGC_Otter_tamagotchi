@@ -191,7 +191,7 @@ void game_selectRoom(game_room index) {
             return;
         }
 
-        if (game_states_is_sadness_critical()) {
+        if (game_states_is_caress_critical() || game_states_is_sadness_critical()) {
             game_alt_message = "\xCC\xFF\xFF\x2E\x2E\x2E\n\xC0\x20\xEF\xEE\xE3\xEB\xE0\xE4\xE8\xF2\xFC\x3F"; //Мяя...\nА погладить?
             return;
         }
@@ -410,6 +410,7 @@ static void checkActionTimer() {
 
             current_state.sleepTimer--;
             if (current_state.sleepTimer <= 0) {
+                current_state.achievements_completed_fullsleep = true;
                 sleepOut();
                 current_state.sleepTimer = 0;
             }

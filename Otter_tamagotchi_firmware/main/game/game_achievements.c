@@ -71,7 +71,7 @@ static void draw_achievement(tsgl_pos x, tsgl_pos y, tsgl_pos index, bool comple
     tsgl_sprite* sprite = gfx_loadSprite(image_path);
     if (sprite) {
         if (!completed) tsgl_sprite_apply_grayscale(sprite);
-        PUSH_FUNC(&framebuffer, imageX, imageY, sprite);
+        PUSH_FUNC_TRANS(&framebuffer, imageX, imageY, sprite);
         tsgl_sprite_free(sprite);
     }
 
@@ -107,10 +107,10 @@ void game_achievements_draw() {
     draw_achievement(offset_x, offset_y, 0, current_state.achievements_completed_fullsleep, "/firmware/images/achivmnt/fullslep.bmp", "\xC4\xE0\xE9\x20\xEF\xEE\xF1\xEF\xE0\xF2\xFC", "\x31\x30\x20\xF7\xE0\xF1\xEE\xE2");
     offset_y += offset_step;
 
-    draw_achievement(offset_x, offset_y, 1, current_state.achievements_completed_fullsleep, "", "", "");
+    draw_achievement(offset_x, offset_y, 1, current_state.achievements_completed_money, "/firmware/images/achivmnt/money.bmp", "", "");
     offset_y += offset_step;
 
-    draw_achievement(offset_x, offset_y, 2, current_state.achievements_completed_fullsleep, "", "", "");
+    draw_achievement(offset_x, offset_y, 2, current_state.achievements_completed_gaming, "/firmware/images/achivmnt/gaming.bmp", "", "");
     offset_y += offset_step;
 }
 
