@@ -269,7 +269,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
 
         if (atomic_flag_test_and_set(&sound->lock)) continue;
 
-        if (sound->playing && !sound->tempStop) {
+        if (sound->playing && !sound->tempStop && !sound->callback_end_run) {
             if (isSoundPlaying(sound)) {
                 _addOutputsValues(sound);
             }
@@ -425,7 +425,7 @@ void tsgl_sound_enableGlobalTimer(int freq, size_t max_sounds) {
 
     while (atomic_flag_test_and_set(&global_sounds_lock));
 
-    global_sounds = calloc(max_sounds, sizeof(size_t));
+    global_sounds = calloc(max_sounds, sizeof(tsgl_sound*));
     global_sounds_max_count = max_sounds;
 
     gptimer_alarm_config_t alarm_config = {
@@ -581,7 +581,7 @@ void tsgl_sound_setOutputs(tsgl_sound* sound, tsgl_sound_output** outputs, size_
     _freeOutputs(sound);
 
     sound->outputsCount = outputsCount;
-    sound->outputs = malloc(outputsCount * sizeof(size_t));
+    sound->outputs = malloc(outputsCount * sizeof(tsgl_sound_output*));
     for (size_t i = 0; i < sound->outputsCount; i++) {
         tsgl_sound_output* output = outputs[i];
         sound->outputs[i] = output;
@@ -597,7 +597,7 @@ void tsgl_sound_setOutputsRaw(tsgl_sound* sound, tsgl_sound_output** outputs, si
     while (atomic_flag_test_and_set(&sound->lock));
 
     sound->outputsCount = outputsCount;
-    sound->outputs = malloc(outputsCount * sizeof(size_t));
+    sound->outputs = malloc(outputsCount * sizeof(tsgl_sound_output*));
     for (size_t i = 0; i < sound->outputsCount; i++) {
         tsgl_sound_output* output = outputs[i];
         sound->outputs[i] = output;
@@ -761,8 +761,8 @@ void tsgl_sound_free(tsgl_sound* sound) {
         fclose(sound->file);
     }
     
-    memset(sound, 0, sizeof(tsgl_sound));
     if (sound->heap) free(sound);
+    memset(sound, 0, sizeof(tsgl_sound));
 }
 
 void tsgl_sound_free_instance(tsgl_sound* sound) {
@@ -794,8 +794,8 @@ void tsgl_sound_free_instance(tsgl_sound* sound) {
         fclose(sound->file);
     }
     
-    memset(sound, 0, sizeof(tsgl_sound));
     if (sound->heap) free(sound);
+    memset(sound, 0, sizeof(tsgl_sound));
 }
 
 void tsgl_sound_enableFreeOnEnd(tsgl_sound* sound, bool freeOnEnd) {
