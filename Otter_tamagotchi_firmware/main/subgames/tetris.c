@@ -529,8 +529,8 @@ void subgame_tetris_handle() {
     draw_y += PRINT_GAP_Y;
 
     PUSH_FUNC_TRANS(&framebuffer,
-        (GAME_ZONE + (STATUS_ZONE / 2)) - (subgame_state->person_sprite->sprite->width / 2),
-        HEIGHT - subgame_state->person_sprite->sprite->height - 2,
+        (GAME_ZONE + (STATUS_ZONE / 2)) - (subgame_state->person_sprite->fb->width / 2),
+        HEIGHT - subgame_state->person_sprite->fb->height - 2,
         subgame_state->person_sprite
     );
 

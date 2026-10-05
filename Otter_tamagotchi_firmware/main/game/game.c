@@ -235,7 +235,7 @@ static void loadSprites() {
     static int room_sprite_old_index = 0;
     if (room_sprite == NULL || current_state.room != room_sprite_old_index) {
         room_sprite_old_index = current_state.room;
-        if (room_sprite != NULL) tsgl_bmp_free(room_sprite);
+        if (room_sprite != NULL) tsgl_sprite_free(room_sprite);
 
         char path[MAX_PATH_LEN];
         TSGL_funcs_slnprintf(path, MAX_PATH_LEN, "/firmware/rooms/%s.bmp", game_getCurrentRoom()->background);
@@ -245,7 +245,7 @@ static void loadSprites() {
     static int room_person_old_index = 0;
     if (person_sprite == NULL || current_state.person != room_person_old_index) {
         room_person_old_index = current_state.person;
-        if (person_sprite != NULL) tsgl_bmp_free(person_sprite);
+        if (person_sprite != NULL) tsgl_sprite_free(person_sprite);
 
         char path[MAX_PATH_LEN];
         TSGL_funcs_slnprintf(path, MAX_PATH_LEN, "/firmware/persons/%s.bmp", game_getCurrentPerson());

@@ -30,7 +30,7 @@ void game_upmenu_reloadIcons() {
             TSGL_funcs_slnprintf(path, MAX_PATH_LEN, "/firmware/icons/%i.bmp", i);
 
         if (sprites[i] != NULL)
-            tsgl_bmp_free(sprites[i]);
+            tsgl_sprite_free(sprites[i]);
 
         if (path[0] != '\0' && tsgl_filesystem_exists(path)) {
             sprites[i] = gfx_loadSprite(path);
@@ -106,7 +106,7 @@ static tsgl_print_settings printsettings_upselect = {
 
 static void free_option_description() {
     if (renderedOptionDescription) {
-        tsgl_bmp_free(renderedOptionDescription);
+        tsgl_sprite_free(renderedOptionDescription);
         renderedOptionDescription = NULL;
         old_selectingIndex = -1;
     }
@@ -141,7 +141,7 @@ static void draw_option_description(int selectingIndex) {
 }
 
 static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
-    int lineHeight = sprite_iconline->sprite->height;
+    int lineHeight = sprite_iconline->fb->height;
 
     int iconWidth = 20;
     int iconHeight = 20;
@@ -200,7 +200,7 @@ static void draw_icons(int offsetIndex, int offsetHeight, int selected) {
 }
 
 void game_upmenu_draw() {
-    int lineHeight = sprite_iconline->sprite->height;
+    int lineHeight = sprite_iconline->fb->height;
     int bottomLineY = height - lineHeight;
 
     PUSH_FUNC(&framebuffer, 0, 0, sprite_iconline);

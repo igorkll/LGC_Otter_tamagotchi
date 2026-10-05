@@ -135,8 +135,8 @@ void subgame_racing_start() {
     subgame_state->car_sprite = gfx_loadSprite("/firmware/subgames/racing/gamecar.bmp");
     subgame_state->person_sprite = game_getPersonSprite();
 
-    subgame_state->size_x = subgame_state->car_sprite->sprite->width;
-    subgame_state->size_y = subgame_state->car_sprite->sprite->height;
+    subgame_state->size_x = subgame_state->car_sprite->fb->width;
+    subgame_state->size_y = subgame_state->car_sprite->fb->height;
 
     subgame_state->car_x = GAME_ZONE / 2;
     subgame_state->car_y = HEIGHT - (subgame_state->size_y / 2) - 10;
@@ -178,11 +178,11 @@ static void game_exit() {
     stop_music();
 
     for (size_t i = 0; i < OBJECTS_TYPES_COUNT; i++) {
-        tsgl_bmp_free(gameobj_sprites[i]);
+        tsgl_sprite_free(gameobj_sprites[i]);
         gameobj_sprites[i] = NULL;
     }
 
-    tsgl_bmp_free(subgame_state->car_sprite);
+    tsgl_sprite_free(subgame_state->car_sprite);
     subgame_state->car_sprite = NULL;
 
     free(subgame_state);
@@ -198,8 +198,8 @@ static void obj_spawn(uint8_t type) {
 
             subgame_state->objs[i].type = type;
             subgame_state->objs[i].sprite = sprite;
-            subgame_state->objs[i].x = tsgl_random(0, GAME_ZONE - sprite->sprite->width);
-            subgame_state->objs[i].y = -sprite->sprite->height;
+            subgame_state->objs[i].x = tsgl_random(0, GAME_ZONE - sprite->fb->width);
+            subgame_state->objs[i].y = -sprite->fb->height;
             subgame_state->objs[i].interacted = false;
             subgame_state->objs[i].stopped = false;
             return;
@@ -380,8 +380,8 @@ void subgame_racing_handle() {
                 tsgl_sprite* sprite2 = gameobj_state2->sprite;
                 
                 if (tsgl_funcs_checkIntersection(
-                    gameobj_state->x, gameobj_state->y + (speed + self_speed), sprite->sprite->width, sprite->sprite->height,
-                    gameobj_state2->x, gameobj_state2->y, sprite2->sprite->width, sprite2->sprite->height
+                    gameobj_state->x, gameobj_state->y + (speed + self_speed), sprite->fb->width, sprite->fb->height,
+                    gameobj_state2->x, gameobj_state2->y, sprite2->fb->width, sprite2->fb->height
                 )) {
                     gameobj_state->stopped = true;
                     use_self_speed = false;
@@ -400,7 +400,7 @@ void subgame_racing_handle() {
             gameobj_state->type = -1;
         } else if (tsgl_funcs_checkIntersection(
             car_x, car_y, subgame_state->size_x, subgame_state->size_y,
-            gameobj_state->x, gameobj_state->y, sprite->sprite->width, sprite->sprite->height
+            gameobj_state->x, gameobj_state->y, sprite->fb->width, sprite->fb->height
         )) {
             obj_collision(i);
         }
@@ -429,8 +429,8 @@ void subgame_racing_handle() {
     draw_y += PRINT_GAP_Y;
 
     PUSH_FUNC_TRANS(&framebuffer,
-        (GAME_ZONE + (STATUS_ZONE / 2)) - (subgame_state->person_sprite->sprite->width / 2),
-        HEIGHT - subgame_state->person_sprite->sprite->height - 2,
+        (GAME_ZONE + (STATUS_ZONE / 2)) - (subgame_state->person_sprite->fb->width / 2),
+        HEIGHT - subgame_state->person_sprite->fb->height - 2,
         subgame_state->person_sprite
     );
 

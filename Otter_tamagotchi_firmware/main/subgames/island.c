@@ -138,7 +138,7 @@ static void game_exit() {
     stop_music();
 
     for (size_t i = 0; i < OBJECTS_TYPES_COUNT; i++) {
-        tsgl_bmp_free(gameobj_sprites[i]);
+        tsgl_sprite_free(gameobj_sprites[i]);
         gameobj_sprites[i] = NULL;
     }
 
@@ -197,11 +197,11 @@ static int8_t get_random_object_with_type(Gameobj_setup_type game_setup_type) {
 }
 
 static tsgl_pos get_object_width(int8_t type) {
-    return gameobj_sprites[type]->sprite->width;
+    return gameobj_sprites[type]->fb->width;
 }
 
 static tsgl_pos get_object_height(int8_t type) {
-    return gameobj_sprites[type]->sprite->height;
+    return gameobj_sprites[type]->fb->height;
 }
 
 static tsgl_pos globalPosToScreenPosX(tsgl_pos global_pos) {

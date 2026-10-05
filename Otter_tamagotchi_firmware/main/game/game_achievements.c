@@ -92,8 +92,8 @@ void game_achievements_draw() {
     tsgl_pos offset_step = ACHIEVEMENTS_BLOCK_HEIGHT + ACHIEVEMENTS_BLOCK_MARGIN;
 
     //Дай поспать
-    //Не завершать сон
-    draw_achievement(offset_x, offset_y, 0, current_state.achievements_completed_fullsleep, "/firmware/images/achivmnt/fullslep.bmp", "\xC4\xE0\xE9\x20\xEF\xEE\xF1\xEF\xE0\xF2\xFC", "\xCD\xE5\x20\xE7\xE0\xE2\xE5\xF0\xF8\xE0\xF2\xFC\x20\xF1\xEE\xED");
+    //10 часов
+    draw_achievement(offset_x, offset_y, 0, current_state.achievements_completed_fullsleep, "/firmware/images/achivmnt/fullslep.bmp", "\xC4\xE0\xE9\x20\xEF\xEE\xF1\xEF\xE0\xF2\xFC", "\x31\x30\x20\xF7\xE0\xF1\xEE\xE2");
     offset_y += offset_step;
 
     draw_achievement(offset_x, offset_y, 1, current_state.achievements_completed_fullsleep, "", "", "");
