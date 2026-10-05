@@ -504,6 +504,19 @@ void game_closeAltApp() {
     }
 }
 
+static void updateRecords() {
+    if (current_state.states_money > ACHIEVEMENT_MONEY) {
+        current_state.achievements_completed_money = true;
+    }
+
+    if (current_state.subgame_recing_max_score > ACHIEVEMENT_GAME_MONEY ||
+        current_state.subgame_tetris_max_score > ACHIEVEMENT_GAME_MONEY ||
+        current_state.subgame_island_max_score > ACHIEVEMENT_GAME_MONEY ||
+        current_state.subgame_snake_max_score > ACHIEVEMENT_GAME_MONEY) {
+        current_state.achievements_completed_gaming = true;
+    }
+}
+
 static void processCheck() {
     if (current_state.sleepTimer == 0 && current_state.states_fatigue >= 100) {
         game_actions_sleep_withoutSound(GAMECFG_FULL_SLEEP_TIME);
@@ -513,6 +526,8 @@ static void processCheck() {
     if (current_state.states_hunger >= 100 || current_state.states_thirst >= 100) {
         game_dead_gameover();
     }
+
+    updateRecords();
 }
 
 static time_t oldSaveTime = -9999;
