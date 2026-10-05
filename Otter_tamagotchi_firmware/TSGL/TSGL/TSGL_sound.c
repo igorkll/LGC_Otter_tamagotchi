@@ -52,6 +52,15 @@ static int IRAM_ATTR _convertPcm(tsgl_sound* sound, void* source) {
     return 0;
 }
 
+static size_t freadz(void* __ptr, size_t __size, size_t __n, FILE* __stream) {
+    size_t bufferSize = __size * __n;
+    size_t elementsRead = fread(__ptr, __size, __n, __stream);
+    size_t bytesRead = elementsRead * __size;
+    size_t setZeroSize = bufferSize - bytesRead;
+    if (setZeroSize > 0) memset((void*)__ptr + bytesRead, 0, setZeroSize);
+    return elementsRead;
+}
+
 static void _soundTask(void* _sound) {
     tsgl_sound* sound = _sound;
 
@@ -71,14 +80,10 @@ static void _soundTask(void* _sound) {
         }
         
         //printf("read\n");
-        size_t bytesRead = fread(buffer, 1, sound->bufferSize, sound->file);
-        size_t setZeroSize = sound->bufferSize - bytesRead;
-        if (setZeroSize > 0) memset((char*)buffer + bytesRead, 0, setZeroSize);
+        freadz(buffer, 1, sound->bufferSize, sound->file);
 
         if (sound->doubleSwapBuffer && sound->readFromStart) {
-            bytesRead = fread(sound->buffer2, 1, sound->bufferSize, sound->file);
-            size_t setZeroSize = sound->bufferSize - bytesRead;
-            if (setZeroSize > 0) memset((char*)sound->buffer2 + bytesRead, 0, setZeroSize);
+            freadz(sound->buffer2, 1, sound->bufferSize, sound->file);
         }
 
         sound->readFromStart = false;
@@ -387,7 +392,7 @@ static void _setPosition(tsgl_sound* sound, size_t position) {
     if (sound->file != NULL) {
         sound->bufferPosition = 0;
         fseek(sound->file, sound->position + sound->offset, SEEK_SET);
-        fread(sound->buffer, sound->bit_rate, sound->bufferSize, sound->file);
+        freadz(sound->buffer, sound->bit_rate, sound->bufferSize, sound->file);
     } else {
         sound->bufferPosition = sound->position;
     }
@@ -502,7 +507,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
             return ESP_ERR_NO_MEM;
         }
 
-        fread(sound->buffer, sound->bit_rate, bufferSize, sound->file);
+        freadz(sound->buffer, sound->bit_rate, bufferSize, sound->file);
 
         if (doubleSwapBuffer) {
             sound->buffer2 = tsgl_malloc(bufferSize, caps);
@@ -514,7 +519,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
                 return ESP_ERR_NO_MEM;
             }
 
-            fread(sound->buffer2, sound->bit_rate, bufferSize, sound->file);
+            freadz(sound->buffer2, sound->bit_rate, bufferSize, sound->file);
         }
 
         xTaskCreate(_soundTask, NULL, TSGL_SOUND_STACK_SIZE, sound, 1, &sound->task);
@@ -530,7 +535,7 @@ esp_err_t tsgl_sound_load_pcmPartEx(tsgl_sound* sound, size_t offset, size_t loa
             return ESP_ERR_NO_MEM;
         }
 
-        fread(sound->buffer, sound->bit_rate, sound->bufferSize, sound->file);
+        freadz(sound->buffer, sound->bit_rate, sound->bufferSize, sound->file);
         fclose(sound->file);
         sound->file = NULL;
     }
