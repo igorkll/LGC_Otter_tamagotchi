@@ -108,7 +108,7 @@ tsgl_sound* pushsound_load(const char* path, int sample_rate) {
 
     if (tsgl_sound_load_pcmEx(current_sound, SOUND_BUFFER_SIZE, 0, path,
             sample_rate, 1, 1,
-            tsgl_sound_pcm_unsigned,
+            PCM_FORMAT,
             USE_SOUND_DOUBLE_BUFFER) != ESP_OK)
         return NULL;
 

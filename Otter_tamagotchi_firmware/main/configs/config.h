@@ -55,6 +55,7 @@
 #define MAX_SOUNDS_COUNT 8
 #define USE_SOUND_DOUBLE_BUFFER true
 #define USE_SOUND_GLOBAL_TIMER true
+#define PCM_FORMAT tsgl_sound_pcm_unsigned
 
 // --------------------------- nbs
 
@@ -84,6 +85,7 @@
 
 #define BUY_SOUND_VOLUME 1
 #define MONEY_SOUND_VOLUME 3
+#define PICKUP_SOUND_VOLUME 3
 #define WELD_SOUND_VOLUME 4
 #define BACKPACK_SOUND_VOLUME 2
 

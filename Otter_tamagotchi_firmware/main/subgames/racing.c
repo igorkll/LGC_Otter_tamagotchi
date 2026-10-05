@@ -47,6 +47,10 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 
 #define SADNESS_DELTA -0.05
 
+#define DEFAULT_SOUND_PATH "/firmware/sounds/pickup.pcm"
+#define DEFAULT_SOUND_SAMPLERATE 16000
+#define DEFAULT_SOUND_VOLUME PICKUP_SOUND_VOLUME
+
 // ----------------------------------------------------------
 
 typedef struct {
@@ -241,6 +245,8 @@ static void obj_collision(size_t index) {
 
     if (gameobj.sound_path != NULL) {
         pushsound_play(gameobj.sound_path, gameobj.sound_samplerate, gameobj.sound_volume);
+    } else {
+        pushsound_play(DEFAULT_SOUND_PATH, DEFAULT_SOUND_SAMPLERATE, DEFAULT_SOUND_VOLUME);
     }
 
     if (gameobj.delete) obj_delete(index);
