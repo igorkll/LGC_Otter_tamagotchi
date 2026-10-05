@@ -61,6 +61,16 @@ static size_t freadz(void* __ptr, size_t __size, size_t __n, FILE* __stream) {
     return elementsRead;
 }
 
+static void IRAM_ATTR _process_dfpwm(tsgl_sound* sound) {
+    if (sound->dfpwm_decode_state) {
+        void* ptr = sound->buffer + sound->bufferPosition;
+
+        for (size_t i = 0; i < sound->channels; i++) {
+            tsgl_dfpwm_decode(&sound->dfpwm_decode_state[i], (uint8_t*)ptr, sound->bit_pos + i);
+        }
+    }
+}
+
 static void _soundTask(void* _sound) {
     tsgl_sound* sound = _sound;
 
@@ -85,6 +95,8 @@ static void _soundTask(void* _sound) {
         if (sound->doubleSwapBuffer && sound->readFromStart) {
             freadz(sound->buffer2, 1, sound->bufferSize, sound->file);
         }
+
+        if (sound->readFromStart || !sound->doubleSwapBuffer) _process_dfpwm(sound);
 
         sound->readFromStart = false;
         sound->tempStop = false;
@@ -132,16 +144,6 @@ static void IRAM_ATTR _resetDfpwmState(tsgl_sound* sound) {
     }
 }
 
-static void IRAM_ATTR _process_dfpwm(tsgl_sound* sound) {
-    if (sound->dfpwm_decode_state) {
-        void* ptr = sound->buffer + sound->bufferPosition;
-
-        for (size_t i = 0; i < sound->channels; i++) {
-            tsgl_dfpwm_decode(&sound->dfpwm_decode_state[i], (uint8_t*)ptr, sound->bit_pos + i);
-        }
-    }
-}
-
 static void _resetDfpwmDecoder(tsgl_sound* sound) {
     if (sound->dfpwm_decode_state == NULL) return;
 
@@ -149,8 +151,9 @@ static void _resetDfpwmDecoder(tsgl_sound* sound) {
     _process_dfpwm(sound);
 }
 
-static void IRAM_ATTR _read_next_sample_raw(tsgl_sound* sound, int bufOffset) {
+static bool IRAM_ATTR _read_next_sample_raw(tsgl_sound* sound, int bufOffset) {
     bool readFile = false;
+    bool notDecode = false;
 
     sound->bufferPosition += bufOffset;
     if (sound->bufferPosition >= sound->bufferSize) {
@@ -161,6 +164,8 @@ static void IRAM_ATTR _read_next_sample_raw(tsgl_sound* sound, int bufOffset) {
     if (sound->position >= sound->len) {
         if (sound->loop) {
             _resetDfpwmState(sound);
+
+            notDecode = true;
 
             sound->position = 0;
             sound->readFromStart = true;
@@ -187,26 +192,35 @@ static void IRAM_ATTR _read_next_sample_raw(tsgl_sound* sound, int bufOffset) {
                 void* buffer = sound->buffer;
                 sound->buffer = sound->buffer2;
                 sound->buffer2 = buffer;
-            } else if (sound->use_local_timer) {
-                gptimer_stop(sound->timer);
-                sound->localTimerStopped = true;
             } else {
-                sound->tempStop = true;
+                if (sound->use_local_timer) {
+                    gptimer_stop(sound->timer);
+                    sound->localTimerStopped = true;
+                } else {
+                    sound->tempStop = true;
+                }
+                notDecode = true;
             }
             xTaskResumeFromISR(sound->task);
         }
     }
+
+    return notDecode;
 }
 
 static void IRAM_ATTR _read_next_sample(tsgl_sound* sound) {
     if (sound->dfpwm_decode_state) {
+        bool notDecode = false;
+
         sound->bit_pos += sound->channels;
         if (sound->bit_pos >= 8) {
             sound->bit_pos = 0;
-            _read_next_sample_raw(sound, 1);
+            notDecode = _read_next_sample_raw(sound, 1);
         }
 
-        _process_dfpwm(sound);
+        if (!notDecode) {
+            _process_dfpwm(sound);
+        }
     } else {
         _read_next_sample_raw(sound, sound->bit_rate * sound->channels);
     }
@@ -255,7 +269,7 @@ static bool IRAM_ATTR _global_timer_ISR(gptimer_handle_t timer, const gptimer_al
 
         if (atomic_flag_test_and_set(&sound->lock)) continue;
 
-        if (sound->playing) {
+        if (sound->playing && !sound->tempStop) {
             if (isSoundPlaying(sound)) {
                 _addOutputsValues(sound);
             }
