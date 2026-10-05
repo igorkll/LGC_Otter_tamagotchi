@@ -104,13 +104,26 @@ void game_achievements_draw() {
 
     //Дай поспать
     //10 часов
-    draw_achievement(offset_x, offset_y, 0, current_state.achievements_completed_fullsleep, "/firmware/images/achivmnt/fullslep.bmp", "\xC4\xE0\xE9\x20\xEF\xEE\xF1\xEF\xE0\xF2\xFC", "\x31\x30\x20\xF7\xE0\xF1\xEE\xE2");
+    draw_achievement(offset_x, offset_y, 0, current_state.achievements_completed_fullsleep, "/firmware/images/achivmnt/fullslep.bmp",
+        "\xC4\xE0\xE9\x20\xEF\xEE\xF1\xEF\xE0\xF2\xFC",
+        "\x31\x30\x20\xF7\xE0\xF1\xEE\xE2"
+    );
     offset_y += offset_step;
 
-    draw_achievement(offset_x, offset_y, 1, current_state.achievements_completed_money, "/firmware/images/achivmnt/money.bmp", "", "");
+    //Я богат
+    //Заработать 1000
+    draw_achievement(offset_x, offset_y, 1, current_state.achievements_completed_money, "/firmware/images/achivmnt/money.bmp",
+        "\xDF\x20\xE1\xEE\xE3\xE0\xF2",
+        "\xC7\xE0\xF0\xE0\xE1\xEE\xF2\xE0\xF2\xFC\x20\x31\x30\x30\x30"
+    );
     offset_y += offset_step;
 
-    draw_achievement(offset_x, offset_y, 2, current_state.achievements_completed_gaming, "/firmware/images/achivmnt/gaming.bmp", "", "");
+    //Игроман
+    //Набрать 1000 очков
+    draw_achievement(offset_x, offset_y, 2, current_state.achievements_completed_gaming, "/firmware/images/achivmnt/gaming.bmp",
+        "\xC8\xE3\xF0\xEE\xEC\xE0\xED",
+        "\xCD\xE0\xE1\xF0\xE0\xF2\xFC\x20\x31\x30\x30\x30\x20\xEE\xF7\xEA\xEE\xE2"
+    );
     offset_y += offset_step;
 }
 
