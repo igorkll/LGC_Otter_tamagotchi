@@ -505,14 +505,14 @@ void game_closeAltApp() {
 }
 
 static void updateRecords() {
-    if (current_state.states_money > ACHIEVEMENT_MONEY) {
+    if (current_state.states_money >= ACHIEVEMENT_MONEY) {
         current_state.achievements_completed_money = true;
     }
 
-    if (current_state.subgame_recing_max_score > ACHIEVEMENT_GAME_MONEY ||
-        current_state.subgame_tetris_max_score > ACHIEVEMENT_GAME_MONEY ||
-        current_state.subgame_island_max_score > ACHIEVEMENT_GAME_MONEY ||
-        current_state.subgame_snake_max_score > ACHIEVEMENT_GAME_MONEY) {
+    if (current_state.subgame_recing_max_score >= ACHIEVEMENT_GAME_MONEY ||
+        current_state.subgame_tetris_max_score >= ACHIEVEMENT_GAME_MONEY ||
+        current_state.subgame_island_max_score >= ACHIEVEMENT_GAME_MONEY ||
+        current_state.subgame_snake_max_score >= ACHIEVEMENT_GAME_MONEY) {
         current_state.achievements_completed_gaming = true;
     }
 }
@@ -647,6 +647,7 @@ void game_start() {
     start();
 
     //current_state.states_thirst = 100;
+    //current_state.states_money = 1000;
 
     bool firstFrame = true;
     while (true) {
