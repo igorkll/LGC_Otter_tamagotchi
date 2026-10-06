@@ -18,6 +18,7 @@
 #define SEPARATOR_LINE_SIZE 2
 
 #define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x1a4e01), framebuffer.colormode)
+#define EMPTY_COLOR tsgl_color_raw(tsgl_color_fromHex(0x267102), framebuffer.colormode)
 #define SNAKE_COLOR green
 #define SNAKE_HEAD_COLOR yellow
 #define EAT_COLOR red
@@ -267,18 +268,14 @@ static void drawSnake() {
         for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
             uint8_t snake = subgame_state->gamearray[ix][iy];
 
-            switch (snake) {
-                case GAMEARRAY_HEAD_ID:
-                    drawSnakeBlock(ix, iy, SNAKE_HEAD_COLOR);
-                    break;
-
-                case GAMEARRAY_EAT_ID:
-                    drawSnakeBlock(ix, iy, EAT_COLOR);
-                    break;
-                
-                default:
-                    drawSnakeBlock(ix, iy, SNAKE_COLOR);
-                    break;
+            if (snake == GAMEARRAY_HEAD_ID) {
+                drawSnakeBlock(ix, iy, SNAKE_HEAD_COLOR);
+            } else if (snake == GAMEARRAY_EAT_ID) {
+                drawSnakeBlock(ix, iy, EAT_COLOR);
+            } else if (snake > 0) {
+                drawSnakeBlock(ix, iy, SNAKE_COLOR);
+            } else {
+                drawSnakeBlock(ix, iy, EMPTY_COLOR);
             }
         }
     }
