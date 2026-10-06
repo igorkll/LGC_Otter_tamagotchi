@@ -31,7 +31,7 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define SOUND_GAMEOVER_SAMPLERATE 16000
 #define SOUND_GAMEOVER_VOLUME 1
 
-static const char* sound_win_path = "/firmware/sounds/gameover.pcm";
+static const char* sound_win_path = "/firmware/sounds/win.pcm";
 #define SOUND_WIN_SAMPLERATE 16000
 #define SOUND_WIN_VOLUME 1
 
@@ -49,12 +49,16 @@ static const char* sound_win_path = "/firmware/sounds/gameover.pcm";
 #define DEFAULT_SNAKE_LEN 2
 
 #define EAT_SCORE_ADD 10
+#define WIN_MONEY_ADD 1000
 
 // этот типо должен быть чуток больше чем GAMEARRAY_X*GAMEARRAY_Y
 typedef uint8_t snake_t;
 #define GAMEARRAY_EAT_ID 254
 #define GAMEARRAY_HEAD_ID 255
 
+#define EAT_SOUND_PATH "/firmware/sounds/pickup.pcm"
+#define EAT_SOUND_SAMPLERATE 16000
+#define EAT_SOUND_VOLUME PICKUP_SOUND_VOLUME
 
 // ----------------------------------------------------------
 
@@ -89,6 +93,9 @@ static void win() {
     stop_music();
     pushsound_play(sound_win_path, SOUND_WIN_SAMPLERATE, SOUND_WIN_VOLUME);
     subgame_state->win = true;
+
+    pushsound_play("/firmware/sounds/money.pcm", 16000, MONEY_SOUND_VOLUME);
+    current_state.states_money += WIN_MONEY_ADD;
 }
 
 static void spawn_eat() {
@@ -223,11 +230,12 @@ static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
     if (ny < 0) ny = GAMEARRAY_Y - 1;
     else if (ny >= GAMEARRAY_Y) ny = 0;
 
-    bool spawnEat = snakeCollision(subgame_state->gamearray[nx][ny]);
+    bool eat = snakeCollision(subgame_state->gamearray[nx][ny]);
     subgame_state->gamearray[x][y] = subgame_state->snake_len + 1;
     subgame_state->gamearray[nx][ny] = GAMEARRAY_HEAD_ID;
 
-    if (spawnEat) {
+    if (eat) {
+        pushsound_play(EAT_SOUND_PATH, EAT_SOUND_SAMPLERATE, EAT_SOUND_VOLUME);
         spawn_eat();
     }
 }
