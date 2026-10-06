@@ -18,7 +18,7 @@
 #define SEPARATOR_LINE_SIZE 2
 
 #define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x1a4e01), framebuffer.colormode)
-#define SNAKE_COLOR tsgl_color_raw(tsgl_color_fromHex(0x43be09), framebuffer.colormode)
+#define SNAKE_COLOR green
 #define SNAKE_HEAD_COLOR yellow
 #define EAT_COLOR red
 
@@ -123,7 +123,7 @@ static void fill_default_gamearray() {
     tsgl_pos py = GAMEARRAY_Y / 2;
     subgame_state->gamearray[px][py] = GAMEARRAY_HEAD_ID;
 
-    for (size_t i = 0; i < DEFAULT_SNAKE_LEN; i++) {
+    for (size_t i = 0; i < subgame_state->snake_len; i++) {
         subgame_state->gamearray[px][py + 1 + i] = 1;
     }
 
