@@ -141,7 +141,7 @@ void game_unload_room_sound() {
 }
 
 static void reload_room_sound() {
-    unload_room_sound();
+    game_unload_room_sound();
 
     if (current_state.sleepTimer > 0 || current_state.dead) return;
 
@@ -220,7 +220,7 @@ bool game_isAnyOverlayOpened() {
 // ------------------------------------ process
 
 void game_sleepIn() {
-    unload_room_sound();
+    game_unload_room_sound();
     hctl_enableAutoBacklight(false);
     hctl_setBacklight(BACKLIGHT_IDLE);
 }
@@ -272,7 +272,7 @@ static void exit_myaaaa(tsgl_sound* sound) {
 }
 
 static void run_myaaaa() {
-    unload_room_sound();
+    game_unload_room_sound();
     hctl_enableAutoBacklight(false);
     hctl_setBacklight(BACKLIGHT_MAX);
 
@@ -646,7 +646,8 @@ void game_start() {
     game_upmenu_init();
     start();
 
-    //current_state.states_thirst = 100;
+    //current_state.states_fatigue = 0;
+    //current_state.states_thirst = 99;
     //current_state.states_money = 1000;
 
     bool firstFrame = true;
