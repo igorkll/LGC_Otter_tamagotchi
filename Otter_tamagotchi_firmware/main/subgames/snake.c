@@ -1,4 +1,4 @@
-#include "tetris.h"
+#include "snake.h"
 #include "../gfx.h"
 #include "../pushsound.h"
 #include "../game/game_modal.h"
@@ -176,8 +176,8 @@ static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
             break;
     }
 
-    subgame_state->gamearray[x][y] = subgame_state->snake_len;
-    subgame_state->gamearray[nx][ny] = GAMEARRAY_HEAD_ID;
+    //subgame_state->gamearray[x][y] = subgame_state->snake_len;
+    //subgame_state->gamearray[nx][ny] = GAMEARRAY_HEAD_ID;
 }
 
 static void processSnake() {
@@ -224,6 +224,31 @@ static void snakeMoveFromKeyboard() {
     if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_RIGHT)) {
         subgame_state->snake_direction = 3;
         snakeMoveDirect();
+    }
+}
+
+static void drawSnakeBlock(tsgl_pos x, tsgl_pos y, tsgl_rawcolor color) {
+    tsgl_pos posX = x * BLOCKSIZE;
+    tsgl_pos posY = y * BLOCKSIZE;
+    
+    tsgl_framebuffer_fill(posX, posY, );
+}
+
+static void drawSnake() {
+    for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
+        for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
+            uint8_t snake = subgame_state->gamearray[ix][iy];
+
+            switch (snake) {
+                case GAMEARRAY_HEAD_ID:
+                    
+                    break;
+                
+                default:
+
+                    break;
+            }
+        }
     }
 }
 
@@ -274,6 +299,8 @@ void subgame_snake_handle() {
     tsgl_framebuffer_fill(&framebuffer, 0, 0, GAME_ZONE, HEIGHT, BG_COLOR);
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, STATUS_ZONE, HEIGHT, black);
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, SEPARATOR_LINE_SIZE, HEIGHT, white);
+
+    drawSnake();
 
     printsettings_subgames.fg = white;
     printsettings_subgames.width = STATUS_ZONE;
