@@ -12,6 +12,7 @@
 #include "../subgames/racing.h"
 #include "../subgames/tetris.h"
 #include "../subgames/island.h"
+#include "../subgames/snake.h"
 
 static tsgl_sound* room_music;
 
@@ -109,6 +110,12 @@ static void game_gaming_roomAction(int action) {
             subgame_island_start();
             game_alt_handle = subgame_island_handle;
             game_alt_exit = subgame_island_exit;
+            break;
+
+        case L2 + 3:
+            subgame_snake_start();
+            game_alt_handle = subgame_snake_handle;
+            game_alt_exit = subgame_snake_exit;
             break;
     }
 }

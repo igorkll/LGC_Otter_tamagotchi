@@ -23,8 +23,7 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 
 #define DEFAULT_SCORE_DELTA 1
 
-#define FATIGUE_DELTA 0.05
-#define SADNESS_DELTA -1.1
+#define SADNESS_DELTA -0.05
 
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 25
@@ -44,7 +43,7 @@ typedef struct {
 
 static Subgame_state* subgame_state = NULL;
 
-void subgame_tetris_start() {
+void subgame_snake_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
 
     subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
@@ -75,13 +74,18 @@ static void gameover() {
     subgame_state->gameover = true;
 }
 
-void subgame_tetris_handle() {
-    if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
+void subgame_snake_handle() {
+    if (tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_LEFT) && tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_RIGHT)) {
         game_exit();
         return;
     }
 
     if (subgame_state->gameover) {
+        if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
+            game_exit();
+            return;
+        }
+        
         game_modal_draw_gameover(subgame_state->score, current_state.subgame_tetris_max_score);
         return;
     }
@@ -90,7 +94,6 @@ void subgame_tetris_handle() {
     if (currentTime - subgame_state->oldTimerTickTime > 1000) {
         subgame_state->oldTimerTickTime = currentTime;
 
-        game_states_change(&current_state.states_fatigue, FATIGUE_DELTA);
         game_states_change(&current_state.states_sadness, SADNESS_DELTA);
 
         subgame_state->score += subgame_state->score_delta;
@@ -125,6 +128,6 @@ void subgame_tetris_handle() {
     );
 }
 
-void subgame_tetris_exit() {
+void subgame_snake_exit() {
     game_exit();
 }
