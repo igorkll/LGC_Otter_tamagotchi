@@ -11,7 +11,9 @@
 #define GAME_ZONE (WIDTH - STATUS_ZONE)
 #define SEPARATOR_LINE_SIZE 2
 
-#define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x333333), framebuffer.colormode)
+#define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x1a4e01), framebuffer.colormode)
+#define SNAKE_COLOR tsgl_color_raw(tsgl_color_fromHex(0x43be09), framebuffer.colormode)
+#define EAT_COLOR tsgl_color_raw(tsgl_color_fromHex(0xbf2e08), framebuffer.colormode)
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
 #define MUSIC_SAMPLERATE 16000
@@ -33,12 +35,15 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 typedef struct {
     bool gameover;
     time_t oldTimerTickTime;
+    time_t oldTimerMove;
     
     int score;
     int score_delta;
 
     tsgl_sound* music;
     tsgl_sprite* person_sprite;
+
+    uint8_t snake_direction;
 } Subgame_state;
 
 static Subgame_state* subgame_state = NULL;
@@ -46,10 +51,14 @@ static Subgame_state* subgame_state = NULL;
 void subgame_snake_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
 
+    time_t currentTime = tsgl_time();
+
     subgame_state->music = pushsound_loop(music_path, MUSIC_SAMPLERATE, MUSIC_VOLUME);
     subgame_state->person_sprite = game_getPersonSprite();
-    subgame_state->oldTimerTickTime = tsgl_time();
+    subgame_state->oldTimerTickTime = currentTime;
+    subgame_state->oldTimerMove = currentTime;
     subgame_state->score_delta = DEFAULT_SCORE_DELTA;
+    subgame_state->snake_direction = 1;
 }
 
 static void stop_music() {
@@ -74,6 +83,32 @@ static void gameover() {
     subgame_state->gameover = true;
 }
 
+static void snakeMoveDirect() {
+    subgame_state->oldTimerMove = tsgl_time();
+}
+
+static void snakeMoveFromKeyboard() {
+    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_LEFT)) {
+        subgame_state->snake_direction = 0;
+        snakeMoveDirect();
+    }
+
+    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_OKAY)) {
+        subgame_state->snake_direction = 1;
+        snakeMoveDirect();
+    }
+
+    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_CANCEL)) {
+        subgame_state->snake_direction = 2;
+        snakeMoveDirect();
+    }
+
+    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_RIGHT)) {
+        subgame_state->snake_direction = 3;
+        snakeMoveDirect();
+    }
+}
+
 void subgame_snake_handle() {
     if (tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_LEFT) && tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_RIGHT)) {
         game_exit();
@@ -86,11 +121,17 @@ void subgame_snake_handle() {
             return;
         }
         
-        game_modal_draw_gameover(subgame_state->score, current_state.subgame_tetris_max_score);
+        game_modal_draw_gameover(subgame_state->score, current_state.subgame_snake_max_score);
         return;
     }
 
+    snakeMoveFromKeyboard();
+
     time_t currentTime = tsgl_time();
+    if (currentTime - subgame_state->oldTimerMove > 1000) {
+        snakeMoveDirect();
+    }
+
     if (currentTime - subgame_state->oldTimerTickTime > 1000) {
         subgame_state->oldTimerTickTime = currentTime;
 
@@ -99,8 +140,8 @@ void subgame_snake_handle() {
         subgame_state->score += subgame_state->score_delta;
     }
     
-    if (subgame_state->score > current_state.subgame_tetris_max_score)
-        current_state.subgame_tetris_max_score = subgame_state->score;
+    if (subgame_state->score > current_state.subgame_snake_max_score)
+        current_state.subgame_snake_max_score = subgame_state->score;
 
     tsgl_framebuffer_fill(&framebuffer, 0, 0, GAME_ZONE, HEIGHT, BG_COLOR);
     tsgl_framebuffer_fill(&framebuffer, GAME_ZONE, 0, STATUS_ZONE, HEIGHT, black);
@@ -117,7 +158,7 @@ void subgame_snake_handle() {
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
 
-    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "HIGH\n%i", current_state.subgame_tetris_max_score);
+    TSGL_funcs_slnprintf(text, MAX_ACTION_LEN, "HIGH\n%i", current_state.subgame_snake_max_score);
     tsgl_framebuffer_text(&framebuffer, GAME_ZONE, draw_y, printsettings_subgames, text);
     draw_y += PRINT_GAP_Y;
 
