@@ -42,9 +42,6 @@ static const char* sound_win_path = "/firmware/sounds/gameover.pcm";
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 25
 
-#define GAMEARRAY_EAT_ID 254
-#define GAMEARRAY_HEAD_ID 255
-
 #define EAT_COUNT 2
 
 #define DEFAULT_SNAKE_DIRECTION 1
@@ -52,6 +49,12 @@ static const char* sound_win_path = "/firmware/sounds/gameover.pcm";
 #define DEFAULT_SNAKE_LEN 2
 
 #define EAT_SCORE_ADD 10
+
+// этот типо должен быть чуток больше чем GAMEARRAY_X*GAMEARRAY_Y
+typedef uint8_t snake_t;
+#define GAMEARRAY_EAT_ID 254
+#define GAMEARRAY_HEAD_ID 255
+
 
 // ----------------------------------------------------------
 
@@ -68,9 +71,9 @@ typedef struct {
     tsgl_sprite* person_sprite;
 
     uint8_t snake_direction;
-    uint8_t snake_len;
 
-    uint8_t gamearray[GAMEARRAY_X][GAMEARRAY_Y];
+    snake_t snake_len;
+    snake_t gamearray[GAMEARRAY_X][GAMEARRAY_Y];
 } Subgame_state;
 
 static Subgame_state* subgame_state = NULL;
@@ -89,7 +92,7 @@ static void win() {
 }
 
 static void spawn_eat() {
-    uint8_t eatId = GAMEARRAY_EAT_ID;
+    snake_t eatId = GAMEARRAY_EAT_ID;
 
     size_t maxIters = GAMEARRAY_X * GAMEARRAY_Y * 10;
     for (size_t i = 0; i < maxIters; i++) {
@@ -169,7 +172,7 @@ static void gameover() {
 static void snake_addLen(int add) {
     for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
         for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
-            uint8_t snake = subgame_state->gamearray[ix][iy];
+            snake_t snake = subgame_state->gamearray[ix][iy];
             
             if (snake != GAMEARRAY_EAT_ID && snake != GAMEARRAY_HEAD_ID && snake > 0) {
                 subgame_state->gamearray[ix][iy] += add;
@@ -181,7 +184,7 @@ static void snake_addLen(int add) {
     subgame_state->score += EAT_SCORE_ADD;
 }
 
-static void snakeCollision(uint8_t collisionWith) {
+static void snakeCollision(snake_t collisionWith) {
     if (collisionWith == GAMEARRAY_EAT_ID) {
         snake_addLen(1);
         spawn_eat();
@@ -226,7 +229,7 @@ static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
 static void processSnake() {
     for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
         for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
-            uint8_t snake = subgame_state->gamearray[ix][iy];
+            snake_t snake = subgame_state->gamearray[ix][iy];
 
             if (snake == GAMEARRAY_HEAD_ID) {
                 moveSnakeSpawnHead(ix, iy);
@@ -236,7 +239,7 @@ static void processSnake() {
 
     for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
         for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
-            uint8_t snake = subgame_state->gamearray[ix][iy];
+            snake_t snake = subgame_state->gamearray[ix][iy];
 
             if (snake != GAMEARRAY_EAT_ID && snake != GAMEARRAY_HEAD_ID && snake > 0) {
                 subgame_state->gamearray[ix][iy] -= 1;
@@ -285,7 +288,7 @@ static void drawSnakeBlock(tsgl_pos x, tsgl_pos y, tsgl_rawcolor color) {
 static void drawSnake() {
     for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
         for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
-            uint8_t snake = subgame_state->gamearray[ix][iy];
+            snake_t snake = subgame_state->gamearray[ix][iy];
 
             if (snake == GAMEARRAY_HEAD_ID) {
                 drawSnakeBlock(ix, iy, SNAKE_HEAD_COLOR);
