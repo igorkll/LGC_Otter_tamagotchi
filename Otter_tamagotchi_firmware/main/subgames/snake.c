@@ -11,12 +11,15 @@
 #define GAMEARRAY_X 10
 #define GAMEARRAY_Y (HEIGHT / BLOCKSIZE) //20
 
+#define BLOCK_MARGIN 2
+
 #define STATUS_ZONE (WIDTH - (GAMEARRAY_X * BLOCKSIZE))
 #define GAME_ZONE (WIDTH - STATUS_ZONE)
 #define SEPARATOR_LINE_SIZE 2
 
 #define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x1a4e01), framebuffer.colormode)
 #define SNAKE_COLOR tsgl_color_raw(tsgl_color_fromHex(0x43be09), framebuffer.colormode)
+#define SNAKE_HEAD_COLOR tsgl_color_raw(tsgl_color_fromHex(0xad9705), framebuffer.colormode)
 #define EAT_COLOR tsgl_color_raw(tsgl_color_fromHex(0xbf2e08), framebuffer.colormode)
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
@@ -230,8 +233,11 @@ static void snakeMoveFromKeyboard() {
 static void drawSnakeBlock(tsgl_pos x, tsgl_pos y, tsgl_rawcolor color) {
     tsgl_pos posX = x * BLOCKSIZE;
     tsgl_pos posY = y * BLOCKSIZE;
-    
-    tsgl_framebuffer_fill(posX, posY, );
+
+    posX += BLOCK_MARGIN;
+    posY += BLOCK_MARGIN;
+
+    tsgl_framebuffer_fill(&framebuffer, posX, posY, BLOCKSIZE - (BLOCK_MARGIN * 2), BLOCKSIZE - (BLOCK_MARGIN * 2), color);
 }
 
 static void drawSnake() {
@@ -241,11 +247,15 @@ static void drawSnake() {
 
             switch (snake) {
                 case GAMEARRAY_HEAD_ID:
-                    
+                    drawSnakeBlock(ix, iy, SNAKE_HEAD_COLOR);
+                    break;
+
+                case GAMEARRAY_EAT_ID:
+                    drawSnakeBlock(ix, iy, EAT_COLOR);
                     break;
                 
                 default:
-
+                    drawSnakeBlock(ix, iy, SNAKE_COLOR);
                     break;
             }
         }
