@@ -715,7 +715,7 @@ void game_start() {
     start();
 
     //current_state.states_fatigue = 0;
-    //current_state.states_thirst = 99;
+    //current_state.states_thirst = 49;
     //current_state.states_money = 1000;
 
     bool firstFrame = true;
