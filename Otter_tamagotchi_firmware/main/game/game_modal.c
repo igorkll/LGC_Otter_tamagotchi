@@ -26,7 +26,7 @@ void game_modal_draw_gameover(int score, int maxscore) {
     tsgl_framebuffer_text(&framebuffer, 0, 0, printsettings_gametitle, text);
 }
 
-void game_modal_draw_win(const char* message) {
+void game_modal_draw_win(int score, int maxscore) {
     char text[MAX_ACTION_LONG_LEN];
     TSGL_funcs_slnprintf(text, MAX_ACTION_LONG_LEN, "WIN!\nSCORE: %i\nMAX SCORE: %i", score, maxscore);
 

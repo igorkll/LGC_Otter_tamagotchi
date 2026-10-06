@@ -41,6 +41,10 @@ static const char* sound_win_path = "/firmware/sounds/gameover.pcm";
 #define GAMEARRAY_EAT_ID 254
 #define GAMEARRAY_HEAD_ID 255
 
+#define EAT_COUNT 2
+
+#define DEFAULT_SNAKE_DIRECTION 1
+
 // ----------------------------------------------------------
 
 typedef struct {
@@ -56,6 +60,7 @@ typedef struct {
     tsgl_sprite* person_sprite;
 
     uint8_t snake_direction;
+    uint8_t snake_len;
 
     uint8_t gamearray[GAMEARRAY_X][GAMEARRAY_Y];
 } Subgame_state;
@@ -83,35 +88,40 @@ static void spawn_eat() {
         tsgl_pos px = tsgl_random(0, GAMEARRAY_X);
         tsgl_pos py = tsgl_random(0, GAMEARRAY_Y);
     
-        if (gamearray[px][py] == 0) {
-            gamearray[px][py] = eatId;
+        if (subgame_state->gamearray[px][py] == 0) {
+            subgame_state->gamearray[px][py] = eatId;
             return;
         }
     }
 
     for (size_t px = 0; px < GAMEARRAY_X; px++) {
         for (size_t py = 0; py < GAMEARRAY_Y; py++) {
-            if (gamearray[px][py] == 0) {
-                gamearray[px][py] = eatId;
+            if (subgame_state->gamearray[px][py] == 0) {
+                subgame_state->gamearray[px][py] = eatId;
                 return;
             }
         }
     }
+
+    // выигрываем если заспавнить еду тупо некуда
+    win();
 }
 
 static void fill_default_gamearray() {
     for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
         for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
-            gamearray[ix][iy] = 0;
+            subgame_state->gamearray[ix][iy] = 0;
         }
     }
 
     tsgl_pos px = GAMEARRAY_X / 2;
     tsgl_pos py = GAMEARRAY_Y / 2;
-    gamearray[px][py] = GAMEARRAY_HEAD_ID;
-    gamearray[px][py + 1] = 1;
+    subgame_state->gamearray[px][py] = GAMEARRAY_HEAD_ID;
+    subgame_state->gamearray[px][py + 1] = 1;
 
-    spawn_eat();
+    for (size_t i = 0; i < EAT_COUNT; i++) {
+        spawn_eat();
+    }
 }
 
 void subgame_snake_start() {
@@ -124,7 +134,7 @@ void subgame_snake_start() {
     subgame_state->oldTimerTickTime = currentTime;
     subgame_state->oldTimerMove = currentTime;
     subgame_state->score_delta = DEFAULT_SCORE_DELTA;
-    subgame_state->snake_direction = 1;
+    subgame_state->snake_direction = DEFAULT_SNAKE_DIRECTION;
 
     fill_default_gamearray();
 }
@@ -144,15 +154,54 @@ static void gameover() {
     subgame_state->gameover = true;
 }
 
-static void snakeMoveDirect() {
-    subgame_state->oldTimerMove = tsgl_time();
+static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
+    tsgl_pos nx = x;
+    tsgl_pos ny = y;
+
+    switch (subgame_state->snake_direction) {
+        case 0:
+            nx--;
+            break;
+
+        case 1:
+            ny--;
+            break;
+
+        case 2:
+            ny++;
+            break;
+
+        case 3:
+            nx++;
+            break;
+    }
+
+    subgame_state->gamearray[x][y] = subgame_state->snake_len;
+    subgame_state->gamearray[nx][ny] = GAMEARRAY_HEAD_ID;
 }
 
 static void processSnake() {
     for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
         for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
-            uint8_t snake = 
+            uint8_t snake = subgame_state->gamearray[ix][iy];
+
+            if (snake == GAMEARRAY_HEAD_ID) {
+                moveSnakeSpawnHead(ix, iy);
+            }
         }
+    }
+}
+
+static void snakeMoveDirect() {
+    subgame_state->oldTimerMove = tsgl_time();
+    processSnake();
+}
+
+static void snakeCollision(uint8_t collisionWith) {
+    if (collisionWith == GAMEARRAY_EAT_ID) {
+        subgame_state->snake_len++;
+    } else {
+        gameover();
     }
 }
 
