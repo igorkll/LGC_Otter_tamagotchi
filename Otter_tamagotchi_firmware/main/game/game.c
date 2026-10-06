@@ -383,6 +383,30 @@ static void processParametersDelta() {
     #endif
 }
 
+static void checkActionTimerNotSleep() {
+    bool fatigue_critical = game_states_is_fatigue_critical();
+    bool hunger_critical = game_states_is_hunger_critical();
+    bool thirst_critical = game_states_is_thirst_critical();
+    bool caress_critical = game_states_is_caress_critical();
+    bool sadness_critical = game_states_is_sadness_critical();
+    
+    bool attention_sound = false;
+    
+    if (fatigue_critical && !current_state.old_fatigue_critical) attention_sound = true;
+    if (hunger_critical && !current_state.old_hunger_critical) attention_sound = true;
+    if (thirst_critical && !current_state.old_thirst_critical) attention_sound = true;
+    if (caress_critical && !current_state.old_caress_critical) attention_sound = true;
+    if (sadness_critical && !current_state.old_sadness_critical) attention_sound = true;
+
+    if (attention_sound) game_attentionCheck();
+
+    current_state.old_fatigue_critical = fatigue_critical;
+    current_state.old_hunger_critical = hunger_critical;
+    current_state.old_thirst_critical = thirst_critical;
+    current_state.old_caress_critical = caress_critical;
+    current_state.old_sadness_critical = sadness_critical;
+}
+
 static time_t oldTimerTickTime = -9999;
 static void checkActionTimer() {
     time_t currentTime = tsgl_time();
@@ -414,6 +438,8 @@ static void checkActionTimer() {
                 current_state.sleepTimer = 0;
                 sleepOut();
             }
+        } else {
+            checkActionTimerNotSleep();
         }
 
         processParametersDelta();
@@ -659,7 +685,7 @@ static time_t lastUserInteractionTime = 0;
 static bool lastUserInteractionTimeValid = false;
 
 void game_attentionCheck() {
-    if (lastUserInteractionTimeValid && tsgl_time() - lastUserInteractionTime <= ) {
+    if (lastUserInteractionTimeValid && tsgl_time() - lastUserInteractionTime <= (ALLOW_ATTENTION_AFTER_INTERACT * 1000)) {
         game_attention();
     }
 }

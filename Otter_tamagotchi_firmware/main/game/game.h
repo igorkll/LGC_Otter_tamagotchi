@@ -78,6 +78,11 @@ typedef struct {
     game_state_val states_thirst;
     game_state_val states_caress;
     game_state_val states_sadness;
+    bool old_fatigue_critical;
+    bool old_hunger_critical;
+    bool old_thirst_critical;
+    bool old_caress_critical;
+    bool old_sadness_critical;
 
     // settings
     bool settings_opened;
