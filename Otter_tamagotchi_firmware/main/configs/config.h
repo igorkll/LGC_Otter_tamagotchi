@@ -56,6 +56,7 @@
 #define USE_SOUND_DOUBLE_BUFFER true
 #define USE_SOUND_GLOBAL_TIMER true
 #define PCM_FORMAT tsgl_sound_pcm_unsigned
+#define SOUND_EFFECTS_SAMPLERATE 16000
 
 // --------------------------- nbs
 
@@ -92,6 +93,8 @@
 #define LEVER0_SOUND_VOLUME 1
 #define LEVER1_SOUND_VOLUME 1
 #define LEVER2_SOUND_VOLUME 1
+
+#define ATTENTION_SOUND_VOLUME 1
 
 // --------------------------- debug
 

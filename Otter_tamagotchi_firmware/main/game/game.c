@@ -535,6 +535,17 @@ static time_t oldSaveTime = -9999;
 static void process() {
     hctl_process();
 
+    bool anyKeyPressed = false;
+    for (size_t i = 0; i < KEYS_COUNT; i++) {
+        if (tsgl_keyboard_whenPressed(&keyboard, i)) {
+            anyKeyPressed = true;
+            break;
+        }
+    }
+    if (anyKeyPressed) {
+        game_userInteraction();
+    }
+
     if (!current_state.dead) {
         checkActionTimer();
         processControl();
@@ -628,6 +639,36 @@ void game_updateParameters() {
     pushsound_updateVolumeSettings(current_state.settings_master_volume, current_state.settings_music_volume);
 }
 
+void game_attention() {
+    switch (tsgl_random(0, 2)) {
+        case 0:
+            pushsound_play("/firmware/sounds/trigger.pcm", SOUND_EFFECTS_SAMPLERATE, TRIGGER_SOUND_VOLUME * ATTENTION_SOUND_VOLUME);
+            break;
+
+        case 1:
+            pushsound_play("/firmware/sounds/sadness.pcm", SOUND_EFFECTS_SAMPLERATE, SADNESS_SOUND_VOLUME * ATTENTION_SOUND_VOLUME);
+            break;
+
+        case 2:
+            pushsound_play("/firmware/sounds/question.pcm", SOUND_EFFECTS_SAMPLERATE, QUESTION_SOUND_VOLUME * ATTENTION_SOUND_VOLUME);
+            break;
+    }
+}
+
+static time_t lastUserInteractionTime = 0;
+static bool lastUserInteractionTimeValid = false;
+
+void game_attentionCheck() {
+    if (lastUserInteractionTimeValid && tsgl_time() - lastUserInteractionTime <= ) {
+        game_attention();
+    }
+}
+
+void game_userInteraction() {
+    lastUserInteractionTime = tsgl_time();
+    lastUserInteractionTimeValid = true;
+}
+
 void game_start() {
     ESP_LOGI(TAG, "game started!");
     tsgl_benchmark_reset(&benchmark);
@@ -635,6 +676,7 @@ void game_start() {
     game_updateParameters();
     pushsound_init();
     pushsound_initNbs();
+    game_userInteraction();
     
     #ifdef DEBUG_NBS
         pushsound_nbs_loop("/firmware/music/tetris.nbs", 1);

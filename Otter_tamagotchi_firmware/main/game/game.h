@@ -139,3 +139,6 @@ void game_updateParameters();
 void game_protectDoublePressOkay();
 void game_closeAltApp();
 void game_unload_room_sound();
+void game_attention();
+void game_attentionCheck();
+void game_userInteraction();

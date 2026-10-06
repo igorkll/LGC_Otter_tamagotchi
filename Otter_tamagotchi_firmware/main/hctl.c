@@ -80,6 +80,7 @@ void hctl_process() {
     for (size_t i = 0; i < KEYS_COUNT; i++) {
         if (tsgl_keyboard_whenPressed(&keyboard, i)) {
             lastInteractTime = currentTime;
+            break;
         }
     }
 
