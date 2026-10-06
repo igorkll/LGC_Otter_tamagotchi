@@ -184,13 +184,15 @@ static void snake_addLen(int add) {
     subgame_state->score += EAT_SCORE_ADD;
 }
 
-static void snakeCollision(snake_t collisionWith) {
+static bool snakeCollision(snake_t collisionWith) {
     if (collisionWith == GAMEARRAY_EAT_ID) {
         snake_addLen(1);
-        spawn_eat();
+        return true;
     } else if (collisionWith > 0) {
         gameover();
     }
+
+    return false;
 }
 
 static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
@@ -221,9 +223,13 @@ static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
     if (ny < 0) ny = GAMEARRAY_Y - 1;
     else if (ny >= GAMEARRAY_Y) ny = 0;
 
-    snakeCollision(subgame_state->gamearray[nx][ny]);
+    bool spawnEat = snakeCollision(subgame_state->gamearray[nx][ny]);
     subgame_state->gamearray[x][y] = subgame_state->snake_len + 1;
     subgame_state->gamearray[nx][ny] = GAMEARRAY_HEAD_ID;
+
+    if (spawnEat) {
+        spawn_eat();
+    }
 }
 
 static void processSnake() {
@@ -258,22 +264,22 @@ static void snakeMoveDirect() {
 }
 
 static void snakeMoveFromKeyboard() {
-    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_LEFT)) {
+    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_LEFT) && subgame_state->snake_direction != 2) {
         subgame_state->snake_direction = 0;
         snakeMoveDirect();
     }
 
-    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_OKAY)) {
+    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_OKAY) && subgame_state->snake_direction != 3) {
         subgame_state->snake_direction = 1;
         snakeMoveDirect();
     }
 
-    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_CANCEL)) {
+    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_CANCEL) && subgame_state->snake_direction != 0) {
         subgame_state->snake_direction = 2;
         snakeMoveDirect();
     }
 
-    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_RIGHT)) {
+    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_RIGHT) && subgame_state->snake_direction != 1) {
         subgame_state->snake_direction = 3;
         snakeMoveDirect();
     }
