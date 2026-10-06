@@ -11,7 +11,7 @@
 #define GAMEARRAY_X 10
 #define GAMEARRAY_Y (HEIGHT / BLOCKSIZE) //20
 
-#define BLOCK_MARGIN 2
+#define BLOCK_MARGIN 1
 
 #define STATUS_ZONE (WIDTH - (GAMEARRAY_X * BLOCKSIZE))
 #define GAME_ZONE (WIDTH - STATUS_ZONE)
@@ -19,8 +19,8 @@
 
 #define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x1a4e01), framebuffer.colormode)
 #define SNAKE_COLOR tsgl_color_raw(tsgl_color_fromHex(0x43be09), framebuffer.colormode)
-#define SNAKE_HEAD_COLOR tsgl_color_raw(tsgl_color_fromHex(0xad9705), framebuffer.colormode)
-#define EAT_COLOR tsgl_color_raw(tsgl_color_fromHex(0xbf2e08), framebuffer.colormode)
+#define SNAKE_HEAD_COLOR yellow
+#define EAT_COLOR red
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
 #define MUSIC_SAMPLERATE 16000
@@ -157,6 +157,14 @@ static void gameover() {
     subgame_state->gameover = true;
 }
 
+static void snakeCollision(uint8_t collisionWith) {
+    if (collisionWith == GAMEARRAY_EAT_ID) {
+        subgame_state->snake_len++;
+    } else if (collisionWith > 0) {
+        gameover();
+    }
+}
+
 static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
     tsgl_pos nx = x;
     tsgl_pos ny = y;
@@ -179,8 +187,15 @@ static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
             break;
     }
 
-    //subgame_state->gamearray[x][y] = subgame_state->snake_len;
-    //subgame_state->gamearray[nx][ny] = GAMEARRAY_HEAD_ID;
+    if (nx < 0) nx = GAMEARRAY_X - 1;
+    else if (nx >= GAMEARRAY_X) nx = 0;
+
+    if (ny < 0) nx = GAMEARRAY_Y - 1;
+    else if (ny >= GAMEARRAY_Y) ny = 0;
+
+    subgame_state->gamearray[x][y] = subgame_state->snake_len;
+    snakeCollision(subgame_state->gamearray[nx][ny]);
+    subgame_state->gamearray[nx][ny] = GAMEARRAY_HEAD_ID;
 }
 
 static void processSnake() {
@@ -190,6 +205,8 @@ static void processSnake() {
 
             if (snake == GAMEARRAY_HEAD_ID) {
                 moveSnakeSpawnHead(ix, iy);
+            } else if (snake != GAMEARRAY_EAT_ID && snake > 0) {
+                subgame_state->gamearray[ix][iy] -= 1;
             }
         }
     }
@@ -198,14 +215,6 @@ static void processSnake() {
 static void snakeMoveDirect() {
     subgame_state->oldTimerMove = tsgl_time();
     processSnake();
-}
-
-static void snakeCollision(uint8_t collisionWith) {
-    if (collisionWith == GAMEARRAY_EAT_ID) {
-        subgame_state->snake_len++;
-    } else {
-        gameover();
-    }
 }
 
 static void snakeMoveFromKeyboard() {
