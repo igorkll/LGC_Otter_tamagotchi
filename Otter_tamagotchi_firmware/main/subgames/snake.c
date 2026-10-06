@@ -48,6 +48,8 @@ static const char* sound_win_path = "/firmware/sounds/gameover.pcm";
 
 #define DEFAULT_SNAKE_DIRECTION 1
 
+#define DEFAULT_SNAKE_LEN 1
+
 // ----------------------------------------------------------
 
 typedef struct {
@@ -120,7 +122,10 @@ static void fill_default_gamearray() {
     tsgl_pos px = GAMEARRAY_X / 2;
     tsgl_pos py = GAMEARRAY_Y / 2;
     subgame_state->gamearray[px][py] = GAMEARRAY_HEAD_ID;
-    subgame_state->gamearray[px][py + 1] = 1;
+
+    for (size_t i = 0; i < DEFAULT_SNAKE_LEN; i++) {
+        subgame_state->gamearray[px][py + 1 + i] = 1;
+    }
 
     for (size_t i = 0; i < EAT_COUNT; i++) {
         spawn_eat();
@@ -138,6 +143,7 @@ void subgame_snake_start() {
     subgame_state->oldTimerMove = currentTime;
     subgame_state->score_delta = DEFAULT_SCORE_DELTA;
     subgame_state->snake_direction = DEFAULT_SNAKE_DIRECTION;
+    subgame_state->snake_len = DEFAULT_SNAKE_LEN;
 
     fill_default_gamearray();
 }
@@ -160,6 +166,7 @@ static void gameover() {
 static void snakeCollision(uint8_t collisionWith) {
     if (collisionWith == GAMEARRAY_EAT_ID) {
         subgame_state->snake_len++;
+        spawn_eat();
     } else if (collisionWith > 0) {
         gameover();
     }
@@ -199,17 +206,23 @@ static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
 }
 
 static void processSnake() {
+    tsgl_pos headposX = 0;
+    tsgl_pos headposY = 0;
+    
     for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
         for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
             uint8_t snake = subgame_state->gamearray[ix][iy];
 
             if (snake == GAMEARRAY_HEAD_ID) {
-                moveSnakeSpawnHead(ix, iy);
+                headposX = ix;
+                headposY = iy;
             } else if (snake != GAMEARRAY_EAT_ID && snake > 0) {
                 subgame_state->gamearray[ix][iy] -= 1;
             }
         }
     }
+
+    moveSnakeSpawnHead(headposX, headposY);
 }
 
 static void snakeMoveDirect() {
