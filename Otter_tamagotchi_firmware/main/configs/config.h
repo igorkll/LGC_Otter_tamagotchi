@@ -99,7 +99,7 @@
 
 // --------------------------- debug
 
-#define RESET_SETTINGS_ID 22
+#define RESET_SETTINGS_ID 23
 
 #define DEBUG_FPS
 //#define DEBUG_RAM
