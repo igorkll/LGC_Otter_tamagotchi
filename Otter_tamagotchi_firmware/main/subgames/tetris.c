@@ -475,7 +475,7 @@ void subgame_tetris_handle() {
     }
 
     if (subgame_state->gameover) {
-        if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
+        if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
             game_exit();
             return;
         }

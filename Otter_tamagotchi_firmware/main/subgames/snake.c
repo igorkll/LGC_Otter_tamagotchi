@@ -264,22 +264,22 @@ static void snakeMoveDirect() {
 }
 
 static void snakeMoveFromKeyboard() {
-    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_LEFT) && subgame_state->snake_direction != 2) {
+    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_LEFT) && subgame_state->snake_direction != 3) {
         subgame_state->snake_direction = 0;
         snakeMoveDirect();
     }
 
-    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_OKAY) && subgame_state->snake_direction != 3) {
+    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_OKAY) && subgame_state->snake_direction != 2) {
         subgame_state->snake_direction = 1;
         snakeMoveDirect();
     }
 
-    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_CANCEL) && subgame_state->snake_direction != 0) {
+    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_CANCEL) && subgame_state->snake_direction != 1) {
         subgame_state->snake_direction = 2;
         snakeMoveDirect();
     }
 
-    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_RIGHT) && subgame_state->snake_direction != 1) {
+    if (tsgl_keyboard_whenPressedOrHold(&keyboard, KEY_INDEX_RIGHT) && subgame_state->snake_direction != 0) {
         subgame_state->snake_direction = 3;
         snakeMoveDirect();
     }
@@ -320,7 +320,7 @@ void subgame_snake_handle() {
     }
 
     if (subgame_state->win) {
-        if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
+        if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
             game_exit();
             return;
         }
@@ -330,7 +330,7 @@ void subgame_snake_handle() {
     }
 
     if (subgame_state->gameover) {
-        if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
+        if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
             game_exit();
             return;
         }
