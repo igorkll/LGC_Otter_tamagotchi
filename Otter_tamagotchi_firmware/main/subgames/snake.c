@@ -222,19 +222,23 @@ static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
     else if (ny >= GAMEARRAY_Y) ny = 0;
 
     snakeCollision(subgame_state->gamearray[nx][ny]);
-    subgame_state->gamearray[x][y] = subgame_state->snake_len;
+    subgame_state->gamearray[x][y] = subgame_state->snake_len + 1;
     subgame_state->gamearray[nx][ny] = GAMEARRAY_HEAD_ID;
 }
 
 static void processSnake() {
     for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
+        bool doubleBreak = false;
         for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
             snake_t snake = subgame_state->gamearray[ix][iy];
 
             if (snake == GAMEARRAY_HEAD_ID) {
                 moveSnakeSpawnHead(ix, iy);
+                doubleBreak = true;
+                break;
             }
         }
+        if (doubleBreak) break;
     }
 
     for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
