@@ -133,7 +133,7 @@ static void game_load() {
     memcpy(&old_state, &current_state, sizeof(Game_state));
 }
 
-static void unload_room_sound() {
+void game_unload_room_sound() {
     if (room_music) {
         tsgl_sound_free(room_music);
         room_music = NULL;
@@ -142,6 +142,8 @@ static void unload_room_sound() {
 
 static void reload_room_sound() {
     unload_room_sound();
+
+    if (current_state.sleepTimer > 0 || current_state.dead) return;
 
     const Room* room = game_getCurrentRoom();
     if (room->music != NULL) {
@@ -200,9 +202,7 @@ void game_selectRoom(game_room index) {
     current_state.room = index;
 
     game_updateActiveIcons();
-    if (current_state.sleepTimer == 0) {
-        reload_room_sound();
-    }
+    reload_room_sound();
     game_upmenu_redrawTitle();
     game_upmenu_reloadIcons();
     game_roomSelected(index);
@@ -411,8 +411,8 @@ static void checkActionTimer() {
             current_state.sleepTimer--;
             if (current_state.sleepTimer <= 0) {
                 current_state.achievements_completed_fullsleep = true;
-                sleepOut();
                 current_state.sleepTimer = 0;
+                sleepOut();
             }
         }
 
@@ -436,9 +436,9 @@ static void processControl() {
 
     if (tsgl_keyboard_whenPressed(&keyboard, KEY_INDEX_CANCEL)) {
         if (current_state.sleepTimer > 0) {
+            current_state.sleepTimer = 0;
             pushsound_play("/firmware/sounds/trigger.pcm", 16000, TRIGGER_SOUND_VOLUME);
             sleepOut();
-            current_state.sleepTimer = 0;
             return;
         }
 

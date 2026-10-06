@@ -138,3 +138,4 @@ bool game_isAnyOverlayOpened();
 void game_updateParameters();
 void game_protectDoublePressOkay();
 void game_closeAltApp();
+void game_unload_room_sound();

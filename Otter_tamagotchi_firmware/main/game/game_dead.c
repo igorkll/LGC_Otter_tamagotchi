@@ -148,5 +148,6 @@ void game_dead_gameover() {
     if (current_state.dead) return;
     current_state.dead = true;
     current_state.achievements_opened = false;
+    game_unload_room_sound();
     game_closeAltApp();
 }
