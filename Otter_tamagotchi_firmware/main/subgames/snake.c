@@ -190,7 +190,7 @@ static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
     if (nx < 0) nx = GAMEARRAY_X - 1;
     else if (nx >= GAMEARRAY_X) nx = 0;
 
-    if (ny < 0) nx = GAMEARRAY_Y - 1;
+    if (ny < 0) ny = GAMEARRAY_Y - 1;
     else if (ny >= GAMEARRAY_Y) ny = 0;
 
     subgame_state->gamearray[x][y] = subgame_state->snake_len;
