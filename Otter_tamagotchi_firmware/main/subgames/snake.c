@@ -7,7 +7,11 @@
 
 // ----------------------------------------------------------
 
-#define STATUS_ZONE 50
+#define BLOCKSIZE 8
+#define GAMEARRAY_X 10
+#define GAMEARRAY_Y (HEIGHT / BLOCKSIZE) //20
+
+#define STATUS_ZONE (WIDTH - (GAMEARRAY_X * BLOCKSIZE))
 #define GAME_ZONE (WIDTH - STATUS_ZONE)
 #define SEPARATOR_LINE_SIZE 2
 
@@ -23,6 +27,10 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define SOUND_GAMEOVER_SAMPLERATE 16000
 #define SOUND_GAMEOVER_VOLUME 1
 
+static const char* sound_win_path = "/firmware/sounds/gameover.pcm";
+#define SOUND_WIN_SAMPLERATE 16000
+#define SOUND_WIN_VOLUME 1
+
 #define DEFAULT_SCORE_DELTA 1
 
 #define SADNESS_DELTA -0.05
@@ -30,10 +38,14 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define PRINT_START_POS_Y 5
 #define PRINT_GAP_Y 25
 
+#define GAMEARRAY_EAT_ID 254
+#define GAMEARRAY_HEAD_ID 255
+
 // ----------------------------------------------------------
 
 typedef struct {
     bool gameover;
+    bool win;
     time_t oldTimerTickTime;
     time_t oldTimerMove;
     
@@ -44,9 +56,63 @@ typedef struct {
     tsgl_sprite* person_sprite;
 
     uint8_t snake_direction;
+
+    uint8_t gamearray[GAMEARRAY_X][GAMEARRAY_Y];
 } Subgame_state;
 
 static Subgame_state* subgame_state = NULL;
+
+static void stop_music() {
+    if (subgame_state->music != NULL) {
+        tsgl_sound_free(subgame_state->music);
+        subgame_state->music = NULL;
+    }
+}
+
+static void win() {
+    stop_music();
+    pushsound_play(sound_win_path, SOUND_WIN_SAMPLERATE, SOUND_WIN_VOLUME);
+    subgame_state->win = true;
+}
+
+static void spawn_eat() {
+    uint8_t eatId = GAMEARRAY_EAT_ID;
+
+    size_t maxIters = GAMEARRAY_X * GAMEARRAY_Y * 10;
+    for (size_t i = 0; i < maxIters; i++) {
+        tsgl_pos px = tsgl_random(0, GAMEARRAY_X);
+        tsgl_pos py = tsgl_random(0, GAMEARRAY_Y);
+    
+        if (gamearray[px][py] == 0) {
+            gamearray[px][py] = eatId;
+            return;
+        }
+    }
+
+    for (size_t px = 0; px < GAMEARRAY_X; px++) {
+        for (size_t py = 0; py < GAMEARRAY_Y; py++) {
+            if (gamearray[px][py] == 0) {
+                gamearray[px][py] = eatId;
+                return;
+            }
+        }
+    }
+}
+
+static void fill_default_gamearray() {
+    for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
+        for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
+            gamearray[ix][iy] = 0;
+        }
+    }
+
+    tsgl_pos px = GAMEARRAY_X / 2;
+    tsgl_pos py = GAMEARRAY_Y / 2;
+    gamearray[px][py] = GAMEARRAY_HEAD_ID;
+    gamearray[px][py + 1] = 1;
+
+    spawn_eat();
+}
 
 void subgame_snake_start() {
     subgame_state = calloc(1, sizeof(Subgame_state));
@@ -59,13 +125,8 @@ void subgame_snake_start() {
     subgame_state->oldTimerMove = currentTime;
     subgame_state->score_delta = DEFAULT_SCORE_DELTA;
     subgame_state->snake_direction = 1;
-}
 
-static void stop_music() {
-    if (subgame_state->music != NULL) {
-        tsgl_sound_free(subgame_state->music);
-        subgame_state->music = NULL;
-    }
+    fill_default_gamearray();
 }
 
 static void game_exit() {
@@ -85,6 +146,14 @@ static void gameover() {
 
 static void snakeMoveDirect() {
     subgame_state->oldTimerMove = tsgl_time();
+}
+
+static void processSnake() {
+    for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
+        for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
+            uint8_t snake = 
+        }
+    }
 }
 
 static void snakeMoveFromKeyboard() {
@@ -112,6 +181,16 @@ static void snakeMoveFromKeyboard() {
 void subgame_snake_handle() {
     if (tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_LEFT) && tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_RIGHT)) {
         game_exit();
+        return;
+    }
+
+    if (subgame_state->win) {
+        if (tsgl_keyboard_getState(&keyboard, KEY_INDEX_CANCEL)) {
+            game_exit();
+            return;
+        }
+        
+        game_modal_draw_win(subgame_state->score, current_state.subgame_snake_max_score);
         return;
     }
 
