@@ -83,6 +83,8 @@ typedef struct {
     tsgl_sound* music;
     tsgl_sprite* person_sprite;
 
+    bool best_eat;
+
     uint8_t snake_direction;
 
     snake_t snake_len;
@@ -109,9 +111,10 @@ static void win() {
     current_state.states_money += WIN_MONEY_ADD;
 }
 
-static void spawn_eat() {
+static void spawn_eat(bool best) {
     snake_t eatId = 0;
-    if (tsgl_random(0, 24) == 0) {
+    if (best) {
+        subgame_state->best_eat = true;
         eatId = GAMEARRAY_BESTEAT_ID;
     } else {
         eatId = GAMEARRAY_EAT_ID;
@@ -157,7 +160,7 @@ static void fill_default_gamearray() {
     }
 
     for (size_t i = 0; i < EAT_COUNT; i++) {
-        spawn_eat();
+        spawn_eat(i == 0);
     }
 }
 
@@ -213,9 +216,9 @@ static bool snakeCollision(snake_t collisionWith) {
         snake_addLen(1);
         return true;
     } else if (collisionWith == GAMEARRAY_BESTEAT_ID) {
+        subgame_state->best_eat = false;
         pushsound_play(sound_money_path, EFFECTS_SOUND_VOLUME, MONEY_SOUND_VOLUME);
         snake_addLen(5);
-        return true;
     } else if (collisionWith > 0) {
         gameover();
     }
@@ -251,10 +254,10 @@ static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
     if (ny < 0) ny = GAMEARRAY_Y - 1;
     else if (ny >= GAMEARRAY_Y) ny = 0;
 
-    bool eat = snakeCollision(subgame_state->gamearray[nx][ny]);
+    bool spawnEat = snakeCollision(subgame_state->gamearray[nx][ny]);
     subgame_state->gamearray[x][y] = subgame_state->snake_len + 1;
     subgame_state->gamearray[nx][ny] = GAMEARRAY_HEAD_ID;
-    if (eat) spawn_eat();
+    if (spawnEat) spawn_eat(false);
 }
 
 static void processSnake() {
@@ -340,20 +343,6 @@ static void drawSnake() {
     }
 }
 
-static bool isBestEatExists() {
-    for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
-        for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
-            snake_t snake = subgame_state->gamearray[ix][iy];
-
-            if (snake == GAMEARRAY_BESTEAT_ID) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
 void subgame_snake_handle() {
     if (tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_LEFT) && tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_RIGHT)) {
         game_exit();
@@ -388,7 +377,7 @@ void subgame_snake_handle() {
     }
 
     if (subgame_state->music != NULL) {
-        tsgl_sound_setSpeed(subgame_state->music, isBestEatExists() ? BEATEAT_MUSIC_SPEED : 1);
+        tsgl_sound_setSpeed(subgame_state->music, subgame_state->best_eat ? BEATEAT_MUSIC_SPEED : 1);
     }
 
     if (currentTime - subgame_state->oldTimerTickTime > 1000) {

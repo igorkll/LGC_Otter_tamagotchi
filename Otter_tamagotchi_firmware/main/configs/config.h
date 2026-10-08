@@ -6,7 +6,7 @@
 #define ROTATE 0
 
 #define MAX_AUTOSAVE_PER_TIME 3000
-#define MAX_OPENED_FILES 4
+#define MAX_OPENED_FILES 6
 
 // ---------------------------
 
@@ -102,7 +102,7 @@
 #define RESET_SETTINGS_ID 24
 
 //#define DEBUG_FPS
-//#define DEBUG_RAM
+#define DEBUG_RAM
 //#define DEBUG_TITLE
 //#define DEBUG_PARAMS
 //#define DEBUG_PARAMS_TIME
