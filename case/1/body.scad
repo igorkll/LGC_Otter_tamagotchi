@@ -20,8 +20,8 @@ text_usb_offset = -4;
 usb_1_text = "зарядка";
 usb_2_text = "сервис";
 
-switch_width = 5;
-switch_height = 3;
+switch_width = 11.1;
+switch_height = 6.2;
 switch_offset = wall + 2;
 
 // -----------------------------------------------
