@@ -15,6 +15,10 @@ usb_offset_height = depth - 2;
 
 text_size = 2;
 text_depth = 1;
+text_usb_offset = -4;
+
+usb_1_text = "зарядка";
+usb_2_text = "сервис";
 
 // -----------------------------------------------
 
@@ -66,16 +70,24 @@ difference() {
         speaker_grid(speakergrid_size, depth);
     
     // ------------- usb
-    translate([height - (wall / 2), usb_offset_width, usb_offset_height]) {
+    
+    translate([height - (wall / 2), usb_offset_width, usb_offset_height])
         rotate([0, 0, 90])
             usb_c_hole(wall);
-    
-        rotate([90, 0, 0])
-            linear_extrude(height = text_depth + 5)
-                text("Hello", size = text_size);
-    }
-        
+            
     translate([height - (wall / 2), width - usb_offset_width, usb_offset_height])
         rotate([0, 0, 90])
             usb_c_hole(wall);
+            
+    // ------------- usb text
+    
+    translate([height - text_depth, usb_offset_width, usb_offset_height + text_usb_offset])
+        rotate([90, 0, 90])
+            linear_extrude(height = text_depth + 1)
+                text(usb_1_text, size = text_size, halign = "center");
+                
+    translate([height - text_depth, width - usb_offset_width, usb_offset_height + text_usb_offset])
+        rotate([90, 0, 90])
+            linear_extrude(height = text_depth + 1)
+                text(usb_2_text, size = text_size, halign = "center");
 }
