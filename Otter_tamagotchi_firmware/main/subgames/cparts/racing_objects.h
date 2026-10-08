@@ -55,7 +55,7 @@ static const Gameobj objects[] = {
         .delete = true,
 
         .sound_path = "/firmware/sounds/money.pcm",
-        .sound_samplerate = 16000,
+        .sound_samplerate = SOUND_EFFECTS_SAMPLERATE,
         .sound_volume = MONEY_SOUND_VOLUME
     }
 };

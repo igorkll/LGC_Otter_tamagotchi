@@ -66,7 +66,7 @@ static void _run() {
         current_state.states_money += current_state.slotmachine_money * firstNum;
     }
 
-    pushsound_play("/firmware/sounds/lever2.pcm", 16000, LEVER2_SOUND_VOLUME);
+    pushsound_play("/firmware/sounds/lever2.pcm", SOUND_EFFECTS_SAMPLERATE, LEVER2_SOUND_VOLUME);
 }
 
 tsgl_rawcolor _get_num_color(int num) {
@@ -132,11 +132,11 @@ void game_slotmachine_open() {
         }
     }
 
-    pushsound_play("/firmware/sounds/lever1.pcm", 16000, LEVER1_SOUND_VOLUME);
+    pushsound_play("/firmware/sounds/lever1.pcm", SOUND_EFFECTS_SAMPLERATE, LEVER1_SOUND_VOLUME);
 }
 
 void game_slotmachine_close() {
     if (!current_state.overlay_slotmachine) return;
     current_state.overlay_slotmachine = false;
-    pushsound_play("/firmware/sounds/lever0.pcm", 16000, LEVER0_SOUND_VOLUME);
+    pushsound_play("/firmware/sounds/lever0.pcm", SOUND_EFFECTS_SAMPLERATE, LEVER0_SOUND_VOLUME);
 }

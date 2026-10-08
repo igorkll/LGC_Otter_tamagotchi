@@ -57,6 +57,7 @@
 #define USE_SOUND_GLOBAL_TIMER true
 #define PCM_FORMAT tsgl_sound_pcm_unsigned
 #define SOUND_EFFECTS_SAMPLERATE 16000
+#define SOUND_DFPWM_SAMPLERATE 16000
 #define ALLOW_ATTENTION_AFTER_INTERACT (1 * 60 * 60)
 
 // --------------------------- nbs

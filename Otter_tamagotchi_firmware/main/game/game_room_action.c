@@ -183,11 +183,11 @@ static void game_museum_roomAction(int action) {
             break;
 
         case L2:
-            startRoomMusic(16000, "gmp0", 1);
+            startRoomMusic(SOUND_DFPWM_SAMPLERATE, "gmp0", 1);
             break;
 
         case L2 + 1:
-            startRoomMusic(16000, "gmp1", 1);
+            startRoomMusic(SOUND_DFPWM_SAMPLERATE, "gmp1", 1);
             break;
     }
 }

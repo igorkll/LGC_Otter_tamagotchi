@@ -26,19 +26,19 @@
 #define BESTEAT_1_COLOR magenta
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
-#define MUSIC_SAMPLERATE 16000
+#define MUSIC_SAMPLERATE SOUND_DFPWM_SAMPLERATE
 #define MUSIC_VOLUME 0.6
 
 static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
-#define SOUND_GAMEOVER_SAMPLERATE 16000
+#define SOUND_GAMEOVER_SAMPLERATE SOUND_EFFECTS_SAMPLERATE
 #define SOUND_GAMEOVER_VOLUME 1
 
 static const char* sound_win_path = "/firmware/sounds/win.pcm";
-#define SOUND_WIN_SAMPLERATE 16000
+#define SOUND_WIN_SAMPLERATE SOUND_EFFECTS_SAMPLERATE
 #define SOUND_WIN_VOLUME 1
 
 static const char* sound_eat_path = "/firmware/sounds/pickup.pcm";
-#define SOUND_EAT_SAMPLERATE 16000
+#define SOUND_EAT_SAMPLERATE SOUND_EFFECTS_SAMPLERATE
 #define SOUND_EAT_VOLUME PICKUP_SOUND_VOLUME
 
 static const char* sound_money_path = "/firmware/sounds/money.pcm";
@@ -107,7 +107,7 @@ static void win() {
     pushsound_play(sound_win_path, SOUND_WIN_SAMPLERATE, SOUND_WIN_VOLUME);
     subgame_state->win = true;
 
-    pushsound_play(sound_money_path, EFFECTS_SOUND_VOLUME, MONEY_SOUND_VOLUME);
+    pushsound_play(sound_money_path, SOUND_EFFECTS_SAMPLERATE, MONEY_SOUND_VOLUME);
     current_state.states_money += WIN_MONEY_ADD;
 }
 
@@ -217,7 +217,7 @@ static bool snakeCollision(snake_t collisionWith) {
         return true;
     } else if (collisionWith == GAMEARRAY_BESTEAT_ID) {
         subgame_state->best_eat = false;
-        pushsound_play(sound_money_path, EFFECTS_SOUND_VOLUME, MONEY_SOUND_VOLUME);
+        pushsound_play(sound_money_path, SOUND_EFFECTS_SAMPLERATE, MONEY_SOUND_VOLUME);
         snake_addLen(5);
     } else if (collisionWith > 0) {
         gameover();

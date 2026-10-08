@@ -10,11 +10,11 @@
 #define BG_COLOR tsgl_color_raw(tsgl_color_fromHex(0x2380a0), framebuffer.colormode)
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
-#define MUSIC_SAMPLERATE 16000
+#define MUSIC_SAMPLERATE SOUND_DFPWM_SAMPLERATE
 #define MUSIC_VOLUME 0.6
 
 static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
-#define SOUND_GAMEOVER_SAMPLERATE 16000
+#define SOUND_GAMEOVER_SAMPLERATE SOUND_EFFECTS_SAMPLERATE
 #define SOUND_GAMEOVER_VOLUME 1
 
 #define DEFAULT_SCORE_DELTA 1

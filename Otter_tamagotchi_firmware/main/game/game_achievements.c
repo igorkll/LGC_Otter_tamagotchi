@@ -128,13 +128,13 @@ void game_achievements_draw() {
 }
 
 void game_achievements_open() {
-    pushsound_play("/firmware/sounds/bp_open.pcm", 16000, BACKPACK_SOUND_VOLUME);
+    pushsound_play("/firmware/sounds/bp_open.pcm", SOUND_EFFECTS_SAMPLERATE, BACKPACK_SOUND_VOLUME);
     current_state.achievements_opened = true;
     game_updateActiveIcons();
 }
 
 void game_achievements_close() {
-    pushsound_play("/firmware/sounds/bp_close.pcm", 16000, BACKPACK_SOUND_VOLUME);
+    pushsound_play("/firmware/sounds/bp_close.pcm", SOUND_EFFECTS_SAMPLERATE, BACKPACK_SOUND_VOLUME);
     current_state.achievements_opened = false;
     game_updateActiveIcons();
 }

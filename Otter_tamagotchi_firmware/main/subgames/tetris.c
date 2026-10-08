@@ -26,7 +26,7 @@ static const char* music_path = "/firmware/music/tetris.nbs";
 #define MUSIC_VOLUME 1
 
 static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
-#define SOUND_GAMEOVER_SAMPLERATE 16000
+#define SOUND_GAMEOVER_SAMPLERATE SOUND_EFFECTS_SAMPLERATE
 #define SOUND_GAMEOVER_VOLUME 1
 
 #define DEFAULT_SCORE_DELTA 1
@@ -380,7 +380,7 @@ static void draw_current_object() {
 static void after_burn_line() {
     subgame_state->score += BURNLINE_ADD_SCORE;
     current_state.states_money += BURNLINE_ADD_MONEY;
-    pushsound_play("/firmware/sounds/money.pcm", 16000, MONEY_SOUND_VOLUME);
+    pushsound_play("/firmware/sounds/money.pcm", SOUND_EFFECTS_SAMPLERATE, MONEY_SOUND_VOLUME);
 }
 
 static void burn_line(tsgl_pos posY) {
@@ -416,7 +416,7 @@ static void burn_line_check() {
 static void weld_object() {
     print_tetris_object(subgame_state->current_object_x, subgame_state->current_object_y, subgame_state->current_object);
     next_object();
-    if (!subgame_state->gameover_flag) pushsound_play("/firmware/sounds/weld.pcm", 16000, WELD_SOUND_VOLUME);
+    if (!subgame_state->gameover_flag) pushsound_play("/firmware/sounds/weld.pcm", SOUND_EFFECTS_SAMPLERATE, WELD_SOUND_VOLUME);
 }
 
 static void fall_object() {

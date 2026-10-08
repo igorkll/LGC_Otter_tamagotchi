@@ -38,17 +38,17 @@
 #define MUSIC_CHANGE_SPEED_FACTOR 0.1
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
-#define MUSIC_SAMPLERATE 16000
+#define MUSIC_SAMPLERATE SOUND_DFPWM_SAMPLERATE
 #define MUSIC_VOLUME 0.6
 
 static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
-#define SOUND_GAMEOVER_SAMPLERATE 16000
+#define SOUND_GAMEOVER_SAMPLERATE SOUND_EFFECTS_SAMPLERATE
 #define SOUND_GAMEOVER_VOLUME 1
 
 #define SADNESS_DELTA -0.05
 
 #define DEFAULT_SOUND_PATH "/firmware/sounds/pickup.pcm"
-#define DEFAULT_SOUND_SAMPLERATE 16000
+#define DEFAULT_SOUND_SAMPLERATE SOUND_EFFECTS_SAMPLERATE
 #define DEFAULT_SOUND_VOLUME PICKUP_SOUND_VOLUME
 
 // ----------------------------------------------------------
