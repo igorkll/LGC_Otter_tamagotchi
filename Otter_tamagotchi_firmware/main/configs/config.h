@@ -73,6 +73,8 @@
 #define NBS_SAMPLES_CHANNELS 1
 #define NBS_SAMPLES_PCMFORMAT tsgl_sound_pcm_signed
 
+#define NBS_NOT_USE true
+
 // --------------------------- volume
 
 #define VOLUME_MUL 0.5
@@ -102,8 +104,8 @@
 
 #define RESET_SETTINGS_ID 24
 
-//#define DEBUG_FPS
-#define DEBUG_RAM
+#define DEBUG_FPS
+//#define DEBUG_RAM
 //#define DEBUG_TITLE
 //#define DEBUG_PARAMS
 //#define DEBUG_PARAMS_TIME

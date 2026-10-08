@@ -706,7 +706,7 @@ void game_start() {
     game_load();
     game_updateParameters();
     pushsound_init();
-    pushsound_initNbs();
+    if (!NBS_NOT_USE) pushsound_initNbs();
     game_userInteraction();
     
     #ifdef DEBUG_NBS
