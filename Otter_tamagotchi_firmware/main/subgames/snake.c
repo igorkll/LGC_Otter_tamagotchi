@@ -356,7 +356,7 @@ static void deleteBeateat() {
             snake_t snake = subgame_state->gamearray[ix][iy];
 
             if (snake == GAMEARRAY_BESTEAT_ID) {
-                subgame_state->gamearray[ix][iy] = -1;
+                subgame_state->gamearray[ix][iy] = 0;
             }
         }
     }
