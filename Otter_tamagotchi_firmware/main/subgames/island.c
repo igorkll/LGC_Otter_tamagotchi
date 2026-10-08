@@ -61,6 +61,7 @@ typedef struct {
 } Gameobj_state;
 
 #include "cparts/island_objects.h"
+#include "cparts/island_map.h"
 
 #define OBJECTS_TYPES_COUNT TSGL_CALC_ARRSIZE(objects_settings)
 static tsgl_sprite* gameobj_sprites[OBJECTS_TYPES_COUNT];

@@ -97,7 +97,8 @@ void game_combinemenu_draw()
             );
         }
 
-        tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, x, y + point_y, printsettings, combinemenu_points[index]);
+        tsgl_framebuffer_text(&framebuffer, x, y + point_y, printsettings, combinemenu_points[index]);
+        //tsgl_print_textArea textArea = tsgl_framebuffer_text(&framebuffer, x, y + point_y, printsettings, combinemenu_points[index]);
         //printf("%i %i\n", index, textArea.top);
     }
 

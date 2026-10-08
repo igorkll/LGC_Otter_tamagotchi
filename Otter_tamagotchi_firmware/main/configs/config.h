@@ -59,6 +59,7 @@
 #define SOUND_EFFECTS_SAMPLERATE 16000
 #define SOUND_DFPWM_SAMPLERATE 16000
 #define ALLOW_ATTENTION_AFTER_INTERACT (1 * 60 * 60)
+#define SOUND_FORCE_ENABLE_OUTPUT true //если включить, то шим генератор будет работать даже при отсутствии звуков на вход что может привести к прохождению тока через динамик и его нагреву. исправляется RC фильтром
 
 // --------------------------- nbs
 
@@ -73,7 +74,7 @@
 #define NBS_SAMPLES_CHANNELS 1
 #define NBS_SAMPLES_PCMFORMAT tsgl_sound_pcm_signed
 
-#define NBS_NOT_USE true
+#define NBS_NOT_USE false
 
 // --------------------------- volume
 

@@ -120,6 +120,7 @@ void app_main() {
     }
 
     hctl_init();
+    tsgl_sound_force_enable_output = SOUND_FORCE_ENABLE_OUTPUT;
     
     #ifndef DEBUG_STARTUP
     tsgl_delay(100);
