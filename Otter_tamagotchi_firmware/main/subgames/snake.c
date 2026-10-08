@@ -22,6 +22,8 @@
 #define SNAKE_COLOR green
 #define SNAKE_HEAD_COLOR yellow
 #define EAT_COLOR red
+#define BESTEAT_0_COLOR blue
+#define BESTEAT_1_COLOR magenta
 
 static const char* music_path = "/firmware/music/edmvselo.dpw";
 #define MUSIC_SAMPLERATE 16000
@@ -34,6 +36,12 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 static const char* sound_win_path = "/firmware/sounds/win.pcm";
 #define SOUND_WIN_SAMPLERATE 16000
 #define SOUND_WIN_VOLUME 1
+
+static const char* sound_eat_path = "/firmware/sounds/pickup.pcm";
+#define SOUND_EAT_SAMPLERATE 16000
+#define SOUND_EAT_VOLUME PICKUP_SOUND_VOLUME
+
+static const char* sound_money_path = "/firmware/sounds/money.pcm";
 
 #define DEFAULT_SCORE_DELTA 1
 
@@ -51,14 +59,15 @@ static const char* sound_win_path = "/firmware/sounds/win.pcm";
 #define EAT_SCORE_ADD 10
 #define WIN_MONEY_ADD 1000
 
-// этот типо должен быть чуток больше чем GAMEARRAY_X*GAMEARRAY_Y
+// этот типо должен быть больше чем GAMEARRAY_X*GAMEARRAY_Y на количество специальных ID обьявленых ниже
 typedef uint8_t snake_t;
+#define GAMEARRAY_BESTEAT_ID 253
 #define GAMEARRAY_EAT_ID 254
 #define GAMEARRAY_HEAD_ID 255
 
-#define EAT_SOUND_PATH "/firmware/sounds/pickup.pcm"
-#define EAT_SOUND_SAMPLERATE 16000
-#define EAT_SOUND_VOLUME PICKUP_SOUND_VOLUME
+#define GAMEARRAY_MIN_ID GAMEARRAY_BESTEAT_ID
+
+#define BEATEAT_MUSIC_SPEED 1.2
 
 // ----------------------------------------------------------
 
@@ -78,6 +87,8 @@ typedef struct {
 
     snake_t snake_len;
     snake_t gamearray[GAMEARRAY_X][GAMEARRAY_Y];
+
+    uint64_t frame;
 } Subgame_state;
 
 static Subgame_state* subgame_state = NULL;
@@ -94,17 +105,22 @@ static void win() {
     pushsound_play(sound_win_path, SOUND_WIN_SAMPLERATE, SOUND_WIN_VOLUME);
     subgame_state->win = true;
 
-    pushsound_play("/firmware/sounds/money.pcm", 16000, MONEY_SOUND_VOLUME);
+    pushsound_play(sound_money_path, EFFECTS_SOUND_VOLUME, MONEY_SOUND_VOLUME);
     current_state.states_money += WIN_MONEY_ADD;
 }
 
 static void spawn_eat() {
-    snake_t eatId = GAMEARRAY_EAT_ID;
+    snake_t eatId = 0;
+    if (tsgl_random(0, 24) == 0) {
+        eatId = GAMEARRAY_BESTEAT_ID;
+    } else {
+        eatId = GAMEARRAY_EAT_ID;
+    }
 
     size_t maxIters = GAMEARRAY_X * GAMEARRAY_Y * 10;
     for (size_t i = 0; i < maxIters; i++) {
-        tsgl_pos px = tsgl_random(0, GAMEARRAY_X);
-        tsgl_pos py = tsgl_random(0, GAMEARRAY_Y);
+        tsgl_pos px = tsgl_random(0, GAMEARRAY_X - 1);
+        tsgl_pos py = tsgl_random(0, GAMEARRAY_Y - 1);
     
         if (subgame_state->gamearray[px][py] == 0) {
             subgame_state->gamearray[px][py] = eatId;
@@ -181,7 +197,7 @@ static void snake_addLen(int add) {
         for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
             snake_t snake = subgame_state->gamearray[ix][iy];
             
-            if (snake != GAMEARRAY_EAT_ID && snake != GAMEARRAY_HEAD_ID && snake > 0) {
+            if (snake > 0 && snake < GAMEARRAY_MIN_ID) {
                 subgame_state->gamearray[ix][iy] += add;
             }
         }
@@ -193,7 +209,12 @@ static void snake_addLen(int add) {
 
 static bool snakeCollision(snake_t collisionWith) {
     if (collisionWith == GAMEARRAY_EAT_ID) {
+        pushsound_play(sound_eat_path, SOUND_EAT_SAMPLERATE, SOUND_EAT_VOLUME);
         snake_addLen(1);
+        return true;
+    } else if (collisionWith == GAMEARRAY_BESTEAT_ID) {
+        pushsound_play(sound_money_path, EFFECTS_SOUND_VOLUME, MONEY_SOUND_VOLUME);
+        snake_addLen(5);
         return true;
     } else if (collisionWith > 0) {
         gameover();
@@ -233,11 +254,7 @@ static void moveSnakeSpawnHead(tsgl_pos x, tsgl_pos y) {
     bool eat = snakeCollision(subgame_state->gamearray[nx][ny]);
     subgame_state->gamearray[x][y] = subgame_state->snake_len + 1;
     subgame_state->gamearray[nx][ny] = GAMEARRAY_HEAD_ID;
-
-    if (eat) {
-        pushsound_play(EAT_SOUND_PATH, EAT_SOUND_SAMPLERATE, EAT_SOUND_VOLUME);
-        spawn_eat();
-    }
+    if (eat) spawn_eat();
 }
 
 static void processSnake() {
@@ -259,7 +276,7 @@ static void processSnake() {
         for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
             snake_t snake = subgame_state->gamearray[ix][iy];
 
-            if (snake != GAMEARRAY_EAT_ID && snake != GAMEARRAY_HEAD_ID && snake > 0) {
+            if (snake > 0 && snake < GAMEARRAY_MIN_ID) {
                 subgame_state->gamearray[ix][iy] -= 1;
             }
         }
@@ -312,6 +329,8 @@ static void drawSnake() {
                 drawSnakeBlock(ix, iy, SNAKE_HEAD_COLOR);
             } else if (snake == GAMEARRAY_EAT_ID) {
                 drawSnakeBlock(ix, iy, EAT_COLOR);
+            } else if (snake == GAMEARRAY_BESTEAT_ID) {
+                drawSnakeBlock(ix, iy, subgame_state->frame % 10 >= 5 ? BESTEAT_0_COLOR : BESTEAT_1_COLOR);
             } else if (snake > 0) {
                 drawSnakeBlock(ix, iy, SNAKE_COLOR);
             } else {
@@ -319,6 +338,20 @@ static void drawSnake() {
             }
         }
     }
+}
+
+static bool isBestEatExists() {
+    for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
+        for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
+            snake_t snake = subgame_state->gamearray[ix][iy];
+
+            if (snake == GAMEARRAY_BESTEAT_ID) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 void subgame_snake_handle() {
@@ -352,6 +385,10 @@ void subgame_snake_handle() {
     time_t currentTime = tsgl_time();
     if (currentTime - subgame_state->oldTimerMove > 1000) {
         snakeMoveDirect();
+    }
+
+    if (subgame_state->music != NULL) {
+        tsgl_sound_setSpeed(subgame_state->music, isBestEatExists() ? BEATEAT_MUSIC_SPEED : 1);
     }
 
     if (currentTime - subgame_state->oldTimerTickTime > 1000) {
@@ -391,6 +428,8 @@ void subgame_snake_handle() {
         HEIGHT - subgame_state->person_sprite->fb->height - 2,
         subgame_state->person_sprite
     );
+
+    subgame_state->frame++;
 }
 
 void subgame_snake_exit() {
