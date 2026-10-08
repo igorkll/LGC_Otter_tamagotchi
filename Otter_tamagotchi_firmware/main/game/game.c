@@ -193,8 +193,13 @@ void game_selectRoom(game_room index) {
             return;
         }
 
-        if (game_states_is_caress_critical() || game_states_is_sadness_critical()) {
-            game_alt_message = "\xCC\xFF\xFF\x2E\x2E\x2E\n\xC0\x20\xEF\xEE\xE3\xEB\xE0\xE4\xE8\xF2\xFC\x3F"; //Мяя...\nА погладить?
+        if (game_states_is_sadness_critical()) { //печаль
+            game_alt_message = "\xCC\xFF\xFF\x2E\x2E\x2E\n\xC0\x20\xEF\xEE\xE3\xEB\xE0\xE4\xE8\xF2\xFC\x3F\n\x3A\x28"; //Мяя...\nА погладить?\n:(
+            return;
+        }
+
+        if (game_states_is_caress_critical()) { //нежность
+            game_alt_message = "\xD1\xED\xE0\xF7\xE0\xEB\xE0\x20\xEF\xEE\xE3\xEB\xE0\xE4\xE8\xF2\xFC\n\x3A\x29"; //Сначала погладить\n:)
             return;
         }
     }

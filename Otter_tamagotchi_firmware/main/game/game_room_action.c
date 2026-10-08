@@ -92,31 +92,68 @@ static void game_kitchen_roomAction(int action) {
     }
 }
 
+static bool checkGameAllowed() {
+    if (game_states_is_fatigue_critical()) {
+        game_alt_message = "\xDF\x20\xF3\xF1\xF2\xE0\xEB\x2E\x2E\x2E\n\xD5\xEE\xF7\xF3\x20\xF1\xEF\xE0\xF2\xFC"; //Я устал...\nХочу спать
+        return false;
+    }
+
+    if (game_states_is_hunger_critical()) {
+        game_alt_message = "\xDF\x20\xE3\xEE\xEB\xEE\xE4\xED\xFB\xE9\n\x3A\x28"; //Я голодный\n:(
+        return false;
+    }
+
+    if (game_states_is_thirst_critical()) {
+        game_alt_message = "\xDF\x20\xF5\xEE\xF7\xF3\x20\xEF\xE8\xF2\xFC\x5C\x6E\x3A\x28"; //Я хочу пить\n:(
+        return false;
+    }
+
+    if (game_states_is_sadness_critical()) { //печаль
+        game_alt_message = "\xCC\xFF\xFF\x2E\x2E\x2E\n\xC0\x20\xEF\xEE\xE3\xEB\xE0\xE4\xE8\xF2\xFC\x3F\n\x3A\x28"; //Мяя...\nА погладить?\n:(
+        return false;
+    }
+
+    if (game_states_is_caress_critical()) { //нежность
+        game_alt_message = "\xD1\xED\xE0\xF7\xE0\xEB\xE0\x20\xEF\xEE\xE3\xEB\xE0\xE4\xE8\xF2\xFC\n\x3A\x29"; //Сначала погладить\n:)
+        return false;
+    }
+
+    return true;
+}
+
 static void game_gaming_roomAction(int action) {
     switch (action) {
-        case L2:
+        case L2: {
+            if (!checkGameAllowed()) return;
             subgame_racing_start();
             game_alt_handle = subgame_racing_handle;
             game_alt_exit = subgame_racing_exit;
             break;
+        }
 
-        case L2 + 1:
+        case L2 + 1: {
+            if (!checkGameAllowed()) return;
             subgame_tetris_start();
             game_alt_handle = subgame_tetris_handle;
             game_alt_exit = subgame_tetris_exit;
             break;
+        }
 
-        case L2 + 2:
+        case L2 + 2: {
+            if (!checkGameAllowed()) return;
             subgame_island_start();
             game_alt_handle = subgame_island_handle;
             game_alt_exit = subgame_island_exit;
             break;
+        }
 
-        case L2 + 3:
+        case L2 + 3: {
+            if (!checkGameAllowed()) return;
             subgame_snake_start();
             game_alt_handle = subgame_snake_handle;
             game_alt_exit = subgame_snake_exit;
             break;
+        }
     }
 }
 
