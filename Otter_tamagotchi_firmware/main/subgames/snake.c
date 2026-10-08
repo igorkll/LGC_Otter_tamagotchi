@@ -58,6 +58,7 @@ static const char* sound_money_path = "/firmware/sounds/money.pcm";
 
 #define EAT_SCORE_ADD 10
 #define WIN_MONEY_ADD 1000
+#define BESTEAT_SCORE_ADD 100
 #define BESTEAT_MONEY_ADD 20
 
 // этот типо должен быть больше чем GAMEARRAY_X*GAMEARRAY_Y на количество специальных ID обьявленых ниже
@@ -223,6 +224,7 @@ static bool snakeCollision(snake_t collisionWith) {
     } else if (collisionWith == GAMEARRAY_BESTEAT_ID) {
         subgame_state->best_eat = false;
         pushsound_play(sound_money_path, SOUND_EFFECTS_SAMPLERATE, MONEY_SOUND_VOLUME);
+        subgame_state->score += BESTEAT_SCORE_ADD;
         current_state.states_money += BESTEAT_MONEY_ADD;
         snake_addLen(5);
     } else if (collisionWith > 0) {
