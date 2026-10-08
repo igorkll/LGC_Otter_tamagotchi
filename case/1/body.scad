@@ -1,7 +1,7 @@
 wall = 2;
 
-width = 50 + wall;
-height = 80 + wall;
+width = 51 + wall;
+height = 62 + wall;
 depth = 20 + wall;
 
 speakergrid_offset_border = 25;
@@ -10,8 +10,8 @@ speakergrid_offset_y = width / 2;
 speakergrid_offset_z = 0;
 speakergrid_size = 20;
 
-usb_offset_width = wall;
-usb_offset_height = wall;
+usb_offset_width = wall + 10;
+usb_offset_height = depth - 2;
 
 // -----------------------------------------------
 
@@ -56,11 +56,18 @@ difference() {
     
     translate([wall, wall, wall])
         cube([height - (wall * 2), width - (wall * 2), depth]);
+
+    // ------------- speaker grid
     
     translate([speakergrid_offset_x, speakergrid_offset_y, speakergrid_offset_z])
         speaker_grid(speakergrid_size, depth);
     
+    // ------------- usb
     translate([height - (wall / 2), usb_offset_width, usb_offset_height])
+        rotate([0, 0, 90])
+            usb_c_hole(wall);
+    
+    translate([height - (wall / 2), width - usb_offset_width, usb_offset_height])
         rotate([0, 0, 90])
             usb_c_hole(wall);
 }
