@@ -68,6 +68,8 @@ typedef uint8_t snake_t;
 #define GAMEARRAY_MIN_ID GAMEARRAY_BESTEAT_ID
 
 #define BEATEAT_MUSIC_SPEED 1.2
+#define BEST_SPAWN_RND 60
+#define MAX_BEATEAT_FRAMES 100
 
 // ----------------------------------------------------------
 
@@ -84,6 +86,7 @@ typedef struct {
     tsgl_sprite* person_sprite;
 
     bool best_eat;
+    uint16_t beat_eat_frames;
 
     uint8_t snake_direction;
 
@@ -114,6 +117,7 @@ static void win() {
 static void spawn_eat(bool best) {
     snake_t eatId = 0;
     if (best) {
+        subgame_state->beat_eat_frames = 0;
         subgame_state->best_eat = true;
         eatId = GAMEARRAY_BESTEAT_ID;
     } else {
@@ -160,7 +164,7 @@ static void fill_default_gamearray() {
     }
 
     for (size_t i = 0; i < EAT_COUNT; i++) {
-        spawn_eat(i == 0);
+        spawn_eat(false);
     }
 }
 
@@ -343,6 +347,21 @@ static void drawSnake() {
     }
 }
 
+static void deleteBeateat() {
+    subgame_state->beat_eat_frames = 0;
+    subgame_state->best_eat = false;
+
+    for (size_t ix = 0; ix < GAMEARRAY_X; ix++) {
+        for (size_t iy = 0; iy < GAMEARRAY_Y; iy++) {
+            snake_t snake = subgame_state->gamearray[ix][iy];
+
+            if (snake == GAMEARRAY_BESTEAT_ID) {
+                subgame_state->gamearray[ix][iy] = -1;
+            }
+        }
+    }
+}
+
 void subgame_snake_handle() {
     if (tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_LEFT) && tsgl_keyboard_whenHold(&keyboard, KEY_INDEX_RIGHT)) {
         game_exit();
@@ -378,6 +397,15 @@ void subgame_snake_handle() {
 
     if (subgame_state->music != NULL) {
         tsgl_sound_setSpeed(subgame_state->music, subgame_state->best_eat ? BEATEAT_MUSIC_SPEED : 1);
+    }
+
+    if (!subgame_state->best_eat) {
+        if (tsgl_random(0, BEST_SPAWN_RND) == 0) spawn_eat(true);
+    } else {
+        subgame_state->beat_eat_frames++;
+        if (subgame_state->beat_eat_frames > MAX_BEATEAT_FRAMES) {
+            deleteBeateat();
+        }
     }
 
     if (currentTime - subgame_state->oldTimerTickTime > 1000) {
