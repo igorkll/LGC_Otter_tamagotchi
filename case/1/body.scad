@@ -1,25 +1,26 @@
 wall = 2;
 
-width = 80 + wall;
-height = 50 + wall;
+width = 50 + wall;
+height = 80 + wall;
 depth = 20 + wall;
 
-speaker_grid_offset_x = 50;
-speaker_grid_offset_y = 0;
+speaker_grid_offset_border = 25;
+
+speaker_grid_offset_x = height - speaker_grid_offset_border;
+speaker_grid_offset_y = width / 2;
 speaker_grid_offset_z = 0;
 
-speaker_grid_width = 40;
-speaker_grid_length = 55;
+speaker_grid_size = 20;
 
-module speaker_grid(width, length, depth,
-                    spacing    = 5,
-                    max_r      = 1.6,
-                    edge_ratio = 0.45,
-                    margin     = 3) {
+module speaker_grid(side, depth,
+                    spacing    = 2.5,
+                    max_r      = 1,
+                    edge_ratio = 0.5,
+                    margin     = 1) {
 
-    R  = min(width, length)/2 - margin - max_r;
-    nx = ceil((width /2) / spacing);
-    ny = ceil((length/2) / spacing);
+    R  = min(side, side)/2 - margin - max_r;
+    nx = ceil((side/2) / spacing);
+    ny = ceil((side/2) / spacing);
 
     for (i = [-nx : nx], j = [-ny : ny]) {
         x = i * spacing;
@@ -34,8 +35,8 @@ module speaker_grid(width, length, depth,
 }
 
 difference() {
-    cube([width, height, depth]);
-    translate([wall, wall, wall]) cube([width - (wall * 2), height - (wall * 2), depth]);
-    translate([speaker_grid_offset_x, speaker_grid_offset_y, speaker_grid_offset_z]) speaker_grid(speaker_grid_width, speaker_grid_length, depth);
+    cube([height, width, depth]);
+    translate([wall, wall, wall]) cube([height - (wall * 2), width - (wall * 2), depth]);
+    translate([speaker_grid_offset_x, speaker_grid_offset_y, speaker_grid_offset_z]) speaker_grid(speaker_grid_size, depth);
     
 }
