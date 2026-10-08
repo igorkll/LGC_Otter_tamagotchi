@@ -1,11 +1,12 @@
 wall = 2;
+wall_up = 1.5;
 
-width = 51 + wall;
-height = 62 + wall;
+width = 51 + (wall * 2);
+height = 62 + wall + wall_up;
 depth = 20 + wall;
 
 speakergrid_offset_border = 25;
-speakergrid_offset_x = height - speakergrid_offset_border;
+speakergrid_offset_x = height - wall_up - speakergrid_offset_border;
 speakergrid_offset_y = width / 2;
 speakergrid_offset_z = 0;
 speakergrid_size = 20;
@@ -13,9 +14,9 @@ speakergrid_size = 20;
 usb_offset_width = wall + 10;
 usb_offset_height = depth - 2;
 
-text_size = 2;
-text_depth = 1;
-text_usb_offset = -4;
+text_size = 3;
+text_depth = 0.8;
+text_usb_offset = -5;
 
 usb_1_text = "зарядка";
 usb_2_text = "сервис";
@@ -66,7 +67,7 @@ difference() {
     cube([height, width, depth]);
     
     translate([wall, wall, wall])
-        cube([height - (wall * 2), width - (wall * 2), depth]);
+        cube([height - wall - wall_up, width - (wall * 2), depth]);
 
     // ------------- speaker grid
     
@@ -75,28 +76,38 @@ difference() {
     
     // ------------- usb
     
-    translate([height - (wall / 2), usb_offset_width, usb_offset_height])
+    translate([height - (wall_up / 2), usb_offset_width, usb_offset_height])
         rotate([0, 0, 90])
-            usb_c_hole(wall);
+            usb_c_hole(wall_up);
             
-    translate([height - (wall / 2), width - usb_offset_width, usb_offset_height])
+    translate([height - (wall_up / 2), width - usb_offset_width, usb_offset_height])
         rotate([0, 0, 90])
-            usb_c_hole(wall);
+            usb_c_hole(wall_up);
             
     // ------------- usb text
     
     translate([height - text_depth, usb_offset_width, usb_offset_height + text_usb_offset])
         rotate([90, 0, 90])
             linear_extrude(height = text_depth + 1)
-                text(usb_1_text, size = text_size, halign = "center");
+                text(
+                    usb_1_text,
+                    size = text_size,
+                    halign = "center",
+                    font = "DejaVu Sans:style=Bold"
+                );
                 
     translate([height - text_depth, width - usb_offset_width, usb_offset_height + text_usb_offset])
         rotate([90, 0, 90])
             linear_extrude(height = text_depth + 1)
-                text(usb_2_text, size = text_size, halign = "center");
+                text(
+                    usb_2_text,
+                    size = text_size,
+                    halign = "center",
+                    font = "DejaVu Sans:style=Bold"
+                );
                 
     // ------------- switch
     
-    translate([height - wall - 1, (width / 2) - (switch_width / 2), switch_offset])
-        cube([wall + 2, switch_width, switch_height]);
+    translate([height - wall_up - 1, (width / 2) - (switch_width / 2), switch_offset])
+        cube([wall_up + 2, switch_width, switch_height]);
 }
