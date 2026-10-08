@@ -64,16 +64,17 @@ difference() {
     
     translate([speakergrid_offset_x, speakergrid_offset_y, speakergrid_offset_z])
         speaker_grid(speakergrid_size, depth);
-    linear_extrude(height = text_depth)
-        text("Hello", size = text_size);
-    // ------------- usb
-    translate([height - (wall / 2), usb_offset_width, usb_offset_height])
-        rotate([0, 0, 90]) {
-            usb_c_hole(wall);
-            
-            
-        }
     
+    // ------------- usb
+    translate([height - (wall / 2), usb_offset_width, usb_offset_height]) {
+        rotate([0, 0, 90])
+            usb_c_hole(wall);
+    
+        rotate([90, 0, 0])
+            linear_extrude(height = text_depth + 5)
+                text("Hello", size = text_size);
+    }
+        
     translate([height - (wall / 2), width - usb_offset_width, usb_offset_height])
         rotate([0, 0, 90])
             usb_c_hole(wall);
