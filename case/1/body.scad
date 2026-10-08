@@ -20,6 +20,10 @@ text_usb_offset = -4;
 usb_1_text = "зарядка";
 usb_2_text = "сервис";
 
+switch_width = 5;
+switch_height = 3;
+switch_offset = wall + 2;
+
 // -----------------------------------------------
 
 module speaker_grid(side, depth,
@@ -90,4 +94,9 @@ difference() {
         rotate([90, 0, 90])
             linear_extrude(height = text_depth + 1)
                 text(usb_2_text, size = text_size, halign = "center");
+                
+    // ------------- switch
+    
+    translate([height - wall - 1, (width / 2) - (switch_width / 2), switch_offset])
+        cube([wall + 2, switch_width, switch_height]);
 }
