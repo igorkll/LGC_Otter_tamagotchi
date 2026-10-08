@@ -74,7 +74,8 @@
 #define NBS_SAMPLES_CHANNELS 1
 #define NBS_SAMPLES_PCMFORMAT tsgl_sound_pcm_signed
 
-#define NBS_NOT_USE false
+#define NBS_NOT_USE true
+//#define SOUND_FORCE_ENABLE_OUTPUT_ON_NBS_PLAYING true
 
 // --------------------------- volume
 

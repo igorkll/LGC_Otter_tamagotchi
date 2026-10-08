@@ -43,7 +43,7 @@ static const char* sound_gameover_path = "/firmware/sounds/gameover.pcm";
 #define WIREFRAME_SIZE_X (BLOCKSIZE * OBJECT_X)
 #define WIREFRAME_SIZE_Y (BLOCKSIZE * OBJECT_Y)
 
-#define WITHOUT_MUSIC true
+#define WITHOUT_MUSIC NBS_NOT_USE
 
 #define rgb tsgl_rgb
 const tsgl_color blockcolors[] = {
