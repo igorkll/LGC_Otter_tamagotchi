@@ -58,6 +58,7 @@ static const char* sound_money_path = "/firmware/sounds/money.pcm";
 
 #define EAT_SCORE_ADD 10
 #define WIN_MONEY_ADD 1000
+#define BESTEAT_MONEY_ADD 20
 
 // этот типо должен быть больше чем GAMEARRAY_X*GAMEARRAY_Y на количество специальных ID обьявленых ниже
 typedef uint8_t snake_t;
@@ -68,8 +69,8 @@ typedef uint8_t snake_t;
 #define GAMEARRAY_MIN_ID GAMEARRAY_BESTEAT_ID
 
 #define BEATEAT_MUSIC_SPEED 1.2
-#define BEST_SPAWN_RND 60
-#define MAX_BEATEAT_FRAMES 100
+#define BEST_SPAWN_RND 200
+#define MAX_BEATEAT_FRAMES 50
 
 // ----------------------------------------------------------
 
@@ -222,6 +223,7 @@ static bool snakeCollision(snake_t collisionWith) {
     } else if (collisionWith == GAMEARRAY_BESTEAT_ID) {
         subgame_state->best_eat = false;
         pushsound_play(sound_money_path, SOUND_EFFECTS_SAMPLERATE, MONEY_SOUND_VOLUME);
+        current_state.states_money += BESTEAT_MONEY_ADD;
         snake_addLen(5);
     } else if (collisionWith > 0) {
         gameover();
