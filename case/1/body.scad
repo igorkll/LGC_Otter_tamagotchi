@@ -1,7 +1,7 @@
 wall = 2;
 wall_up = 1.5;
 
-width = 50 + (wall * 2);
+width = 50.5 + (wall * 2);
 height = 62 + wall + wall_up;
 depth = 20 + wall;
 
@@ -14,7 +14,7 @@ speakergrid_offset_y = width - wall - speakergrid_offset_width;
 speakergrid_offset_z = 0;
 
 usb_offset_width_1 = wall + 10;
-usb_offset_width_2 = wall + 11.5;
+usb_offset_width_2 = wall + 12;
 usb_offset_height = depth - 2;
 
 text_size = 3;
@@ -27,7 +27,24 @@ usb_2_text = "сервис";
 switch_width = 11.1;
 switch_height = 6.2;
 switch_offset_bottom = wall + 2;
-switch_offset_top = wall_up + 2;
+switch_offset_top = wall_up + 4;
+
+
+title_depth = 0.8;
+title_1 = "Мини выдра ><";
+title_2 = "Автор: Logiкусь";
+title_1_pos = height / 2;
+title_2_pos = (height / 2) - 6;
+title_1_size = 4;
+title_2_size = 3;
+
+image_pos = (height / 2) - 19;
+image_depth = 1;
+image_z_offset = -0.1;
+image_size_x = 20;
+image_size_y = 20;
+
+model_flip = true;
 
 // -----------------------------------------------
 
@@ -67,52 +84,95 @@ module usb_c_hole(wall, clearance = 0.3) {
                 }
 }
 
-difference() {
-    cube([height, width, depth]);
-    
-    translate([wall, wall, wall])
-        cube([height - wall - wall_up, width - (wall * 2), depth]);
+module back_text(pos, size, textstr) {
+    translate([pos, width / 2, -1])
+        rotate([0, 0, -90])
+            mirror([1,0,0])
+                linear_extrude(height = title_depth + 1)
+                    text(
+                        textstr,
+                        size = size,
+                        halign = "center",
+                        valign = "center",
+                        font = "DejaVu Sans:style=Bold"
+                    );
+}
 
-    // ------------- speaker grid
+module draw_image() {
+    resize([image_size_y, image_size_x, image_depth])
+        surface(file = "bodyimage.png", center = true, convexity = 5);
+}
+
+module title() {
+    back_text(title_1_pos, title_1_size, title_1);
+    back_text(title_2_pos, title_2_size, title_2);
     
-    translate([speakergrid_offset_x, speakergrid_offset_y, speakergrid_offset_z])
-        speaker_grid(speakergrid_size, depth);
-    
-    // ------------- usb
-    
-    translate([height - (wall_up / 2), usb_offset_width_1, usb_offset_height])
-        rotate([0, 0, 90])
-            usb_c_hole(wall_up);
-            
-    translate([height - (wall_up / 2), width - usb_offset_width_2, usb_offset_height])
-        rotate([0, 0, 90])
-            usb_c_hole(wall_up);
-            
-    // ------------- usb text
-    
-    translate([height - text_depth, usb_offset_width_1, usb_offset_height + text_usb_offset])
-        rotate([90, 0, 90])
-            linear_extrude(height = text_depth + 1)
-                text(
-                    usb_1_text,
-                    size = text_size,
-                    halign = "center",
-                    font = "DejaVu Sans:style=Bold"
-                );
+    translate([image_pos, width / 2, image_z_offset])
+        mirror([1,0,0])
+            rotate([0, 0, 90])
+                draw_image();
+}
+
+module main() {
+    difference() {
+        cube([height, width, depth]);
+        
+        translate([wall, wall, wall])
+            cube([height - wall - wall_up, width - (wall * 2), depth]);
+
+        // ------------- speaker grid
+        
+        translate([speakergrid_offset_x, speakergrid_offset_y, speakergrid_offset_z])
+            speaker_grid(speakergrid_size, depth);
+        
+        // ------------- usb
+        
+        translate([height - (wall_up / 2), usb_offset_width_1, usb_offset_height])
+            rotate([0, 0, 90])
+                usb_c_hole(wall_up);
                 
-    translate([height - text_depth, width - usb_offset_width_2, usb_offset_height + text_usb_offset])
-        rotate([90, 0, 90])
-            linear_extrude(height = text_depth + 1)
-                text(
-                    usb_2_text,
-                    size = text_size,
-                    halign = "center",
-                    font = "DejaVu Sans:style=Bold"
-                );
+        translate([height - (wall_up / 2), width - usb_offset_width_2, usb_offset_height])
+            rotate([0, 0, 90])
+                usb_c_hole(wall_up);
                 
-    // ------------- switch
-    
-    translate([height - switch_width - switch_offset_top, -(wall / 2), switch_offset_bottom])
-        cube([switch_width, wall + 2, switch_height]);
+        // ------------- usb text
+        
+        translate([height - text_depth, usb_offset_width_1, usb_offset_height + text_usb_offset])
+            rotate([90, 0, 90])
+                linear_extrude(height = text_depth + 1)
+                    text(
+                        usb_1_text,
+                        size = text_size,
+                        halign = "center",
+                        font = "DejaVu Sans:style=Bold"
+                    );
+                    
+        translate([height - text_depth, width - usb_offset_width_2, usb_offset_height + text_usb_offset])
+            rotate([90, 0, 90])
+                linear_extrude(height = text_depth + 1)
+                    text(
+                        usb_2_text,
+                        size = text_size,
+                        halign = "center",
+                        font = "DejaVu Sans:style=Bold"
+                    );
+                    
+        // ------------- switch
+        
+        translate([height - switch_width - switch_offset_top, -(wall / 2), switch_offset_bottom])
+            cube([switch_width, wall + 2, switch_height]);
+            
+        // ------------- title
+        
+        title();
+    }
+}
+
+if (model_flip) {
+    rotate([180, 0, 0])
+        main();
+} else {
+    rotate([0, 0, 0])
+        main();
 }
     
