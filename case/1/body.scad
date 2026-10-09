@@ -15,7 +15,7 @@ speakergrid_offset_z = 0;
 
 usb_offset_width_1 = wall + 10;
 usb_offset_width_2 = wall + 12;
-usb_offset_height = depth - 2;
+usb_offset_height = depth - 3;
 
 text_size = 3;
 text_depth = 0.8;
@@ -28,7 +28,6 @@ switch_width = 11.1;
 switch_height = 6.2;
 switch_offset_bottom = wall + 2;
 switch_offset_top = wall_up + 4;
-
 
 title_depth = 0.8;
 title_1 = "Мини выдра ><";
@@ -45,6 +44,7 @@ image_size_x = 20;
 image_size_y = 20;
 
 model_flip = true;
+only_front_panel = true;
 
 // -----------------------------------------------
 
