@@ -119,6 +119,11 @@ module main() {
         
         translate([wall, wall, wall])
             cube([height - wall - wall_up, width - (wall * 2), depth]);
+        
+        if (only_front_panel) {
+            translate([-wall_up, -1, -1])
+                cube([height, width + 2, depth + 2]);
+        }
 
         // ------------- speaker grid
         
