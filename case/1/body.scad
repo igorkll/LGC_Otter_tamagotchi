@@ -44,7 +44,7 @@ image_size_x = 20;
 image_size_y = 20;
 
 model_flip = true;
-only_front_panel = true;
+only_front_panel = false;
 
 // -----------------------------------------------
 
