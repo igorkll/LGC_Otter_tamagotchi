@@ -43,8 +43,15 @@ image_z_offset = -0.1;
 image_size_x = 20;
 image_size_y = 20;
 
-model_flip = true;
+corner_space = 10;
+
+corner_rack_size = 2;
+corner_rack_height = (depth - wall) - corner_space;
+
+model_flip = false;
 only_front_panel = false;
+only_back_panel = false;
+no_back_panel = true;
 
 // -----------------------------------------------
 
@@ -124,6 +131,16 @@ module main() {
             translate([-wall_up, -1, -1])
                 cube([height, width + 2, depth + 2]);
         }
+        
+        if (only_back_panel) {
+            translate([-1, -1, wall])
+                cube([height + 2, width + 2, depth]);
+        }
+        
+        if (no_back_panel) {
+            translate([-1, -1, -1])
+                cube([height + 2, width + 2, wall + 1.001]);
+        }
 
         // ------------- speaker grid
         
@@ -171,6 +188,20 @@ module main() {
         
         title();
     }
+    
+    // ------------- corner rack
+        
+    translate([wall, wall, wall])
+        cube([corner_rack_size, corner_rack_size, corner_rack_height]);
+    
+    translate([height - wall_up - corner_rack_size, wall, wall])
+        cube([corner_rack_size, corner_rack_size, corner_rack_height]);
+    
+    translate([wall, width - wall - corner_rack_size, wall])
+        cube([corner_rack_size, corner_rack_size, corner_rack_height]);
+    
+    translate([height - wall_up - corner_rack_size, width - wall - corner_rack_size, wall])
+        cube([corner_rack_size, corner_rack_size, corner_rack_height]);
 }
 
 if (model_flip) {
