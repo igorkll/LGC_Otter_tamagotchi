@@ -16,6 +16,11 @@ buttonhole_offsets = [
     (width - wall) - 8
 ];
 
+label_size = 8;
+label_depth = 0.8;
+label_offset = buttonhole_bottom_offset + (buttonhole_size / 2) + 5;
+labels = ["→", "✗", "✓", "←"];
+
 screenhole_width = 34.5;
 screenhole_height = 44 - 2.5;
 screenhole_offset = -0.2 + wall_up;
@@ -28,6 +33,17 @@ difference() {
     for (buttonhole_offset = buttonhole_offsets) {
         translate([buttonhole_bottom_offset, buttonhole_offset, -0.5])
             cylinder(h = thickness + 1, d = buttonhole_size);
+    }
+    
+    for (i = [0 : len(buttonhole_offsets) - 1]) {
+        translate([label_offset, buttonhole_offsets[i], thickness - label_depth])
+            linear_extrude(label_depth + 0.01)
+                rotate([0, 0, -90])
+                        text(labels[i],
+                             size = label_size,
+                             halign = "center",
+                             valign = "center",
+                             font = "DejaVu Sans");
     }
     
     translate([height - screenhole_height - screenhole_offset, (width / 2) - (screenhole_width / 2), -0.5])
