@@ -16,6 +16,10 @@ buttonhole_offsets = [
     (width - wall) - 8
 ];
 
+screenhole_width = 34.5;
+screenhole_height = 44;
+screenhole_offset = 1 + wall_up;
+
 // -----------------------------------------------
 
 difference() {
@@ -23,6 +27,9 @@ difference() {
     
     for (buttonhole_offset = buttonhole_offsets) {
         translate([buttonhole_bottom_offset, buttonhole_offset, -0.5])
-            cylinder(h = wall + 1, d = buttonhole_size);
+            cylinder(h = thickness + 1, d = buttonhole_size);
     }
+    
+    translate([height - screenhole_height - screenhole_offset, (width / 2) - (screenhole_width / 2), -0.5])
+        cube([screenhole_height, screenhole_width, thickness + 1]);
 }
