@@ -18,7 +18,7 @@ buttonhole_offsets = [
 
 label_size = 8;
 label_depth = 0.8;
-label_offset = buttonhole_bottom_offset + (buttonhole_size / 2) + 5;
+label_offset = buttonhole_bottom_offset + (buttonhole_size / 2) + 6.5;
 labels = ["→", "✗", "✓", "←"];
 
 screenhole_width = 34.5;
