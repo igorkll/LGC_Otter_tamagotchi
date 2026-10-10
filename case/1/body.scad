@@ -3,7 +3,7 @@ wall_up = 1.5;
 
 width = 50.5 + (wall * 2);
 height = 62 + wall + wall_up;
-depth = 20 + wall;
+depth = 23 + wall;
 
 speakergrid_size = 20;
 speakergrid_margin = 1;
@@ -24,10 +24,10 @@ text_usb_offset = -5;
 usb_1_text = "зарядка";
 usb_2_text = "сервис";
 
-switch_width = 11.1;
-switch_height = 6.2;
+switch_width = 14.5;
+switch_height = 8.5;
 switch_offset_bottom = wall + 2;
-switch_offset_top = wall_up + 4;
+switch_offset_top = wall_up + 7;
 
 title_depth = 0.8;
 title_1 = "Мини выдра ><";
@@ -45,13 +45,14 @@ image_size_y = 20;
 
 corner_space = 10;
 
-corner_rack_size = 2;
+corner_rack_size = 2.5;
+corner_rack_size_y = 4;
 corner_rack_height = (depth - wall) - corner_space;
 
-model_flip = true;
+model_flip = false;
 only_front_panel = false;
-only_back_panel = true;
-no_back_panel = false;
+only_back_panel = false;
+no_back_panel = true;
 
 // -----------------------------------------------
 
@@ -198,17 +199,21 @@ module main() {
     difference() {
         // ------------- corner rack
         
-        translate([wall, wall, wall])
-            cube([corner_rack_size, corner_rack_size, corner_rack_height]);
-        
-        translate([height - wall_up - corner_rack_size, wall, wall])
-            cube([corner_rack_size, corner_rack_size, corner_rack_height]);
-        
-        translate([wall, width - wall - corner_rack_size, wall])
-            cube([corner_rack_size, corner_rack_size, corner_rack_height]);
-        
-        translate([height - wall_up - corner_rack_size, width - wall - corner_rack_size, wall])
-            cube([corner_rack_size, corner_rack_size, corner_rack_height]);
+        union() {
+            
+            
+            translate([wall, wall, wall])
+                cube([corner_rack_size_y, corner_rack_size, corner_rack_height]);
+            
+            translate([height - wall_up - corner_rack_size_y, wall, wall])
+                cube([corner_rack_size_y, corner_rack_size, corner_rack_height]);
+            
+            translate([wall, width - wall - corner_rack_size, wall])
+                cube([corner_rack_size_y, corner_rack_size, corner_rack_height]);
+            
+            translate([height - wall_up - corner_rack_size_y, width - wall - corner_rack_size, wall])
+                cube([corner_rack_size_y, corner_rack_size, corner_rack_height]);
+        }
         
         // ------------- exclude
         
