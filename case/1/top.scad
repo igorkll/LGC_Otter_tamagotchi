@@ -7,13 +7,13 @@ width = 50.5 + (wall * 2);
 height = 62 + wall + wall_up;
 thickness = wall;
 
-buttonhole_size = 3;
-buttonhole_bottom_offset = 3 + wall;
+buttonhole_size = 5;
+buttonhole_bottom_offset = 5 + wall;
 buttonhole_offsets = [
-    wall + 5,
-    wall + 15,
-    (width - wall) - 5,
-    (width - wall) - 15
+    wall + 8,
+    wall + 18.5,
+    (width - wall) - 18.5,
+    (width - wall) - 8
 ];
 
 // -----------------------------------------------
