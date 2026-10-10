@@ -17,7 +17,7 @@ buttonhole_offsets = [
 ];
 
 screenhole_width = 34.5;
-screenhole_height = 44;
+screenhole_height = 44 - 2.5;
 screenhole_offset = -0.2 + wall_up;
 
 // -----------------------------------------------
