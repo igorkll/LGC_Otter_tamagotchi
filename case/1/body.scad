@@ -48,10 +48,10 @@ corner_space = 10;
 corner_rack_size = 2;
 corner_rack_height = (depth - wall) - corner_space;
 
-model_flip = false;
+model_flip = true;
 only_front_panel = false;
-only_back_panel = false;
-no_back_panel = true;
+only_back_panel = true;
+no_back_panel = false;
 
 // -----------------------------------------------
 
@@ -120,6 +120,23 @@ module title() {
                 draw_image();
 }
 
+module main_exclude() {
+    if (only_front_panel) {
+        translate([-wall_up, -1, -1])
+            cube([height, width + 2, depth + 2]);
+    }
+    
+    if (only_back_panel) {
+        translate([-1, -1, wall])
+            cube([height + 2, width + 2, depth]);
+    }
+    
+    if (no_back_panel) {
+        translate([-1, -1, -1])
+            cube([height + 2, width + 2, wall + 1.001]);
+    }
+}
+
 module main() {
     difference() {
         cube([height, width, depth]);
@@ -127,20 +144,9 @@ module main() {
         translate([wall, wall, wall])
             cube([height - wall - wall_up, width - (wall * 2), depth]);
         
-        if (only_front_panel) {
-            translate([-wall_up, -1, -1])
-                cube([height, width + 2, depth + 2]);
-        }
+        // ------------- exclude
         
-        if (only_back_panel) {
-            translate([-1, -1, wall])
-                cube([height + 2, width + 2, depth]);
-        }
-        
-        if (no_back_panel) {
-            translate([-1, -1, -1])
-                cube([height + 2, width + 2, wall + 1.001]);
-        }
+        main_exclude();
 
         // ------------- speaker grid
         
@@ -189,19 +195,25 @@ module main() {
         title();
     }
     
-    // ------------- corner rack
+    difference() {
+        // ------------- corner rack
         
-    translate([wall, wall, wall])
-        cube([corner_rack_size, corner_rack_size, corner_rack_height]);
-    
-    translate([height - wall_up - corner_rack_size, wall, wall])
-        cube([corner_rack_size, corner_rack_size, corner_rack_height]);
-    
-    translate([wall, width - wall - corner_rack_size, wall])
-        cube([corner_rack_size, corner_rack_size, corner_rack_height]);
-    
-    translate([height - wall_up - corner_rack_size, width - wall - corner_rack_size, wall])
-        cube([corner_rack_size, corner_rack_size, corner_rack_height]);
+        translate([wall, wall, wall])
+            cube([corner_rack_size, corner_rack_size, corner_rack_height]);
+        
+        translate([height - wall_up - corner_rack_size, wall, wall])
+            cube([corner_rack_size, corner_rack_size, corner_rack_height]);
+        
+        translate([wall, width - wall - corner_rack_size, wall])
+            cube([corner_rack_size, corner_rack_size, corner_rack_height]);
+        
+        translate([height - wall_up - corner_rack_size, width - wall - corner_rack_size, wall])
+            cube([corner_rack_size, corner_rack_size, corner_rack_height]);
+        
+        // ------------- exclude
+        
+        main_exclude();
+    }
 }
 
 if (model_flip) {
